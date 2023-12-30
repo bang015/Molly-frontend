@@ -150,11 +150,6 @@ const SignUpPage: React.FC = () => {
                   }}
                 />
               </div>
-              <div>
-                <Button className="signup-btn1" type="submit">
-                  가입
-                </Button>
-              </div>
             </form>
             <div className="goToSignIn">
               계정이 있으신가요? <Link to={"/signin"}>로그인</Link>
