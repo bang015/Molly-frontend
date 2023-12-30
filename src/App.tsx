@@ -1,13 +1,20 @@
-import React from 'react';
+import React from "react";
 
-function App() {
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+
+import MainPage from "./Pages/MainPage";
+import SignUpPage from "./Pages/SignUpPage";
+import SignInPage from "./Pages/SignInPage";
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-       
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/signin" element={<SignInPage />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

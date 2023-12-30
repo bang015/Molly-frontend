@@ -1,0 +1,62 @@
+.mainPage {
+  width: 1300px;
+  border: 1px solid;
+  margin: auto;
+  display: flex;
+}
+.main-left {
+  width: 300px;
+  border: 1px solid;
+}
+.main-right{
+  width: 300px;
+  border: 1px solid;
+}
+.main-center{
+  width: 700px;
+  border: 1px solid;
+}
+.modal {
+	z-index:1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 불투명한 검은색 배경 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.create-post{
+  width: 700px;
+  background-color: white;
+  border-radius: 8px;
+  height: 700px;
+}
+.create-post-title{
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid;
+  text-align: center;
+  margin-top: 5px;
+  font-weight: bold;
+}
+.create-post-content{
+  width: 100%;
+  height: 670px;
+}
+.create-post-text{
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+}
+.upload-icon{
+  margin-bottom: 10px;
+  margin-left: 17px;
+}
+#fileInput {
+  display: none;
+}

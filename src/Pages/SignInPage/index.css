@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+  background-color: white;
+}
+.signup {
+  margin: 0 auto;
+  padding: 0;
+}
+.signup-container {
+  justify-content: center;
+  display: flex;
+}
+.signup-left {
+  display: inline-block;
+  width: 120vw;
+  text-align: center;
+}
+.signup-right {
+  margin-top: 15vw;
+  display: inline-block;
+  width: 100vw;
+  text-align: center;
+}
+.paper {
+  width: 30vw;
+  border-radius: 1.8rem !important;
+}
+.paper-title {
+  padding-top: 20px;
+  font-size: "1.6vw";
+  font-family: "Spoqa Han Sans Neo";
+}
+.signup-input {
+  width: 22vw;
+  margin: 0.5vw !important;
+}
+
+.ignup-input-box {
+  margin: 0.5vw;
+}
+
+.signup-btn {
+  width: 10.7vw;
+  height: 3vw;
+  display: inline-block !important;
+  background-color: #f8f0f1 !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: black !important;
+  margin: 1vw 0.5rem !important;
+}
