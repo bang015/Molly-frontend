@@ -8,8 +8,11 @@
 }
 .signup-left {
   display: inline-block;
-  width: 120vw;
+  width: 80vw;
   text-align: center;
+  margin-top: 200px;
+  margin-left: 200px;
+  margin-right: 50px;
 }
 .signup-right1 {
   margin-top: 9vw;

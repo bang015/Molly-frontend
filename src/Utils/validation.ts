@@ -47,7 +47,7 @@ export const checkNickExists = async (nickname: string) => {
 };
 
 export const checkNickValidation = async (nickname: string) => {
-  const regExp = /^[A-Za-z0-9_.]{3,30}$/;
+  const regExp = /^[가-힣A-Za-z0-9_.]{3,30}$/;
   const isSpecial = /\W/;
   let isValid;
   let helperText;

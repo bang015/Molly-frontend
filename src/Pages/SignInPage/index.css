@@ -10,11 +10,6 @@ body {
   justify-content: center;
   display: flex;
 }
-.signup-left {
-  display: inline-block;
-  width: 120vw;
-  text-align: center;
-}
 .signup-right {
   margin-top: 15vw;
   display: inline-block;

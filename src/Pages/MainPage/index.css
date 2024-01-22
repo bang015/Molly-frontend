@@ -28,35 +28,4 @@
   align-items: center;
   justify-content: center;
 }
-.create-post{
-  width: 700px;
-  background-color: white;
-  border-radius: 8px;
-  height: 700px;
-}
-.create-post-title{
-  width: 100%;
-  height: 30px;
-  border-bottom: 1px solid;
-  text-align: center;
-  margin-top: 5px;
-  font-weight: bold;
-}
-.create-post-content{
-  width: 100%;
-  height: 670px;
-}
-.create-post-text{
-  position: absolute;
-  top: 50%; 
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 20px;
-}
-.upload-icon{
-  margin-bottom: 10px;
-  margin-left: 17px;
-}
-#fileInput {
-  display: none;
-}
+
