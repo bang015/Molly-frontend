@@ -15,3 +15,6 @@ export const QUERY_NAME = '?nickname=';
 
 /* post */
 export const POST_API = "/post";
+
+/* follow */
+export const FOLLOW_API = "/follow"; 

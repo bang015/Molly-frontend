@@ -25,3 +25,10 @@ export interface IUserforSignUp {
   password?: string;
   name?: string;
 }
+
+export interface suggestFollower {
+  userId: number;
+  userName: string;
+  userNickname: string;
+  profileImagePath: string|null;
+}

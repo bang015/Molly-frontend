@@ -5,12 +5,15 @@ import MainPage from "./Pages/MainPage";
 import SignUpPage from "./Pages/SignUpPage";
 import SignInPage from "./Pages/SignInPage";
 import ProfilePage from "./Pages/ProfilePage";
+import PeoplePage from "./Pages/peoplePage";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./Redux/auth";
 const App: React.FC = () => {
   const isLogin = useSelector((state: RootState) => state.authReducer.isLogin);
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const user = useSelector((state:RootState)=>state.authReducer.user);
+  const followed = useSelector(
+    (state: RootState) => state.authReducer.followed
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     if (isLogin && token) {
@@ -23,7 +26,17 @@ const App: React.FC = () => {
       <Routes>
         <Route
           path="/"
-          element={isLogin ? <MainPage /> : <Navigate to="/signin" />}
+          element={
+            isLogin ? (
+              followed ? (
+                <Navigate to="/explore/people" />
+              ) : (
+                <MainPage />
+              )
+            ) : (
+              <Navigate to="/signin" />
+            )
+          }
         />
         <Route
           path="/signup"
@@ -36,6 +49,10 @@ const App: React.FC = () => {
         <Route
           path="/profile"
           element={isLogin ? <ProfilePage /> : <Navigate to="/signin" />}
+        />
+        <Route
+          path="/explore/people"
+          element={isLogin ? <PeoplePage /> : <Navigate to="/signin" />}
         />
       </Routes>
     </BrowserRouter>
