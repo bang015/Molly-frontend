@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { FOLLOW_API, INIT } from "../Utils/api-url";
-
+import { suggestFollower } from "../Interfaces/user";
+import { useDispatch } from "react-redux";
 interface FollowState {
-  followedUsers: number[];
+  followedUsers: suggestFollower[];
   followLoading: boolean;
 }
 
@@ -13,15 +14,15 @@ const initialState: FollowState = {
 };
 
 const followSlice = createSlice({
-  name: 'follow',
+  name: "follow",
   initialState,
   reducers: {
     followUserStart: (state) => {
       state.followLoading = true;
     },
-    followUserSuccess: (state, action: PayloadAction<number>) => {
+    followUserSuccess: (state, action: PayloadAction<suggestFollower[]>) => {
       state.followLoading = false;
-      state.followedUsers.push(action.payload);
+      state.followedUsers=action.payload;
     },
     followUserFailure: (state) => {
       state.followLoading = false;
@@ -30,23 +31,30 @@ const followSlice = createSlice({
   },
 });
 
-export const { followUserStart, followUserSuccess, followUserFailure } = followSlice.actions;
+export const { followUserStart, followUserSuccess, followUserFailure } =
+  followSlice.actions;
 export default followSlice.reducer;
 
 export const followUser = createAsyncThunk(
-  'follow/followUser',
-  async ({token,userId} : {token: string, userId: number}) => {
-    try{
+  "follow/followUser",
+  async ({ token, followUserId }: { token: string; followUserId: number }, { dispatch }) => {
+    try {
+      dispatch(followUserStart());
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`,
-        userId
-      )
-      if(response.status === 200){
+        { followUserId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
         const result = response.data;
-        
+        dispatch(followUserSuccess(result));
       }
-    }catch(err){
-
+    } catch (err) {
+      dispatch(followUserFailure());
     }
   }
-)
+);
