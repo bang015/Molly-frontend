@@ -18,23 +18,19 @@ const setToken = createAction<string>(SET_TOKEN); // result.data.token
 const removeToken = createAction(REMOVE_TOKEN);
 const postUserSuccess = createAction(POST_USER_SUCCESS);
 const postUserFail = createAction(POST_USER_FAIL);
-const getUserSuccess = createAction<{ user: userType, suggestFollowerList: suggestFollower[], followed: boolean}>(GET_USER_SUCCESS); 
+const getUserSuccess = createAction<userType>(GET_USER_SUCCESS); 
 const getUserFail = createAction(GET_USER_FAIL);
 
 type AuthState = {
   isLogin: boolean;
   token: string | null;
   user: userType | null;
-  suggestList: suggestFollower[];
-  followed: boolean;
 };
 
 const initialState: AuthState = {
   isLogin: !!localStorage.getItem("token"),
   token: localStorage.getItem("token"),
   user: null,
-  suggestList: [],
-  followed: false
 };
 
 const authReducer = createReducer(initialState, (builder) => {
@@ -53,9 +49,7 @@ const authReducer = createReducer(initialState, (builder) => {
     })
     .addCase(getUserSuccess, (state, action) => {
       if (action.payload) {
-        state.user = action.payload.user;
-        state.suggestList = action.payload.suggestFollowerList;
-        state.followed = action.payload.followed;
+        state.user = action.payload;
       }
     })
     .addCase(getUserFail, (state) => {

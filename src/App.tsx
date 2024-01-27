@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const isLogin = useSelector((state: RootState) => state.authReducer.isLogin);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const followed = useSelector(
-    (state: RootState) => state.authReducer.followed
+    (state: RootState) => state.followReducer.followed
   );
   const dispatch = useDispatch();
   useEffect(() => {
