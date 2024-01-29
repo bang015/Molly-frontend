@@ -79,7 +79,7 @@ export const followUser = createAsyncThunk(
 
 export const getFollow = createAsyncThunk(
   "follow/getFollow",
-  async (token: string, { dispatch }) => {
+  async ({token, limit}: {token: string,limit:number}, { dispatch }) => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`,
@@ -87,6 +87,9 @@ export const getFollow = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params: {
+            limit: limit
+          }
         }
       );
       if (response.status === 200) {

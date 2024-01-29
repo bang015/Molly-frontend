@@ -1,3 +1,11 @@
 .segFollow{
   width: 500px;
+  margin: auto;
+
+}
+.follow-center{
+  width: 1000px;
+}
+.seg{
+  padding-left: 16px;
 }

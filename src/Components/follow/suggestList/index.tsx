@@ -4,14 +4,18 @@ import React, { useEffect } from "react";
 import { followUser, getFollow } from "../../../Redux/follow";
 import { Avatar, Button, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 
-export const SuggestList: React.FC = () => {
+interface SuggestListProps {
+  limit: number;
+}
+
+export const SuggestList: React.FC<SuggestListProps>= ({ limit }) => {
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.authReducer.token); 
   useEffect(() => {
     if(token){
-      dispatch(getFollow(token) as any);
+      dispatch(getFollow({token,limit}) as any);
     }
-  }, [token])
+  }, [token, limit])
   const suggestList = useSelector(
     (state: RootState) => state.followReducer.suggestList
   );

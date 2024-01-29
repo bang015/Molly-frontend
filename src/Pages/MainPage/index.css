@@ -8,16 +8,16 @@
   width: 300px;
   border: 1px solid;
 }
-.main-right{
+.main-right {
   width: 300px;
   border: 1px solid;
 }
-.main-center{
+.main-center {
   width: 700px;
   border: 1px solid;
 }
 .modal {
-	z-index:1000;
+  z-index: 1000;
   position: fixed;
   top: 0;
   left: 0;
@@ -28,4 +28,8 @@
   align-items: center;
   justify-content: center;
 }
-
+.more {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

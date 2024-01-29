@@ -32,7 +32,7 @@ const Nav: React.FC = () => {
         />
       </div>
       <div className="nav-menu">
-        <ListItemButton component="a" href="/profile">
+        <ListItemButton component="a" href="/">
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
@@ -44,7 +44,7 @@ const Nav: React.FC = () => {
           </ListItemIcon>
           <ListItemText primary="Search" />
         </ListItemButton>
-        <ListItemButton component="a" href="/">
+        <ListItemButton component="a" href="/explore">
           <ListItemIcon>
             <ExploreOutlinedIcon />
           </ListItemIcon>

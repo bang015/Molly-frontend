@@ -3,17 +3,13 @@ import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../Redux/auth";
 import Nav from "../../Components/Nav";
-import { RootState } from "../../Redux";
-import { getFollow } from "../../Redux/follow";
+import { SuggestList } from "../../Components/follow/suggestList";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const Main: React.FC = () => {
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.authReducer.token); 
-
-  useEffect(() => {
-    if(token){
-      dispatch(getFollow(token) as any);
-    }
-  }, [token])
+  const limit = 5;
+  const navigate = useNavigate();
   const handlesignOut = () => {
     dispatch(signOut() as any);
   };
@@ -24,7 +20,11 @@ const Main: React.FC = () => {
       </div>
       <div className="main-center"></div>
       <div className="main-right">
-        <button onClick={handlesignOut}>로그아웃</button>
+        <div className="more">
+          <div>회원님을 위한 추천</div>
+          <div><Button onClick={()=>{navigate('/explore/people')}}>모두보기</Button></div>
+        </div>
+        <SuggestList limit={limit}/>
       </div>
     </div>
   );

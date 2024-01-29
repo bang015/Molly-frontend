@@ -6,6 +6,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import SignInPage from "./Pages/SignInPage";
 import ProfilePage from "./Pages/ProfilePage";
 import PeoplePage from "./Pages/peoplePage";
+import ExplorePage from "./Pages/explorePage";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./Redux/auth";
 const App: React.FC = () => {
@@ -49,6 +50,10 @@ const App: React.FC = () => {
         <Route
           path="/profile"
           element={isLogin ? <ProfilePage /> : <Navigate to="/signin" />}
+        />
+        <Route
+          path="/explore"
+          element={isLogin ? <ExplorePage /> : <Navigate to="/signin" />}
         />
         <Route
           path="/explore/people"

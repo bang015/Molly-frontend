@@ -26,7 +26,6 @@ const SignInPage: React.FC = () => {
       }
     }else{
       const token = await dispatch(postSignIn(userData) as any);
-      console.log(token.payload)
       if(token.payload !== null){
         await dispatch(getUser(token.payload) as any);
         navigate("/");
