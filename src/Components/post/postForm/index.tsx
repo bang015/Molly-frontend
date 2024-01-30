@@ -5,7 +5,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import TextField from "@mui/material/TextField";
 import "./index.css";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Modal } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
@@ -34,9 +34,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
-  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-  };
+  
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
 
@@ -135,14 +133,118 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
       post_images: croppedImgList,
     };
     if (matches) {
-    const tags = matches.map(match => match.replace(/^#/, ''));
+      const tags = matches.map((match) => match.replace(/^#/, ""));
       postContent.hashtags = tags;
     }
-    uploadPost(token!, postContent)
+    uploadPost(token!, postContent);
   };
   return (
     <div>
-      {postConfig && (
+      <Modal
+        open={postConfig}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="create-post">
+          <div className="create-post-title">
+            새 게시물 만들기
+            <Button
+              disabled={postcontent === "" || showImages.length === 0}
+              className="post-btn"
+              onClick={handleuploadPost}
+            >
+              개시
+            </Button>
+          </div>
+          <div className="create-post-container">
+            <div className="create-post-content">
+              {showImages.length === 0 ? (
+                <div className="create-post-text">
+                  <label htmlFor="fileInput">
+                    <div>
+                      <img
+                        className="upload-icon"
+                        src="/images/upload-icon.jpg"
+                        width="250px"
+                        alt="upload"
+                      />
+                    </div>
+                    당신의 추억을 업로드하세요!
+                  </label>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    accept="image/*,video/*"
+                    onChange={handleAddImages}
+                    multiple
+                  />
+                </div>
+              ) : (
+                <div className="post-image">
+                  <Cropper
+                    image={showImages[currentImageIndex]}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={8 / 7}
+                    onCropChange={setCrop}
+                    onCropComplete={onCropComplete}
+                    onZoomChange={setZoom}
+                    objectFit="cover"
+                  />
+                  {currentImageIndex > 0 && (
+                    <IconButton
+                      className="back-btn"
+                      aria-label="fingerprint"
+                      color="secondary"
+                      style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                      onClick={onPrevClick}
+                    >
+                      <ChevronLeftIcon style={{ color: "black" }} />
+                    </IconButton>
+                  )}
+                  {showImages.length > 1 &&
+                    currentImageIndex < showImages.length - 1 && (
+                      <IconButton
+                        className="next-btn"
+                        aria-label="fingerprint"
+                        color="secondary"
+                        style={{
+                          backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        }}
+                        onClick={onNextClick}
+                      >
+                        <NavigateNextIcon style={{ color: "black" }} />
+                      </IconButton>
+                    )}
+                </div>
+              )}
+            </div>
+            <div className="post-text">
+              <div>
+                <div>
+                  <Avatar alt="Remy Sharp" src={user?.ProfileImage?.path} />
+                  {user?.nickname}
+                </div>
+                <div>
+                  <TextField
+                    variant="standard"
+                    className="post-textField"
+                    placeholder="문구를 입력하세요..."
+                    rows={6}
+                    multiline
+                    onChange={handlePostContent}
+                    InputProps={{
+                      style: { padding: 10 },
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      {/* {postConfig && (
         <div className="modal" onClick={handleCloseModal}>
           <div className="create-post" onClick={handleModalClick}>
             <div className="create-post-title">
@@ -242,7 +344,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

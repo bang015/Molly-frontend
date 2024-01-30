@@ -1,3 +1,4 @@
+
 .post-image {
   width: 900px;
   height: 700px;
@@ -9,6 +10,10 @@
   background-color: white;
   border-radius: 8px;
   height: 700px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .create-post-title {
   width: 100%;

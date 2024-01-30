@@ -3,7 +3,7 @@ import { RootState } from "../../../Redux";
 import React, { useEffect } from "react";
 import { followUser, getFollow } from "../../../Redux/follow";
 import { Avatar, Button, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
-
+import "./index.css";
 interface SuggestListProps {
   limit: number;
 }
@@ -33,15 +33,17 @@ export const SuggestList: React.FC<SuggestListProps>= ({ limit }) => {
   };
 
   return (
-    <div>
+    <div className="list">
       {suggestList.map((user) => (
             <ListItem
               key={user.userId}
+              style={{ zIndex: 99 }}
               secondaryAction={
                 <Button
                   variant={isFollowing(user.userId)? "outlined" : "contained"}
                   disableElevation
                   onClick={() => handleFollow(user.userId)}
+                  style={{ zIndex: 99 }}
                 >
                   {isFollowing(user.userId) ? "팔로잉" : "팔로우"}
                 </Button>

@@ -1,0 +1,20 @@
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: auto;
+  width: 800px;
+}
+
+.image-item {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+.nav-menu{
+  flex-grow: 1;
+}
+.post-content{
+  width: 1200px;
+}

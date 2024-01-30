@@ -7,7 +7,7 @@ const People: React.FC = () => {
   const limit = 30;
   return (
     <div className="mainPage">
-      <div className="main-left">
+      <div className="nav-container">
         <Nav></Nav>
       </div>
       <div className="follow-center">

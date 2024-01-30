@@ -1,4 +1,13 @@
 .nav{
+  height: 100dvh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  border-right: 1px rgb(219, 219, 219) solid;
+  width: inherit;
+  z-index: 900;
+}
+.n{
+  position: fixed;
+  width: inherit;
 }

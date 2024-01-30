@@ -22,6 +22,7 @@ const Nav: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [postConfig, setPostConfig] = useState(false);
   return (
+    <div className="n">
     <div className="nav">
       <div className="nav-logo">
         <img
@@ -99,6 +100,7 @@ const Nav: React.FC = () => {
         </ListItemButton>
       </div>
       <PostForm postConfig={postConfig} setPostConfig={setPostConfig} />
+    </div>
     </div>
   );
 };

@@ -15,11 +15,13 @@ const Main: React.FC = () => {
   };
   return (
     <div className="mainPage">
-      <div className="main-left">
+      <div className="nav-container">
         <Nav></Nav>
       </div>
-      <div className="main-center"></div>
-      <div className="main-right">
+      <div className="main-center">
+      
+      </div>
+      <div className="follow-container">
         <div className="more">
           <div>회원님을 위한 추천</div>
           <div><Button onClick={()=>{navigate('/explore/people')}}>모두보기</Button></div>
