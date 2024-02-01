@@ -14,13 +14,18 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux";
 import "./index.css";
 import PostForm from "../post/postForm";
+import { signOut } from "../../Redux/auth";
 const Nav: React.FC = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [postConfig, setPostConfig] = useState(false);
+  const handleSignOut = () => {
+    dispatch(signOut() as any);
+  }
   return (
     <div className="n">
     <div className="nav">
@@ -92,7 +97,7 @@ const Nav: React.FC = () => {
         </ListItemButton>
       </div>
       <div className="nav-bottom">
-        <ListItemButton component="a" href="/">
+        <ListItemButton component="a" onClick={handleSignOut}>
           <ListItemIcon>
             <MenuOutlinedIcon />
           </ListItemIcon>

@@ -56,7 +56,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
               resolve(null);
               const originalImageWidth = image.width;
               const originalImageHeight = image.height;
-              const imageRatio = 8 / 7;
+              const imageRatio = 7 / 7;
               const cropSize = getCropSize(
                 originalImageWidth,
                 originalImageHeight,
@@ -186,7 +186,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
                     image={showImages[currentImageIndex]}
                     crop={crop}
                     zoom={zoom}
-                    aspect={8 / 7}
+                    aspect={7 / 7}
                     onCropChange={setCrop}
                     onCropComplete={onCropComplete}
                     onZoomChange={setZoom}
@@ -244,107 +244,6 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
           </div>
         </div>
       </Modal>
-      {/* {postConfig && (
-        <div className="modal" onClick={handleCloseModal}>
-          <div className="create-post" onClick={handleModalClick}>
-            <div className="create-post-title">
-              새 게시물 만들기
-              <Button
-                disabled={postcontent === "" || showImages.length === 0}
-                className="post-btn"
-                onClick={handleuploadPost}
-              >
-                개시
-              </Button>
-            </div>
-            <div className="create-post-container">
-              <div className="create-post-content">
-                {showImages.length === 0 ? (
-                  <div className="create-post-text">
-                    <label htmlFor="fileInput">
-                      <div>
-                        <img
-                          className="upload-icon"
-                          src="/images/upload-icon.jpg"
-                          width="250px"
-                          alt="upload"
-                        />
-                      </div>
-                      당신의 추억을 업로드하세요!
-                    </label>
-                    <input
-                      type="file"
-                      id="fileInput"
-                      accept="image/*,video/*"
-                      onChange={handleAddImages}
-                      multiple
-                    />
-                  </div>
-                ) : (
-                  <div className="post-image">
-                    <Cropper
-                      image={showImages[currentImageIndex]}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={8 / 7}
-                      onCropChange={setCrop}
-                      onCropComplete={onCropComplete}
-                      onZoomChange={setZoom}
-                      objectFit="cover"
-                    />
-                    {currentImageIndex > 0 && (
-                      <IconButton
-                        className="back-btn"
-                        aria-label="fingerprint"
-                        color="secondary"
-                        style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-                        onClick={onPrevClick}
-                      >
-                        <ChevronLeftIcon style={{ color: "black" }} />
-                      </IconButton>
-                    )}
-                    {showImages.length > 1 &&
-                      currentImageIndex < showImages.length - 1 && (
-                        <IconButton
-                          className="next-btn"
-                          aria-label="fingerprint"
-                          color="secondary"
-                          style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                          }}
-                          onClick={onNextClick}
-                        >
-                          <NavigateNextIcon style={{ color: "black" }} />
-                        </IconButton>
-                      )}
-                  </div>
-                )}
-              </div>
-              <div className="post-text">
-                <div>
-                  <div>
-                    <Avatar alt="Remy Sharp" src={user?.ProfileImage?.path} />
-                    {user?.nickname}
-                  </div>
-                  <div>
-                    <TextField
-                      variant="standard"
-                      className="post-textField"
-                      placeholder="문구를 입력하세요..."
-                      rows={6}
-                      multiline
-                      onChange={handlePostContent}
-                      InputProps={{
-                        style: { padding: 10 },
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };
