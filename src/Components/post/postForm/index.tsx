@@ -34,7 +34,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
-  
+
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
 
@@ -106,7 +106,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
     }
   };
   const handlePostContent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const postContent = e.target.value;
+    const postContent = e.target.value.replace(/\n/g, "<br>");
     setPostContent(postContent);
   };
   const handleuploadPost = async () => {
@@ -154,7 +154,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
               className="post-btn"
               onClick={handleuploadPost}
             >
-              개시
+              게시
             </Button>
           </div>
           <div className="create-post-container">
