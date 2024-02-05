@@ -19,6 +19,8 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./index.css";
 import { createdAt } from "../../../Utils/moment";
 import EmojiPicker from "emoji-picker-react";
+import { addComment, getComment } from "../../../Redux/comment";
+import { addCommentType } from "../../../Interfaces/comment";
 
 interface PostDetailModalProps {
   postId: number;
@@ -29,12 +31,14 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const post = useSelector(
     (state: RootState) => state.postListReducer.getPostDetail
   );
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = new Date(post?.createdAt as string);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [comment, setComment] = useState("");
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
+    dispatch(getComment(postId) as any);
   }, [postId]);
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value);
@@ -54,7 +58,15 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       textFieldRef.current.focus();
     }
   };
-  const handlePostComment = () => {};
+  const handlePostComment = () => {
+    const commentInfo : addCommentType = {
+      postId: postId,
+      content: comment,
+    } 
+    if(token)
+    dispatch(addComment({token,commentInfo}) as any)
+    console.log(comment);
+  };
   return (
     <div>
       {post && (
@@ -107,7 +119,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         {post && (
                           <Avatar
                             alt="Remy Sharp"
-                            src={post.profileImage.path || ""}
+                            src={
+                              post.profileImage
+                                ? post.profileImage.path ?? undefined
+                                : undefined
+                            }
                           />
                         )}
                       </div>
@@ -137,7 +153,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                             {post && (
                               <Avatar
                                 alt="Remy Sharp"
-                                src={post.profileImage.path || ""}
+                                src={
+                                  post.profileImage
+                                    ? post.profileImage.path ?? undefined
+                                    : undefined
+                                }
                               />
                             )}
                           </div>
@@ -146,7 +166,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                               <span>{post.nickname}</span>
                             </div>
                             <div
-                            className="c3"
+                              className="c3"
                               dangerouslySetInnerHTML={{ __html: post.content }}
                             />
                           </div>
@@ -181,8 +201,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       variant="standard"
                       className="comment-textField"
                       placeholder="댓글 달기..."
-                      rows={1}
+                      maxRows={3}
                       multiline
+                      fullWidth
                       inputRef={textFieldRef}
                       onChange={handleComment}
                       InputProps={{
@@ -190,10 +211,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         style: {
                           padding: 16,
                           paddingRight: "8px",
+                          transition: "none",
                         },
                         endAdornment: (
                           <InputAdornment position="end">
                             <Button
+                              
                               disabled={comment === ""}
                               onClick={handlePostComment}
                             >
@@ -202,6 +225,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                           </InputAdornment>
                         ),
                       }}
+                      InputLabelProps={{ shrink: true }} 
                     />
                   </div>
                 </div>

@@ -22,7 +22,6 @@
   max-height: 897px;
   max-width: 897px;
   aspect-ratio: 1 / 1;
-  flex-basis: 717.6px;
   flex-grow: 1;
   justify-content: center;
   min-height: 450px;
@@ -177,7 +176,7 @@
 .section3 {
   padding-left: 16px;
   padding-right: 16px;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   order: 5;
 }
 .section4 {
@@ -185,9 +184,7 @@
   width: 100%;
   border-top: 1px rgb(219, 219, 219) solid;
 }
-.comment-textField {
-  width: 100%;
-}
+
 .c-back-btn {
   position: absolute;
   top: 50%;

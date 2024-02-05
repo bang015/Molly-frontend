@@ -12,9 +12,12 @@ export const MY = '/my';
 /* query */
 export const QUERY_EMAIL = '?email=';
 export const QUERY_NAME = '?nickname=';
-
+export const QUERY_POSTID = '?postId=';
+export const QUERY_COMMENTID = '?commentId=';
 /* post */
 export const POST_API = "/post";
 
 /* follow */
 export const FOLLOW_API = "/follow"; 
+/* comment */
+export const COMMENT_API = "/comment";

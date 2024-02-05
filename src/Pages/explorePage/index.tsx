@@ -15,7 +15,6 @@ const Explore: React.FC = () => {
     dispatch(getAllPost(page) as any);
   }, [page]);
   const handlePostModal = (id: number) => {
-
     setSelectedPostId(id);
   };
 
