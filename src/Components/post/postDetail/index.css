@@ -215,3 +215,22 @@
 .comment-list li {
   padding: 0 14px 16px 0;
 }
+.cml{
+  display: flex;
+  padding-top: 10px; 
+  padding-bottom: 10px; 
+}
+.c-btn{
+  background: none;
+  border: 0;
+  font-weight: 600;
+  
+}
+.crAt{
+  display: flex;
+  align-items: center;
+  padding-top: 5px;
+}
+.crAt div{
+  font-size: 14px;
+}

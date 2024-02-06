@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { addCommentType } from "../Interfaces/comment";
+import { addCommentType, commentType } from "../Interfaces/comment";
 import axios from "axios";
-import { COMMENT_API, INIT, QUERY_POSTID } from "../Utils/api-url";
+import { COMMENT_API, INIT, } from "../Utils/api-url";
 
 interface commentState {
-  commentList : [],
-  commentLoading : boolean
+  commentList : commentType[],
+  addCommentLoading : boolean,
+  getCommentLoading: boolean
 }
 
 const initialState : commentState = {
   commentList : [],
-  commentLoading : false
+  addCommentLoading : false,
+  getCommentLoading: false,
 }
 
 const commentSlice = createSlice({
@@ -18,17 +20,30 @@ const commentSlice = createSlice({
   initialState,
   reducers : {
     postCommentStart : (state)=>{
-      state.commentLoading = true;
+      state.addCommentLoading = true;
     },
     postCommentSuccess : (state) => {
-      state.commentLoading = false;
+      state.addCommentLoading = false;
     },
     postCommentFailure : (state) => {
-      state.commentLoading = false;
+      state.addCommentLoading = false;
+    },
+    getCommentStart : (state) => {
+      state.getCommentLoading = true;
+    },
+    getCommentSuccess : (state, action: PayloadAction<commentType[]>) => {
+      state.getCommentLoading = false;
+      state.commentList = [...state.commentList, ...action.payload]
+    },
+    getCommentFailure : (state) => {
+      state.getCommentLoading = false;
+    },
+    clearComment : (state) => {
+      state.commentList = []
     }
   }
 })
-export const { postCommentStart, postCommentSuccess, postCommentFailure, } =
+export const { postCommentStart, postCommentSuccess, postCommentFailure, getCommentStart, getCommentSuccess, getCommentFailure, clearComment} =
 commentSlice.actions;
 export default commentSlice.reducer;
 
@@ -53,11 +68,15 @@ export const addComment = createAsyncThunk (
 
 export const getComment = createAsyncThunk (
   'comment/getComment',
-  async(postId: number, {dispatch}) => {
+  async({postId, page}:{postId: number,page: number}, {dispatch}) => {
     try{
-      const response = axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}`
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`
       )
+
+      if(response.status === 200) {
+        dispatch(getCommentSuccess(response.data));
+      }
     }catch(err){
 
     }

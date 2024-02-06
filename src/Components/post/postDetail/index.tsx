@@ -17,10 +17,10 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import "./index.css";
-import { createdAt } from "../../../Utils/moment";
+import { createdAt, displayCreateAt } from "../../../Utils/moment";
 import EmojiPicker from "emoji-picker-react";
 import { addComment, getComment } from "../../../Redux/comment";
-import { addCommentType } from "../../../Interfaces/comment";
+import { addCommentType, commentType } from "../../../Interfaces/comment";
 
 interface PostDetailModalProps {
   postId: number;
@@ -32,16 +32,22 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     (state: RootState) => state.postListReducer.getPostDetail
   );
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const commentList = useSelector(
+    (state: RootState) => state.commentReducer.commentList
+  );
   const textFieldRef = useRef<HTMLInputElement | null>(null);
-  const crAt = new Date(post?.createdAt as string);
+  const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [comment, setComment] = useState("");
+  const [page, setPage] = useState(1);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
-    dispatch(getComment(postId) as any);
+    dispatch(getComment({ postId, page }) as any);
   }, [postId]);
+
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setComment(e.target.value);
+    const commentContent = e.target.value.replace(/\n/g, "<br>");
+    setComment(commentContent);
   };
   const onPrevClick = () => {
     if (currentImageIndex > 0) {
@@ -59,14 +65,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     }
   };
   const handlePostComment = () => {
-    const commentInfo : addCommentType = {
+    const commentInfo: addCommentType = {
       postId: postId,
       content: comment,
-    } 
-    if(token)
-    dispatch(addComment({token,commentInfo}) as any)
-    console.log(comment);
+    };
+    if (token) dispatch(addComment({ token, commentInfo }) as any);
   };
+  console.log(commentList);
   return (
     <div>
       {post && (
@@ -152,7 +157,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                           <div className="c1">
                             {post && (
                               <Avatar
-                                alt="Remy Sharp"
+                                alt="profile"
                                 src={
                                   post.profileImage
                                     ? post.profileImage.path ?? undefined
@@ -169,10 +174,46 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                               className="c3"
                               dangerouslySetInnerHTML={{ __html: post.content }}
                             />
+                            <div className="crAt">
+                              <div>{displayCreateAt(crAt)}</div>
+                              
+                            </div>
                           </div>
                         </div>
                       </li>
-                      <div>asdgkj</div>
+                      <div>
+                        {commentList.map((comment) => (
+                          <div key={comment.id} className="cml">
+                            <div className="c1">
+                              <Avatar
+                              alt="profile"
+                              src={
+                                comment.profileImage
+                                  ? comment.profileImage ?? undefined
+                                  : undefined
+                              }
+                              />
+                            </div> 
+                            <div>
+                            <div className="c2">
+                              <span>{comment.nickname}</span>
+                            </div>
+                            <div
+                              className="c3"
+                              dangerouslySetInnerHTML={{ __html: comment.content }}
+                            />
+                            <div className="crAt">
+                              <div>
+                                {displayCreateAt(comment.createdAt)}
+                              </div>
+                              <div>
+                                <button className="c-btn">답글 달기</button>
+                              </div>
+                            </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </ul>
                   </div>
                   <section className="section1">
@@ -216,7 +257,6 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         endAdornment: (
                           <InputAdornment position="end">
                             <Button
-                              
                               disabled={comment === ""}
                               onClick={handlePostComment}
                             >
@@ -225,7 +265,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                           </InputAdornment>
                         ),
                       }}
-                      InputLabelProps={{ shrink: true }} 
+                      InputLabelProps={{ shrink: true }}
                     />
                   </div>
                 </div>

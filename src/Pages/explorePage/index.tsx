@@ -5,6 +5,7 @@ import { RootState } from "../../Redux";
 import Nav from "../../Components/Nav";
 import "./index.css";
 import PostDetail from "../../Components/post/postDetail";
+import { clearComment } from "../../Redux/comment";
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const Explore: React.FC = () => {
 
   const closeModal = () => {
     setSelectedPostId(null);
+    dispatch(clearComment());
   };
   return (
     <div className="mainPage">
