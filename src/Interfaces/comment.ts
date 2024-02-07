@@ -8,6 +8,7 @@ export interface commentType {
   updatedAt: string;
   nickname: string;
   profileImage: string;
+  subcommentCount?: number;
 }
 export interface addCommentType {
   postId: number;

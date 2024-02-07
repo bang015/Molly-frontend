@@ -7,12 +7,14 @@ interface commentState {
   commentList : commentType[],
   addCommentLoading : boolean,
   getCommentLoading: boolean
+  totalPages : number
 }
 
 const initialState : commentState = {
   commentList : [],
   addCommentLoading : false,
   getCommentLoading: false,
+  totalPages: 0
 }
 
 const commentSlice = createSlice({
@@ -22,8 +24,9 @@ const commentSlice = createSlice({
     postCommentStart : (state)=>{
       state.addCommentLoading = true;
     },
-    postCommentSuccess : (state) => {
+    postCommentSuccess : (state, action: PayloadAction<commentType>) => {
       state.addCommentLoading = false;
+      state.commentList = [action.payload, ...state.commentList];
     },
     postCommentFailure : (state) => {
       state.addCommentLoading = false;
@@ -31,9 +34,10 @@ const commentSlice = createSlice({
     getCommentStart : (state) => {
       state.getCommentLoading = true;
     },
-    getCommentSuccess : (state, action: PayloadAction<commentType[]>) => {
+    getCommentSuccess : (state, action: PayloadAction<{commentList:commentType[], totalPages: number}>) => {
       state.getCommentLoading = false;
-      state.commentList = [...state.commentList, ...action.payload]
+      state.commentList = [...state.commentList, ...action.payload.commentList];
+      state.totalPages = action.payload.totalPages;
     },
     getCommentFailure : (state) => {
       state.getCommentLoading = false;
@@ -51,7 +55,7 @@ export const addComment = createAsyncThunk (
   'comment/addComment',
   async({token, commentInfo} : {token: string, commentInfo: addCommentType}, {dispatch}) => {
     try{
-      const response = axios.post(
+      const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
         commentInfo,
         {
@@ -59,7 +63,11 @@ export const addComment = createAsyncThunk (
             Authorization: `Bearer ${token}`,
           }
         }
-      )
+      );
+      if(response.status === 200) {
+        dispatch(postCommentSuccess(response.data));
+        console.log(response.data);
+      }
     }catch(err){
 
     }
@@ -81,4 +89,18 @@ export const getComment = createAsyncThunk (
 
     }
   }
-)
+);
+
+export const getSubComment = async (postId: number, id: number, page: number) => {
+  try{
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}/${id}?page=${page}`
+    )
+
+    if(response.status === 200) {
+      return response.data
+    }
+  }catch{
+
+  }
+}

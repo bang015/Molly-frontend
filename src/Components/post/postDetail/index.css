@@ -208,29 +208,70 @@
   font-size: 13px;
   font-weight: 600;
   margin-right: 5px;
+  color: rgb(38, 38, 38);
 }
-.c3{
+.c3 {
   display: inline;
+  font-size: 14px;
+  font-weight: 400;
 }
 .comment-list li {
   padding: 0 14px 16px 0;
 }
-.cml{
+.cml {
   display: flex;
-  padding-top: 10px; 
-  padding-bottom: 10px; 
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
-.c-btn{
+.c-btn {
   background: none;
   border: 0;
   font-weight: 600;
-  
+  font-size: 12px;
+  color: rgb(115, 115, 115);
 }
-.crAt{
+.crAt {
   display: flex;
   align-items: center;
   padding-top: 5px;
 }
-.crAt div{
-  font-size: 14px;
+.crAt div {
+  font-size: 12px;
+  padding-right: 5px;
+  color: rgb(115, 115, 115);
+}
+.moreBtn {
+  margin-top: 10px;
+  text-align: center;
+}
+.cmb {
+  margin: 0px 0 0 54px;
+  padding: 0;
+}
+.cmb button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.cmb span {
+  font-weight: 600;
+  color: rgb(115, 115, 115);
+  font-size: 12px;
+}
+.cmll {
+  border: 0;
+  border-bottom: 1px solid rgb(115, 115, 115);
+  box-sizing: border-box;
+  display: inline-block;
+  flex-direction: column;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 100%;
+  height: 0;
+  margin: 0;
+  margin-right: 10px;
+  padding: 0;
+  position: relative;
+  vertical-align: middle;
+  width: 20px;
 }

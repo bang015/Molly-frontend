@@ -16,12 +16,13 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "./index.css";
 import { createdAt, displayCreateAt } from "../../../Utils/moment";
 import EmojiPicker from "emoji-picker-react";
 import { addComment, getComment } from "../../../Redux/comment";
 import { addCommentType, commentType } from "../../../Interfaces/comment";
-
+import { CommentList } from "../comment/commentList";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -35,18 +36,26 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const commentList = useSelector(
     (state: RootState) => state.commentReducer.commentList
   );
+  const totalPages = useSelector(
+    (state: RootState) => state.commentReducer.totalPages
+  );
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [comment, setComment] = useState("");
+  const [commentId, setCommentId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
+  const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
     dispatch(getComment({ postId, page }) as any);
-  }, [postId]);
+  }, [postId, page]);
 
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const commentContent = e.target.value.replace(/\n/g, "<br>");
+    const commentContent = e.target.value;
+    if (!commentContent.includes("@")) {
+      setCommentId(null);
+    }
     setComment(commentContent);
   };
   const onPrevClick = () => {
@@ -65,13 +74,31 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     }
   };
   const handlePostComment = () => {
+    const commentContent = comment
+      .replace(/\n/g, "<br>")
+      .replace(/@([^\s]+)/g, '<span style="color: blue;">@$1</span>');
     const commentInfo: addCommentType = {
       postId: postId,
-      content: comment,
+      content: commentContent,
+      commentId: commentId,
     };
     if (token) dispatch(addComment({ token, commentInfo }) as any);
+    setComment("");
+    setCommentId(null);
   };
-  console.log(commentList);
+  const handleSubComment = (nickname: string, commentId: number) => {
+    if (textFieldRef.current) {
+      textFieldRef.current.focus();
+    }
+    setCommentId(commentId);
+    setComment(`@${nickname} `);
+  };
+  const handleNextPage = () => {
+    if (totalPages > page) setPage(page + 1);
+  };
+  const handleSubCommentList = () => {
+    setIsSubCommentVisible(!isSubCommentVisible);
+  };
   return (
     <div>
       {post && (
@@ -176,43 +203,23 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                             />
                             <div className="crAt">
                               <div>{displayCreateAt(crAt)}</div>
-                              
                             </div>
                           </div>
                         </div>
                       </li>
                       <div>
                         {commentList.map((comment) => (
-                          <div key={comment.id} className="cml">
-                            <div className="c1">
-                              <Avatar
-                              alt="profile"
-                              src={
-                                comment.profileImage
-                                  ? comment.profileImage ?? undefined
-                                  : undefined
-                              }
-                              />
-                            </div> 
-                            <div>
-                            <div className="c2">
-                              <span>{comment.nickname}</span>
-                            </div>
-                            <div
-                              className="c3"
-                              dangerouslySetInnerHTML={{ __html: comment.content }}
-                            />
-                            <div className="crAt">
-                              <div>
-                                {displayCreateAt(comment.createdAt)}
-                              </div>
-                              <div>
-                                <button className="c-btn">답글 달기</button>
-                              </div>
-                            </div>
-                            </div>
-                          </div>
+                          <CommentList
+                            key={comment.id}
+                            comment={comment}
+                            handleSubComment={handleSubComment}
+                          />
                         ))}
+                        {totalPages > page && (
+                          <div className="moreBtn" onClick={handleNextPage}>
+                            <AddCircleOutlineIcon sx={{ fontSize: 30 }} />
+                          </div>
+                        )}
                       </div>
                     </ul>
                   </div>
@@ -245,6 +252,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       maxRows={3}
                       multiline
                       fullWidth
+                      value={comment}
                       inputRef={textFieldRef}
                       onChange={handleComment}
                       InputProps={{
