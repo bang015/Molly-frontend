@@ -33,22 +33,25 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     (state: RootState) => state.postListReducer.getPostDetail
   );
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const commentList = useSelector(
-    (state: RootState) => state.commentReducer.commentList
-  );
-  const totalPages = useSelector(
-    (state: RootState) => state.commentReducer.totalPages
-  );
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [comment, setComment] = useState("");
   const [commentId, setCommentId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-  const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
+  const [commentList, setCommentList] = useState<commentType[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [newCommentList, setNewCommentList] = useState<
+    { id: number; comment: commentType }[]
+  >([]);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
-    dispatch(getComment({ postId, page }) as any);
+    const list = async () => {
+      const result = await getComment(postId, page);
+      setCommentList([...commentList, ...result.commentList]);
+      setTotalPages(result.totalPages);
+    };
+    list();
   }, [postId, page]);
 
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,16 +76,28 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       textFieldRef.current.focus();
     }
   };
-  const handlePostComment = () => {
+  const handlePostComment = async () => {
     const commentContent = comment
       .replace(/\n/g, "<br>")
-      .replace(/@([^\s]+)/g, '<span style="color: blue;">@$1</span>');
+      .replace(
+        /@([^\s]+)/g,
+        '<span style="color: rgb(0, 55, 107);">@$1</span>'
+      );
     const commentInfo: addCommentType = {
       postId: postId,
       content: commentContent,
       commentId: commentId,
     };
-    if (token) dispatch(addComment({ token, commentInfo }) as any);
+    if (token) {
+      const comment = await addComment(token, commentInfo);
+      if (comment.commentId === null) {
+        setCommentList([comment, ...commentList]);
+      } else {
+        const id = comment.commentId;
+        const commentlist = { id, comment };
+        setNewCommentList([...newCommentList, commentlist]);
+      }
+    }
     setComment("");
     setCommentId(null);
   };
@@ -96,9 +111,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const handleNextPage = () => {
     if (totalPages > page) setPage(page + 1);
   };
-  const handleSubCommentList = () => {
-    setIsSubCommentVisible(!isSubCommentVisible);
-  };
+  
   return (
     <div>
       {post && (
@@ -213,6 +226,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                             key={comment.id}
                             comment={comment}
                             handleSubComment={handleSubComment}
+                            newCommentList={newCommentList}
+                            setNewCommentList={setNewCommentList}
                           />
                         ))}
                         {totalPages > page && (

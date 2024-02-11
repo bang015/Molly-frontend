@@ -1,20 +1,43 @@
 import React, { useState } from "react";
 import { commentType } from "../../../../Interfaces/comment";
 import { SubCommentList } from "../subCommentList";
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import { displayCreateAt } from "../../../../Utils/moment";
+import { NewCommentList } from "../newCommentList";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import EditDeleteModal from "../../../EditDeleteModal";
+
 interface commentListProps {
   comment: commentType;
   handleSubComment: (nickname: string, commentId: number) => void;
+  newCommentList: { id: number; comment: commentType }[];
+  setNewCommentList: React.Dispatch<
+    React.SetStateAction<{ id: number; comment: commentType }[]>
+  >;
 }
 export const CommentList: React.FC<commentListProps> = ({
   comment,
   handleSubComment,
+  newCommentList,
+  setNewCommentList,
 }) => {
   const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
+  
   const handleSubCommentList = () => {
     setIsSubCommentVisible(!isSubCommentVisible);
+    const updatedCommentList = newCommentList.filter(
+      (item) => item.id !== comment.id
+    );
+    setNewCommentList(updatedCommentList);
+  };
+  
+  const handleModalOpen = (userId: number) => {
+    setUserId(userId);
+  };
+  const handleModalClose = () => {
+    setUserId(null);
   };
   return (
     <div key={comment.id}>
@@ -29,7 +52,7 @@ export const CommentList: React.FC<commentListProps> = ({
             }
           />
         </div>
-        <div>
+        <div style={{ flexGrow: 1 }}>
           <div className="c2">
             <span>{comment.nickname}</span>
           </div>
@@ -53,16 +76,46 @@ export const CommentList: React.FC<commentListProps> = ({
             </div>
           </div>
         </div>
+        <div className="cmb">
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              handleModalOpen(comment.userId);
+            }}
+          >
+            <MoreHorizIcon />
+          </IconButton>
+        </div>
       </div>
+      {userId !== null && (
+        <EditDeleteModal userId={userId} onClose={handleModalClose} />
+      )}
       {comment.subcommentCount! > 0 && (
         <div className="cmb">
           <button onClick={handleSubCommentList}>
             <div className="cmll"></div>
-            <span>답글 보기({comment.subcommentCount}개)</span>
+            <span>
+              {isSubCommentVisible
+                ? "답글 숨기기"
+                : `답글 보기(${comment.subcommentCount}개)`}
+            </span>
           </button>
-          {isSubCommentVisible && (
+          {isSubCommentVisible ? (
             <div>
-              <SubCommentList postId={comment.postId} id={comment.id} />
+              <SubCommentList
+                postId={comment.postId}
+                id={comment.id}
+                newCommentList={newCommentList}
+                subcommentCount={comment.subcommentCount!}
+              />
+            </div>
+          ) : (
+            <div>
+              <NewCommentList
+                postId={comment.postId}
+                id={comment.id}
+                newCommentList={newCommentList}
+              />
             </div>
           )}
         </div>
