@@ -88,7 +88,7 @@ export const CommentList: React.FC<commentListProps> = ({
         </div>
       </div>
       {userId !== null && (
-        <EditDeleteModal userId={userId} onClose={handleModalClose} />
+        <EditDeleteModal userId={userId} id={comment.id}onClose={handleModalClose} />
       )}
       {comment.subcommentCount! > 0 && (
         <div className="cmb">

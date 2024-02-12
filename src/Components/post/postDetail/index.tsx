@@ -32,6 +32,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const post = useSelector(
     (state: RootState) => state.postListReducer.getPostDetail
   );
+  const deleteComment = useSelector((state: RootState) => state.commentReducer.deletComment);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
@@ -53,6 +54,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     list();
   }, [postId, page]);
+  useEffect(() => {
+    const updatedCommentList = commentList.filter(item => !deleteComment.includes(item.id));
+    console.log(updatedCommentList);
+    console.log(deleteComment);
+    setCommentList(updatedCommentList);
+  }, [deleteComment]);
 
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value;
@@ -111,7 +118,6 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const handleNextPage = () => {
     if (totalPages > page) setPage(page + 1);
   };
-  
   return (
     <div>
       {post && (

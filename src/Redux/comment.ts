@@ -5,7 +5,7 @@ import { COMMENT_API, INIT } from "../Utils/api-url";
 interface commentState {
   commentList: commentType[];
   subCommentList: { id: number; comment: commentType[] }[];
-  newComment: { id: number; comment: commentType }[];
+  deletComment: number[];
   addCommentLoading: boolean;
   getCommentLoading: boolean;
   totalPages: number;
@@ -14,7 +14,7 @@ interface commentState {
 const initialState: commentState = {
   commentList: [],
   subCommentList: [],
-  newComment: [],
+  deletComment: [],
   addCommentLoading: false,
   getCommentLoading: false,
   totalPages: 0,
@@ -24,33 +24,6 @@ const commentSlice = createSlice({
   name: "Comment",
   initialState,
   reducers: {
-    postCommentStart: (state) => {
-      state.addCommentLoading = true;
-    },
-    postCommentSuccess: (state, action: PayloadAction<commentType>) => {
-      state.addCommentLoading = false;
-      if(action.payload.commentId === null){
-        state.commentList = [action.payload, ...state.commentList];
-      }else{
-        const id = action.payload.commentId
-        const comment = action.payload
-        const newComment = {id, comment};
-        state.newComment = [...state.newComment, newComment];
-        for(let i = 0; i< state.subCommentList.length; i++){
-          if(state.subCommentList[i].id === action.payload.commentId){
-            state.subCommentList[i].comment = [action.payload, ...state.subCommentList[i].comment]
-          }
-        }
-        for(let i =0; i< state.commentList.length; i++){
-          if(state.commentList[i].id === action.payload.commentId){
-            state.commentList[i].subcommentCount = state.commentList[i].subcommentCount! + 1
-          }
-        }
-      }
-    },
-    postCommentFailure: (state) => {
-      state.addCommentLoading = false;
-    },
     getCommentStart: (state) => {
       state.getCommentLoading = true;
     },
@@ -83,20 +56,20 @@ const commentSlice = createSlice({
         );
       }
     },
+    deleteCommentSuccess: (state, action: PayloadAction<number>) => {
+      state.deletComment = [...state.deletComment, action.payload];
+    },
     clearComment: (state) => {
-      state.commentList = [];
-      state.subCommentList = [];
+      state.deletComment = [];
     },
   },
 });
 export const {
-  postCommentStart,
-  postCommentSuccess,
-  postCommentFailure,
   getCommentStart,
   getCommentSuccess,
   getCommentFailure,
   getSubCommentSuccess,
+  deleteCommentSuccess,
   clearComment,
 } = commentSlice.actions;
 export default commentSlice.reducer;
@@ -123,7 +96,10 @@ export default commentSlice.reducer;
 //     } catch (err) {}
 //   }
 // );
-export const addComment = async(token: string, commentInfo: addCommentType) => {
+export const addComment = async (
+  token: string,
+  commentInfo: addCommentType
+) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
@@ -138,7 +114,7 @@ export const addComment = async(token: string, commentInfo: addCommentType) => {
       return response.data;
     }
   } catch (err) {}
-}
+};
 
 // export const getComment = createAsyncThunk(
 //   "comment/getComment",
@@ -155,7 +131,7 @@ export const addComment = async(token: string, commentInfo: addCommentType) => {
 //   }
 // );
 
-export const getComment = async (postId : number, page: number) => {
+export const getComment = async (postId: number, page: number) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`
@@ -165,7 +141,7 @@ export const getComment = async (postId : number, page: number) => {
       return response.data;
     }
   } catch (err) {}
-}
+};
 
 // export const getSubComment = createAsyncThunk(
 //   "comment/getSubComment",
@@ -184,17 +160,39 @@ export const getComment = async (postId : number, page: number) => {
 //     } catch {}
 //   }
 // );
-export const getSubComment = async (postId: number, id: number, page: number, ) => {
-  try{
+export const getSubComment = async (
+  postId: number,
+  id: number,
+  page: number
+) => {
+  try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}/${id}?page=${page}`
-    )
+    );
 
-    if(response.status === 200) {
-
-      return response.data
+    if (response.status === 200) {
+      return response.data;
     }
-  }catch{
-
+  } catch {}
+};
+export const deleteComment = createAsyncThunk(
+  "comment/deleteComment",
+  async ({ id, token }: { id: number; token: string }, { dispatch }) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        dispatch(deleteCommentSuccess(response.data));
+      }
+    } catch {}
   }
-}
+);
+// export const deleteComment = async (id: number, token: string) => {
+//
+// }
