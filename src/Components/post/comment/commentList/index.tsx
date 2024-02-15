@@ -22,7 +22,7 @@ export const CommentList: React.FC<commentListProps> = ({
   setNewCommentList,
 }) => {
   const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   
   const handleSubCommentList = () => {
@@ -33,11 +33,11 @@ export const CommentList: React.FC<commentListProps> = ({
     setNewCommentList(updatedCommentList);
   };
   
-  const handleModalOpen = (userId: number) => {
-    setUserId(userId);
+  const handleModalOpen = () => {
+    setOpen(true);
   };
   const handleModalClose = () => {
-    setUserId(null);
+    setOpen(false);
   };
   return (
     <div key={comment.id}>
@@ -80,18 +80,18 @@ export const CommentList: React.FC<commentListProps> = ({
           <IconButton
             aria-label="delete"
             onClick={() => {
-              handleModalOpen(comment.userId);
+              handleModalOpen();
             }}
           >
             <MoreHorizIcon />
           </IconButton>
         </div>
       </div>
-      {userId !== null && (
-        <EditDeleteModal userId={userId} id={comment.id}onClose={handleModalClose} />
+      {open && (
+        <EditDeleteModal open={open} comment={comment} onClose={handleModalClose} />
       )}
       {comment.subcommentCount! > 0 && (
-        <div className="cmb">
+        <div className="cmb ml">
           <button onClick={handleSubCommentList}>
             <div className="cmll"></div>
             <span>

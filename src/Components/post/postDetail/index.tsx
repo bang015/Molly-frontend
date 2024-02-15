@@ -20,7 +20,12 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "./index.css";
 import { createdAt, displayCreateAt } from "../../../Utils/moment";
 import EmojiPicker from "emoji-picker-react";
-import { addComment, getComment } from "../../../Redux/comment";
+import {
+  addComment,
+  clearComment,
+  getComment,
+  updateComment,
+} from "../../../Redux/comment";
 import { addCommentType, commentType } from "../../../Interfaces/comment";
 import { CommentList } from "../comment/commentList";
 interface PostDetailModalProps {
@@ -32,7 +37,20 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const post = useSelector(
     (state: RootState) => state.postListReducer.getPostDetail
   );
-  const deleteComment = useSelector((state: RootState) => state.commentReducer.deletComment);
+  const updatePending = useSelector(
+    (state: RootState) => state.commentReducer.updatePending
+  );
+  const updateCommentId = useSelector(
+    (state: RootState) => state.commentReducer.updateCommentId
+  );
+  const updatedComment = useSelector(
+    (state: RootState) => state.commentReducer.updatedComment
+  );
+  const deleteComment = useSelector(
+    (state: RootState) => state.commentReducer.deletComment
+  );
+  const followList = useSelector((state: RootState) => state.followReducer.followingUser);
+  console.log(followList);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
@@ -54,13 +72,40 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     list();
   }, [postId, page]);
+
   useEffect(() => {
-    const updatedCommentList = commentList.filter(item => !deleteComment.includes(item.id));
-    console.log(updatedCommentList);
-    console.log(deleteComment);
-    setCommentList(updatedCommentList);
+    if (deleteComment.length !== 0) {
+      const CommentList = commentList.filter(
+        (item) => !deleteComment.includes(item.id)
+      );
+      setCommentList(CommentList);
+    }
   }, [deleteComment]);
 
+  useEffect(() => {
+    if (updatedComment) {
+      const updatedCommentIndex = commentList.findIndex(
+        (map) => map.id === updatedComment?.id
+      );
+      if (updatedCommentIndex !== -1) {
+        const updatedCommentList = [...commentList];
+        updatedCommentList[updatedCommentIndex] = updatedComment;
+        setCommentList(updatedCommentList);
+      }
+    }
+  }, [updatedComment]);
+
+  useEffect(() => {
+    if (updatePending) {
+      if(updateCommentId){
+        const originalText = updateCommentId.content.replace(/<[^>]+>/g, '');
+        setComment(originalText);
+        if (textFieldRef.current) {
+          textFieldRef.current.focus();
+        }
+      }
+    }
+  }, [updatePending, updateCommentId]);
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value;
     if (!commentContent.includes("@")) {
@@ -107,6 +152,21 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     }
     setComment("");
     setCommentId(null);
+  };
+  const handleUpdateComment = async () => {
+    const commentContent = comment
+      .replace(/\n/g, "<br>")
+      .replace(
+        /@([^\s]+)/g,
+        '<span style="color: rgb(0, 55, 107);">@$1</span>'
+      );
+    const id = updateCommentId?.id;
+    const content = commentContent;
+    if (token && id) {
+      dispatch(updateComment({ token, id, content }) as any);
+    }
+    setComment("");
+    dispatch(clearComment());
   };
   const handleSubComment = (nickname: string, commentId: number) => {
     if (textFieldRef.current) {
@@ -283,7 +343,16 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                           paddingRight: "8px",
                           transition: "none",
                         },
-                        endAdornment: (
+                        endAdornment: updatePending ? (
+                          <InputAdornment position="end">
+                            <Button
+                              disabled={comment === ""}
+                              onClick={handleUpdateComment}
+                            >
+                              수정
+                            </Button>
+                          </InputAdornment>
+                        ) : (
                           <InputAdornment position="end">
                             <Button
                               disabled={comment === ""}

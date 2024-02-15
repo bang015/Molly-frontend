@@ -3,99 +3,48 @@ import { addCommentType, commentType } from "../Interfaces/comment";
 import axios from "axios";
 import { COMMENT_API, INIT } from "../Utils/api-url";
 interface commentState {
-  commentList: commentType[];
-  subCommentList: { id: number; comment: commentType[] }[];
   deletComment: number[];
-  addCommentLoading: boolean;
-  getCommentLoading: boolean;
-  totalPages: number;
+  updatePending: boolean;
+  updateCommentId: commentType | null;
+  updatedComment: commentType | null;
 }
 
 const initialState: commentState = {
-  commentList: [],
-  subCommentList: [],
   deletComment: [],
-  addCommentLoading: false,
-  getCommentLoading: false,
-  totalPages: 0,
+  updatePending: false,
+  updateCommentId: null,
+  updatedComment: null
 };
 
 const commentSlice = createSlice({
   name: "Comment",
   initialState,
   reducers: {
-    getCommentStart: (state) => {
-      state.getCommentLoading = true;
-    },
-    getCommentSuccess: (
-      state,
-      action: PayloadAction<{ commentList: commentType[]; totalPages: number }>
-    ) => {
-      state.getCommentLoading = false;
-      state.commentList = [...state.commentList, ...action.payload.commentList];
-      state.totalPages = action.payload.totalPages;
-    },
-    getCommentFailure: (state) => {
-      state.getCommentLoading = false;
-    },
-    getSubCommentSuccess: (state, action: PayloadAction<commentType[]>) => {
-      const comment = action.payload;
-      const id = comment[0].commentId!;
-      const existingSubComment = state.subCommentList.find(
-        (item) => item.id === id
-      );
-      if (!existingSubComment) {
-        const subComment = { id, comment };
-        state.subCommentList = [...state.subCommentList, subComment];
-      } else {
-        const filteredList = comment.filter(
-          (item) =>
-            !existingSubComment.comment.find(
-              (existingItem) => existingItem.id === item.id
-            )
-        );
-      }
-    },
     deleteCommentSuccess: (state, action: PayloadAction<number>) => {
       state.deletComment = [...state.deletComment, action.payload];
     },
+    updatePending: (state, action: PayloadAction<commentType>) => {
+      state.updatePending = true;
+      state.updateCommentId = action.payload;
+    },
+    updateCommentSuccess : (state, action: PayloadAction<commentType>) => {
+      state.updatedComment = action.payload
+    },
     clearComment: (state) => {
       state.deletComment = [];
+      state.updatePending = false;
+      state.updateCommentId = null;
     },
   },
 });
 export const {
-  getCommentStart,
-  getCommentSuccess,
-  getCommentFailure,
-  getSubCommentSuccess,
   deleteCommentSuccess,
+  updatePending,
   clearComment,
+  updateCommentSuccess
 } = commentSlice.actions;
 export default commentSlice.reducer;
 
-// export const addComment = createAsyncThunk(
-//   "comment/addComment",
-//   async (
-//     { token, commentInfo }: { token: string; commentInfo: addCommentType },
-//     { dispatch }
-//   ) => {
-//     try {
-//       const response = await axios.post(
-//         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
-//         commentInfo,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-//       if (response.status === 200) {
-//         dispatch(postCommentSuccess(response.data));
-//       }
-//     } catch (err) {}
-//   }
-// );
 export const addComment = async (
   token: string,
   commentInfo: addCommentType
@@ -116,21 +65,6 @@ export const addComment = async (
   } catch (err) {}
 };
 
-// export const getComment = createAsyncThunk(
-//   "comment/getComment",
-//   async ({ postId, page }: { postId: number; page: number }, { dispatch }) => {
-//     try {
-//       const response = await axios.get(
-//         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`
-//       );
-
-//       if (response.status === 200) {
-//         dispatch(getCommentSuccess(response.data));
-//       }
-//     } catch (err) {}
-//   }
-// );
-
 export const getComment = async (postId: number, page: number) => {
   try {
     const response = await axios.get(
@@ -143,23 +77,6 @@ export const getComment = async (postId: number, page: number) => {
   } catch (err) {}
 };
 
-// export const getSubComment = createAsyncThunk(
-//   "comment/getSubComment",
-//   async (
-//     { postId, id, page }: { postId: number; id: number; page: number },
-//     { dispatch }
-//   ) => {
-//     try {
-//       const response = await axios.get(
-//         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}/${id}?page=${page}`
-//       );
-
-//       if (response.status === 200) {
-//         dispatch(getSubCommentSuccess(response.data));
-//       }
-//     } catch {}
-//   }
-// );
 export const getSubComment = async (
   postId: number,
   id: number,
@@ -193,6 +110,26 @@ export const deleteComment = createAsyncThunk(
     } catch {}
   }
 );
-// export const deleteComment = async (id: number, token: string) => {
-//
-// }
+
+export const updateComment = createAsyncThunk(
+  "comment/updateComment",
+  async ({token, id, content} : {token: string, id:number, content: string} , {dispatch}) => {
+    try{
+      const response = await axios.patch(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
+        {content},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      if(response.status === 200) {
+        dispatch(updateCommentSuccess(response.data));
+      }
+    }catch{
+
+    }
+  }
+)
+

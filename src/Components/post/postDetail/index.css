@@ -245,13 +245,15 @@
   text-align: center;
 }
 .cmb {
-  margin: 0px 0 0 54px;
   padding: 0;
 }
 .cmb button {
   background: none;
   border: none;
   cursor: pointer;
+}
+.ml{
+  margin-left: 50px;
 }
 .cmb span {
   font-weight: 600;

@@ -3,34 +3,42 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../Redux";
 import "./index.css";
-import { deleteComment } from "../../Redux/comment";
+import { deleteComment, updatePending } from "../../Redux/comment";
+import { commentType } from "../../Interfaces/comment";
 interface EditDeleteModalProps {
-  userId: number;
-  id: number;
+  open: boolean;
+  comment: commentType;
   onClose: () => void;
 }
 const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
-  userId,
-  id,
+  open,
+  comment,
   onClose,
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const id = comment.id;
+  const userId = comment.userId;
   const removeComment = () => {
     if(token)
-    dispatch(deleteComment({id, token}) as any)
-    // deleteComment(commentId, token!);
+    dispatch(deleteComment({id, token}) as any);
+    onClose();
+  }
+
+  const updateComment = () => {
+    dispatch(updatePending(comment));
+    onClose();
   }
   return (
     <div>
-      <Modal open={userId !== null} onClose={onClose}>
+      <Modal open={open} onClose={onClose}>
         <div className="post-detail">
           <div className="modal-container">
             {userId === user!.id ? (
               <div>
                 <div>
-                  <button className="mbtn1 mbtnc">수정</button>
+                  <button className="mbtn1 mbtnc" onClick={updateComment}>수정</button>
                 </div>
                 <div>
                   <button className="mbtnc" onClick={removeComment}>삭제</button>

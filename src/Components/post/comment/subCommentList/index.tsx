@@ -4,6 +4,9 @@ import { Avatar, IconButton } from "@mui/material";
 import { commentType } from "../../../../Interfaces/comment";
 import { displayCreateAt } from "../../../../Utils/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import EditDeleteModal from "../../../EditDeleteModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../Redux";
 
 interface subCommentListProps {
   postId: number;
@@ -17,8 +20,15 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
   newCommentList,
   subcommentCount,
 }) => {
+  const updatedComment = useSelector(
+    (state: RootState) => state.commentReducer.updatedComment
+  );
+  const deleteComment = useSelector(
+    (state: RootState) => state.commentReducer.deletComment
+  );
   const [page, setPage] = useState(1);
   const [subComment, setSubComment] = useState<commentType[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     const subList = async () => {
       setSubComment([]);
@@ -38,6 +48,37 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
       }
     });
   };
+
+  useEffect(() => {
+    if (deleteComment.length !== 0) {
+      const CommentList = subComment.filter(
+        (item) => !deleteComment.includes(item.id)
+      );
+      setSubComment(CommentList);
+    }
+  }, [deleteComment]);
+
+  useEffect(()=>{
+    if (updatedComment) {
+      const updatedCommentIndex = subComment.findIndex(
+        (map) => map.id === updatedComment?.id
+      );
+      if (updatedCommentIndex !== -1) {
+        const updatedCommentList = [...subComment];
+        updatedCommentList[updatedCommentIndex] = updatedComment;
+        setSubComment(updatedCommentList);
+      }
+    }
+  }, [updatedComment])
+  
+  const handleModalOpen = () => {
+    setOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setOpen(false);
+  };
+
   const handleNextPage = () => {
     setPage(page + 1);
   };
@@ -71,10 +112,22 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
             </div>
           </div>
           <div className="cmb">
-            <IconButton aria-label="delete">
+            <IconButton
+              aria-label="delete"
+              onClick={() => {
+                handleModalOpen();
+              }}
+            >
               <MoreHorizIcon />
             </IconButton>
           </div>
+          {open && (
+            <EditDeleteModal
+              open={open}
+              comment={comment}
+              onClose={handleModalClose}
+            />
+          )}
         </div>
       ))}
       {subCommentPages > page && (
