@@ -17,6 +17,7 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import "./index.css";
 import { createdAt, displayCreateAt } from "../../../Utils/moment";
 import EmojiPicker from "emoji-picker-react";
@@ -28,6 +29,8 @@ import {
 } from "../../../Redux/comment";
 import { addCommentType, commentType } from "../../../Interfaces/comment";
 import { CommentList } from "../comment/commentList";
+import { followUser } from "../../../Redux/follow";
+import { getPostLike, likePost } from "../../../Redux/like";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -49,9 +52,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const deleteComment = useSelector(
     (state: RootState) => state.commentReducer.deletComment
   );
-  const followList = useSelector((state: RootState) => state.followReducer.followingUser);
-  console.log(followList);
+  const followingList = useSelector(
+    (state: RootState) => state.followReducer.followingUser
+  );
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const user = useSelector((state: RootState) => state.authReducer.user);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -63,6 +68,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [newCommentList, setNewCommentList] = useState<
     { id: number; comment: commentType }[]
   >([]);
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [checkLiked, setCheckLiked] = useState(false);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
     const list = async () => {
@@ -72,7 +79,14 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     list();
   }, [postId, page]);
-
+  useEffect(() => {
+    const like = async () => {
+      const result = await getPostLike(token!, postId);
+      setLikeCount(result.count);
+      setCheckLiked(result.checkLiked);
+    };
+    like();
+  }, [postId, checkLiked]);
   useEffect(() => {
     if (deleteComment.length !== 0) {
       const CommentList = commentList.filter(
@@ -97,8 +111,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
 
   useEffect(() => {
     if (updatePending) {
-      if(updateCommentId){
-        const originalText = updateCommentId.content.replace(/<[^>]+>/g, '');
+      if (updateCommentId) {
+        const originalText = updateCommentId.content.replace(/<[^>]+>/g, "");
         setComment(originalText);
         if (textFieldRef.current) {
           textFieldRef.current.focus();
@@ -106,6 +120,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       }
     }
   }, [updatePending, updateCommentId]);
+  const followCheck = () => {
+    return !(
+      user?.id === post?.userId ||
+      followingList.some((item) => item.userId === post?.userId)
+    );
+  };
+
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value;
     if (!commentContent.includes("@")) {
@@ -178,6 +199,18 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const handleNextPage = () => {
     if (totalPages > page) setPage(page + 1);
   };
+  const handleFollow = () => {
+    if (token) {
+      const followUserId = post?.userId!;
+      dispatch(followUser({ token, followUserId }) as any);
+    }
+  };
+  const handleLike = async () => {
+    if (token) {
+      const check = await likePost(token, postId);
+      setCheckLiked(check);
+    }
+  };
   return (
     <div>
       {post && (
@@ -240,12 +273,14 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                       <div className="uf">
                         <div className="un">{post.nickname}</div>
-                        <div>
-                          <span>•</span>
-                          <button>
-                            <div className="ft">팔로우</div>
-                          </button>
-                        </div>
+                        {followCheck() && (
+                          <div>
+                            <span>•</span>
+                            <button onClick={handleFollow}>
+                              <div className="ft">팔로우</div>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="mb">
@@ -306,8 +341,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                   </div>
                   <section className="section1">
                     <div className="icon ficon">
-                      <IconButton aria-label="heart">
-                        <FavoriteBorderIcon sx={{ fontSize: 25 }} />
+                      <IconButton aria-label="heart" onClick={handleLike}>
+                        {checkLiked ? (
+                          <FavoriteIcon />
+                        ) : (
+                          <FavoriteBorderIcon sx={{ fontSize: 25 }} />
+                        )}
                       </IconButton>
                     </div>
                     <div className="icon">
@@ -322,7 +361,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     </div>
                   </section>
                   <section className="section2">
-                    <div>좋아요</div>
+                    {likeCount > 0 && <div>좋아요 {likeCount}개</div>}
                   </section>
                   <div className="section3">{createdAt(crAt)}</div>
                   <div className="section4">

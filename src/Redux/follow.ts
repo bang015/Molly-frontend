@@ -43,10 +43,13 @@ const followSlice = createSlice({
       state.suggestList = action.payload.suggestFollowerList;
       state.followed = action.payload.followed;
     },
+    getFollowingSuccess: (state, action: PayloadAction<suggestFollower[]>) => {
+      state.followingUser = action.payload
+    }
   },
 });
 
-export const { followUserStart, followUserSuccess, followUserFailure,getFollowSuccess } =
+export const { followUserStart, followUserSuccess, followUserFailure,getFollowSuccess, getFollowingSuccess } =
   followSlice.actions;
 export default followSlice.reducer;
 
@@ -100,3 +103,18 @@ export const getFollow = createAsyncThunk(
   }
 );
 
+export const getFollowing = createAsyncThunk(
+  "follow/getFollowing",
+  async (id:number, {dispatch}) => {
+    try{
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/${id}`,
+      );
+      if(response.status=== 200) {
+        dispatch(getFollowingSuccess(response.data));
+      }
+    }catch{
+
+    }
+  }
+)

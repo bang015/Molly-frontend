@@ -21,3 +21,5 @@ export const POST_API = "/post";
 export const FOLLOW_API = "/follow"; 
 /* comment */
 export const COMMENT_API = "/comment";
+/* like */
+export const LIKE_API = "/like";

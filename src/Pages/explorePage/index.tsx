@@ -6,15 +6,22 @@ import Nav from "../../Components/Nav";
 import "./index.css";
 import PostDetail from "../../Components/post/postDetail";
 import { clearComment } from "../../Redux/comment";
+import { getFollowing } from "../../Redux/follow";
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch();
   const allPostList = useSelector((state: RootState) => state.postListReducer.allPostList);
+  const user = useSelector((state: RootState) => state.authReducer.user);
   const [page, setPage] = useState(1);
   const [selectedPostId, setSelectedPostId] = useState<number|null>(null);
   useEffect(() => {
     dispatch(getAllPost(page) as any);
   }, [page]);
+  useEffect(()=> {
+    if(user){
+      dispatch(getFollowing(user.id!) as any);
+    }
+  }, [user]);
   const handlePostModal = (id: number) => {
     setSelectedPostId(id);
   };
