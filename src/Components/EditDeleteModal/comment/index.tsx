@@ -1,10 +1,10 @@
 import { Modal } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../Redux";
+import { RootState } from "../../../Redux";
 import "./index.css";
-import { deleteComment, updatePending } from "../../Redux/comment";
-import { commentType } from "../../Interfaces/comment";
+import { deleteComment, updatePending } from "../../../Redux/comment";
+import { commentType } from "../../../Interfaces/comment";
 interface EditDeleteModalProps {
   open: boolean;
   comment: commentType;
@@ -21,15 +21,14 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
   const id = comment.id;
   const userId = comment.userId;
   const removeComment = () => {
-    if(token)
-    dispatch(deleteComment({id, token}) as any);
+    if (token) dispatch(deleteComment({ id, token }) as any);
     onClose();
-  }
+  };
 
   const updateComment = () => {
     dispatch(updatePending(comment));
     onClose();
-  }
+  };
   return (
     <div>
       <Modal open={open} onClose={onClose}>
@@ -38,10 +37,14 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
             {userId === user!.id ? (
               <div>
                 <div>
-                  <button className="mbtn1 mbtnc" onClick={updateComment}>수정</button>
+                  <button className="mbtn1 mbtnc" onClick={updateComment}>
+                    수정
+                  </button>
                 </div>
                 <div>
-                  <button className="mbtnc" onClick={removeComment}>삭제</button>
+                  <button className="mbtnc" onClick={removeComment}>
+                    삭제
+                  </button>
                 </div>
               </div>
             ) : (
@@ -49,8 +52,10 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
                 <button className="mbtn1 mbtnc">신고</button>
               </div>
             )}
-            <div >
-              <button className="mbtn2" onClick={onClose}>취소</button>
+            <div>
+              <button className="mbtn2" onClick={onClose}>
+                취소
+              </button>
             </div>
           </div>
         </div>

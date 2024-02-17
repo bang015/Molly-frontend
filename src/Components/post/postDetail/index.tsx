@@ -31,6 +31,8 @@ import { addCommentType, commentType } from "../../../Interfaces/comment";
 import { CommentList } from "../comment/commentList";
 import { followUser } from "../../../Redux/follow";
 import { getPostLike, likePost } from "../../../Redux/like";
+import PostMoreModal from "../../EditDeleteModal/post";
+import DeleteModal from "../../EditDeleteModal/delete";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -70,6 +72,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   >([]);
   const [likeCount, setLikeCount] = useState<number>(0);
   const [checkLiked, setCheckLiked] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
     const list = async () => {
@@ -211,6 +215,18 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       setCheckLiked(check);
     }
   };
+  const handleModalOpen = () => {
+    setOpen(true);
+  };
+  const handleModalClose = () => {
+    setOpen(false);
+  };
+  const onDeleteOpen = () => {
+    setDeleteOpen(true);
+  };
+  const onDeleteClose = () => {
+    setDeleteOpen(false);
+  };
   return (
     <div>
       {post && (
@@ -284,11 +300,24 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                     </div>
                     <div className="mb">
-                      <IconButton aria-label="delete">
+                      <IconButton aria-label="delete" onClick={handleModalOpen}>
                         <MoreHorizIcon />
                       </IconButton>
                     </div>
                   </div>
+                  {open && (
+                    <PostMoreModal
+                      open={open}
+                      onClose={handleModalClose}
+                      onDeleteOpen={onDeleteOpen}
+                      post={post}
+                    />
+                  )}
+                  <DeleteModal
+                    postId={postId}
+                    deleteOpen={deleteOpen}
+                    onDeleteClose={onDeleteClose}
+                  />
                 </div>
                 <div className="comment-main">
                   <div className="comment">
@@ -343,7 +372,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     <div className="icon ficon">
                       <IconButton aria-label="heart" onClick={handleLike}>
                         {checkLiked ? (
-                          <FavoriteIcon />
+                          <FavoriteIcon style={{ color: "rgb(255, 48, 64)" }} />
                         ) : (
                           <FavoriteBorderIcon sx={{ fontSize: 25 }} />
                         )}
@@ -361,7 +390,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     </div>
                   </section>
                   <section className="section2">
-                    {likeCount > 0 && <div>좋아요 {likeCount}개</div>}
+                    {likeCount > 0 ? (
+                      <div>좋아요 {likeCount}개</div>
+                    ) : (
+                      <div>가장 먼저 <span onClick={handleLike}>좋아요</span>를 눌러보세요</div>
+                    )}
                   </section>
                   <div className="section3">{createdAt(crAt)}</div>
                   <div className="section4">

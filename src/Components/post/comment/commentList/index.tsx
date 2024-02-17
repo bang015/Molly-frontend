@@ -5,7 +5,7 @@ import { Avatar, IconButton } from "@mui/material";
 import { displayCreateAt } from "../../../../Utils/moment";
 import { NewCommentList } from "../newCommentList";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "../../../EditDeleteModal";
+import EditDeleteModal from "../../../EditDeleteModal/comment";
 
 interface commentListProps {
   comment: commentType;
@@ -24,7 +24,6 @@ export const CommentList: React.FC<commentListProps> = ({
   const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
 
-  
   const handleSubCommentList = () => {
     setIsSubCommentVisible(!isSubCommentVisible);
     const updatedCommentList = newCommentList.filter(
@@ -32,7 +31,7 @@ export const CommentList: React.FC<commentListProps> = ({
     );
     setNewCommentList(updatedCommentList);
   };
-  
+
   const handleModalOpen = () => {
     setOpen(true);
   };
@@ -88,7 +87,11 @@ export const CommentList: React.FC<commentListProps> = ({
         </div>
       </div>
       {open && (
-        <EditDeleteModal open={open} comment={comment} onClose={handleModalClose} />
+        <EditDeleteModal
+          open={open}
+          comment={comment}
+          onClose={handleModalClose}
+        />
       )}
       {comment.subcommentCount! > 0 && (
         <div className="cmb ml">

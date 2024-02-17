@@ -171,12 +171,24 @@
   padding-left: 16px;
   padding-right: 16px;
   margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 400;
   order: 4;
+}
+.section2 span{
+  font-weight: 600;
+  color: rgb(38, 38, 38);
+  cursor: pointer;
+}
+.section2 span:hover{
+  opacity: .5;
 }
 .section3 {
   padding-left: 16px;
   padding-right: 16px;
   margin-bottom: 10px;
+  font-size: 14px;
+  color: rgb(115, 115, 115);
   order: 5;
 }
 .section4 {

@@ -4,7 +4,7 @@ import { Avatar, IconButton } from "@mui/material";
 import { commentType } from "../../../../Interfaces/comment";
 import { displayCreateAt } from "../../../../Utils/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "../../../EditDeleteModal";
+import EditDeleteModal from "../../../EditDeleteModal/comment";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../Redux";
 
@@ -58,7 +58,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
     }
   }, [deleteComment]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (updatedComment) {
       const updatedCommentIndex = subComment.findIndex(
         (map) => map.id === updatedComment?.id
@@ -69,8 +69,8 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
         setSubComment(updatedCommentList);
       }
     }
-  }, [updatedComment])
-  
+  }, [updatedComment]);
+
   const handleModalOpen = () => {
     setOpen(true);
   };
