@@ -5,12 +5,14 @@ import { postType } from "../Interfaces/post";
 
 interface postListState{
   allPostList: postType[];
+  mainPostList: postType[];
   getPostLoading : boolean;
   getPostDetail: postType|null;
 }
 
 const initialState: postListState = {
   allPostList : [],
+  mainPostList: [],
   getPostLoading : false,
   getPostDetail: null
 }
@@ -31,13 +33,32 @@ const postListSlice = createSlice({
     getPostDetailSuccess: (state, action: PayloadAction<postType>)=> {
       state.getPostLoading = false;
       state.getPostDetail = action.payload;
+    },
+    getMainPostList: (state, action: PayloadAction<postType[]>) => {
+      state.mainPostList = [...state.mainPostList, ...action.payload];
     }
   }
 });
 
-export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess } =
+export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList } =
 postListSlice.actions;
 export default postListSlice.reducer;
+
+export const getMainPost = createAsyncThunk(
+  "postList/getMainPost",
+  async({page, userId} : {page: number, userId: number}, {dispatch}) => {
+    try{
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${userId}?page=${page}`,
+      );
+      if(response.status === 200) {
+        dispatch(getMainPostList(response.data));
+      }
+    }catch{
+
+    }
+  }
+)
 
 export const getAllPost = createAsyncThunk(
   'postList/getAllPost',

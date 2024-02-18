@@ -6,19 +6,25 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import TextField from "@mui/material/TextField";
 import "./index.css";
 import { Avatar, Button, Modal } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
 import { uploadPostType } from "../../../Interfaces/post";
 import { uploadPost } from "../../../Redux/post";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import FilterIcon from "@mui/icons-material/Filter";
+import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 interface PostModalProps {
   postConfig: boolean;
   setPostConfig: React.Dispatch<React.SetStateAction<boolean>>;
+  openModal: () => void;
 }
 
-const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
+const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openModal }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const posting = useSelector((state: RootState) => state.postReducer.posting);
   const [showImages, setShowImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([]);
@@ -127,16 +133,19 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
     }
     const regex = /#([a-zA-Z0-9가-힣_]+)/g;
     const matches = postcontent.match(regex);
-    let postContent: uploadPostType = {
+    let post: uploadPostType = {
       token: token!,
       content: postcontent,
       post_images: croppedImgList,
     };
     if (matches) {
       const tags = matches.map((match) => match.replace(/^#/, ""));
-      postContent.hashtags = tags;
+      post.hashtags = tags;
     }
-    uploadPost(token!, postContent);
+    dispatch(uploadPost({ post }) as any);
+    openModal();
+    handleCloseModal();
+    //uploadPost(token!, postContent);
   };
   return (
     <div>
@@ -162,13 +171,8 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
               {showImages.length === 0 ? (
                 <div className="create-post-text">
                   <label htmlFor="fileInput">
-                    <div>
-                      <img
-                        className="upload-icon"
-                        src="/images/upload-icon.jpg"
-                        width="250px"
-                        alt="upload"
-                      />
+                    <div className="ipicon">
+                      <ImageSearchIcon sx={{ fontSize: 100 }} />
                     </div>
                     당신의 추억을 업로드하세요!
                   </label>
@@ -222,10 +226,22 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
             </div>
             <div className="post-text">
               <div>
-                <div>
-                  <Avatar alt="Remy Sharp" src={user?.ProfileImage?.path} />
-                  {user?.nickname}
-                </div>
+                {user && (
+                  <div className="cpuf">
+                    <div className="pi">
+                      <Avatar
+                        alt="profile"
+                        src={
+                          user.ProfileImage
+                            ? user.ProfileImage.path ?? undefined
+                            : undefined
+                        }
+                      />
+                    </div>
+                    <div className="uf unts">{user.nickname}</div>
+                  </div>
+                )}
+
                 <div>
                   <TextField
                     variant="standard"
@@ -236,6 +252,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig }) => {
                     onChange={handlePostContent}
                     InputProps={{
                       style: { padding: 10 },
+                      disableUnderline: true,
                     }}
                   />
                 </div>

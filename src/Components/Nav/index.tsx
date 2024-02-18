@@ -19,12 +19,20 @@ import { RootState } from "../../Redux";
 import "./index.css";
 import PostForm from "../post/postForm";
 import { signOut } from "../../Redux/auth";
+import PostLoading from "../post/postLoading";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [postConfig, setPostConfig] = useState(false);
+  const [open, setOpen] = useState(false);
   const handleSignOut = () => {
     dispatch(signOut() as any);
+  }
+  const handleOpenModal = () => {
+    setOpen(true);
+  }
+  const handleCloseModal = () => {
+    setOpen(false);
   }
   return (
     <div className="n">
@@ -104,7 +112,8 @@ const Nav: React.FC = () => {
           <ListItemText primary="More" />
         </ListItemButton>
       </div>
-      <PostForm postConfig={postConfig} setPostConfig={setPostConfig} />
+      <PostForm postConfig={postConfig} setPostConfig={setPostConfig} openModal={handleOpenModal}/>
+      <PostLoading open={open} onClose={handleCloseModal}/>
     </div>
     </div>
   );
