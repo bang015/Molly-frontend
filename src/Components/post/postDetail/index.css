@@ -197,14 +197,19 @@
   border-top: 1px rgb(219, 219, 219) solid;
 }
 
-.c-back-btn {
-  position: absolute;
-  top: 50%;
-  left: 2%;
-}
+.c-back-btn,
 .c-next-btn {
   position: absolute;
   top: 50%;
+  transform: translateY(-50%);
+  z-index: 1; 
+}
+
+.c-back-btn {
+  left: 2%;
+}
+
+.c-next-btn {
   right: 2%;
 }
 .p-content {

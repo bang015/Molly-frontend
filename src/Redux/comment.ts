@@ -65,10 +65,10 @@ export const addComment = async (
   } catch (err) {}
 };
 
-export const getComment = async (postId: number, page: number) => {
+export const getComment = async ( userId: number, postId: number, page: number) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${userId}/${postId}?page=${page}`
     );
 
     if (response.status === 200) {
@@ -76,7 +76,18 @@ export const getComment = async (postId: number, page: number) => {
     }
   } catch (err) {}
 };
+export const getMyCommentByPost = async (userId: number, postId: number) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${userId}/${postId}`
+    );
+    if(response.status === 200) {
+      return response.data;
+    }
+  }catch{
 
+  }
+}
 export const getSubComment = async (
   postId: number,
   id: number,
@@ -84,7 +95,7 @@ export const getSubComment = async (
 ) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}/${id}?page=${page}`
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/sub/${postId}/${id}?page=${page}`
     );
 
     if (response.status === 200) {

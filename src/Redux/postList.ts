@@ -49,7 +49,7 @@ export const getMainPost = createAsyncThunk(
   async({page, userId} : {page: number, userId: number}, {dispatch}) => {
     try{
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${userId}?page=${page}`,
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/${userId}?page=${page}`,
       );
       if(response.status === 200) {
         dispatch(getMainPostList(response.data));

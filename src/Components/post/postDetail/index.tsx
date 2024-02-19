@@ -25,6 +25,7 @@ import {
   addComment,
   clearComment,
   getComment,
+  getMyCommentByPost,
   updateComment,
 } from "../../../Redux/comment";
 import { addCommentType, commentType } from "../../../Interfaces/comment";
@@ -33,6 +34,8 @@ import { followUser } from "../../../Redux/follow";
 import { getPostLike, likePost } from "../../../Redux/like";
 import PostMoreModal from "../../EditDeleteModal/post";
 import DeleteModal from "../../EditDeleteModal/delete";
+import PostUtilIcon from "../postUtilIcon";
+import PostLikeCount from "../postLikeCount";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -76,13 +79,20 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
-    const list = async () => {
-      const result = await getComment(postId, page);
-      setCommentList([...commentList, ...result.commentList]);
-      setTotalPages(result.totalPages);
+    const fetchData = async () => {
+      if (user && post) {
+        const otherCommentResult = await getComment(user.id!, postId, page);
+        if (page === 1) {
+          const myCommentResult = await getMyCommentByPost(user.id!, postId);
+          setCommentList([...myCommentResult.commentList, ...otherCommentResult.commentList]);
+        } else {
+          setCommentList(prevList => [...prevList, ...otherCommentResult.commentList]);
+        }
+        setTotalPages(otherCommentResult.totalPages);
+      }
     };
-    list();
-  }, [postId, page]);
+    fetchData();
+  }, [user, postId, page]);
   useEffect(() => {
     const like = async () => {
       const result = await getPostLike(token!, postId);
@@ -139,13 +149,18 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     setComment(commentContent);
   };
   const onPrevClick = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
+    if (post) {
+      setCurrentImageIndex(
+        (prevIndex) =>
+          (prevIndex - 1 + post.mediaList.length) % post.mediaList.length
+      );
     }
   };
   const onNextClick = (): void => {
-    if (currentImageIndex < post!.mediaList.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
+    if (post) {
+      setCurrentImageIndex(
+        (prevIndex) => (prevIndex + 1) % post.mediaList.length
+      );
     }
   };
   const handleChatClick = () => {
@@ -264,11 +279,16 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     </div>
                   )}
                 <div>
-                  <img
-                    className="medias"
-                    src={post.mediaList[currentImageIndex].mediaPath}
-                    alt="img"
-                  />
+                  <div
+                    className="medias-wrapper"
+                    style={{
+                      transform: `translateX(-${currentImageIndex * 100}%)`,
+                    }}
+                  >
+                    {post.mediaList.map((media, index) => (
+                      <img key={index} src={media.mediaPath} alt="img" />
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="post-comment">
@@ -368,34 +388,15 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                     </ul>
                   </div>
-                  <section className="section1">
-                    <div className="icon ficon">
-                      <IconButton aria-label="heart" onClick={handleLike}>
-                        {checkLiked ? (
-                          <FavoriteIcon style={{ color: "rgb(255, 48, 64)" }} />
-                        ) : (
-                          <FavoriteBorderIcon sx={{ fontSize: 25 }} />
-                        )}
-                      </IconButton>
-                    </div>
-                    <div className="icon">
-                      <IconButton aria-label="chat" onClick={handleChatClick}>
-                        <ChatBubbleOutlineIcon sx={{ fontSize: 25 }} />
-                      </IconButton>
-                    </div>
-                    <div className="icon-left">
-                      <IconButton aria-label="bookmark">
-                        <BookmarkBorderIcon sx={{ fontSize: 25 }} />
-                      </IconButton>
-                    </div>
-                  </section>
-                  <section className="section2">
-                    {likeCount > 0 ? (
-                      <div>좋아요 {likeCount}개</div>
-                    ) : (
-                      <div>가장 먼저 <span onClick={handleLike}>좋아요</span>를 눌러보세요</div>
-                    )}
-                  </section>
+                  <PostUtilIcon
+                    handleChatClick={handleChatClick}
+                    checkLiked={checkLiked}
+                    handleLike={handleLike}
+                  />
+                  <PostLikeCount
+                    likeCount={likeCount}
+                    handleLike={handleLike}
+                  />
                   <div className="section3">{createdAt(crAt)}</div>
                   <div className="section4">
                     <TextField
