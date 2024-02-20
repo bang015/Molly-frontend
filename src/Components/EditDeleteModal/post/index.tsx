@@ -1,9 +1,8 @@
 import { Modal } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { postType } from "../../../Interfaces/post";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
-import { getPostLike } from "../../../Redux/like";
 import { followUser } from "../../../Redux/follow";
 import DeleteModal from "../delete";
 interface postMoreModalProps {
@@ -11,12 +10,14 @@ interface postMoreModalProps {
   post: postType;
   onClose: () => void;
   onDeleteOpen: () => void;
+  onEditOpen: () => void;
 }
 const PostMoreModal: React.FC<postMoreModalProps> = ({
   open,
   post,
   onClose,
-  onDeleteOpen
+  onDeleteOpen,
+  onEditOpen
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
@@ -47,6 +48,10 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
   const onDeleteClose= () => {
     setDeleteOpen(false);
   }
+  const postEdit = () => {
+    onEditOpen();
+    onClose();
+  }
   return (
     <div>
       <Modal open={open} onClose={onClose}>
@@ -55,7 +60,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
             {userId === user!.id ? (
               <div>
                 <div>
-                  <button className="mbtn1 mbtnc">수정</button>
+                  <button className="mbtn1 mbtnc" onClick={postEdit}>수정</button>
                 </div>
                 <div>
                   <button className="mbtnc" onClick={postDelete}>삭제</button>

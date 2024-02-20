@@ -77,6 +77,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [checkLiked, setCheckLiked] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [postConfig, setPostConfig] = useState(false);
+
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
     const fetchData = async () => {
@@ -84,9 +86,15 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
         const otherCommentResult = await getComment(user.id!, postId, page);
         if (page === 1) {
           const myCommentResult = await getMyCommentByPost(user.id!, postId);
-          setCommentList([...myCommentResult.commentList, ...otherCommentResult.commentList]);
+          setCommentList([
+            ...myCommentResult.commentList,
+            ...otherCommentResult.commentList,
+          ]);
         } else {
-          setCommentList(prevList => [...prevList, ...otherCommentResult.commentList]);
+          setCommentList((prevList) => [
+            ...prevList,
+            ...otherCommentResult.commentList,
+          ]);
         }
         setTotalPages(otherCommentResult.totalPages);
       }
@@ -242,6 +250,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const onDeleteClose = () => {
     setDeleteOpen(false);
   };
+  // 게시물 수정 모달
+  const onEditOpen = () => {
+    setPostConfig(true);
+  }
+  const onEditClose = () => {
+    setPostConfig(false);
+  }
   return (
     <div>
       {post && (
@@ -325,14 +340,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </IconButton>
                     </div>
                   </div>
-                  {open && (
-                    <PostMoreModal
-                      open={open}
-                      onClose={handleModalClose}
-                      onDeleteOpen={onDeleteOpen}
-                      post={post}
-                    />
-                  )}
+                  <PostMoreModal
+                    open={open}
+                    onClose={handleModalClose}
+                    onDeleteOpen={onDeleteOpen}
+                    onEditOpen={onEditOpen}
+                    post={post}
+                  />
                   <DeleteModal
                     postId={postId}
                     deleteOpen={deleteOpen}
@@ -389,11 +403,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     </ul>
                   </div>
                   <PostUtilIcon
+                    config={false}
                     handleChatClick={handleChatClick}
                     checkLiked={checkLiked}
                     handleLike={handleLike}
                   />
                   <PostLikeCount
+                    config={false}
                     likeCount={likeCount}
                     handleLike={handleLike}
                   />

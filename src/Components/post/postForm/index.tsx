@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import IconButton from "@mui/material/IconButton";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -9,28 +9,36 @@ import { Avatar, Button, Modal } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
-import { uploadPostType } from "../../../Interfaces/post";
+import { postType, uploadPostType } from "../../../Interfaces/post";
 import { uploadPost } from "../../../Redux/post";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import FilterIcon from "@mui/icons-material/Filter";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 interface PostModalProps {
   postConfig: boolean;
   setPostConfig: React.Dispatch<React.SetStateAction<boolean>>;
   openModal: () => void;
+  post: postType | null;
 }
-
-const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openModal }) => {
+const PostForm: React.FC<PostModalProps> = ({
+  postConfig,
+  setPostConfig,
+  openModal,
+  post,
+}) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const posting = useSelector((state: RootState) => state.postReducer.posting);
   const [showImages, setShowImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([]);
-  const [postcontent, setPostContent] = useState<string>("");
+  const [postContent, setPostContent] = useState<string>("");
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    if(post){
+      const content = post.content.replace(/<br>/g, '\n');
+      setPostContent(content);
+    }
+  }, [post, postConfig]);
   const handleCloseModal = () => {
     setPostConfig(false);
     setShowImages([]);
@@ -40,7 +48,6 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
-
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
 
@@ -99,21 +106,33 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
     setCroppedAreaList(updatedCroppedAreas);
   };
   const onNextClick = (): void => {
-    if (currentImageIndex < showImages.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-      setCrop({ x: 0, y: 0 });
-      setZoom(1);
+    if (post) {
+      if (currentImageIndex < post.mediaList.length - 1) {
+        setCurrentImageIndex(currentImageIndex + 1);
+      }
+    } else {
+      if (currentImageIndex < showImages.length - 1) {
+        setCurrentImageIndex(currentImageIndex + 1);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+      }
     }
   };
   const onPrevClick = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-      setZoom(1);
+    if (post) {
+      if (currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+      }
+    } else {
+      if (currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+        setZoom(1);
+      }
     }
   };
   const handlePostContent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const postContent = e.target.value.replace(/\n/g, "<br>");
-    setPostContent(postContent);
+    const Content = e.target.value;
+    setPostContent(Content);
   };
   const handleuploadPost = async () => {
     let croppedImgList: Blob[] = [];
@@ -132,10 +151,11 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
       }
     }
     const regex = /#([a-zA-Z0-9가-힣_]+)/g;
-    const matches = postcontent.match(regex);
+    const matches = postContent.match(regex);
+    const content = postContent.replace(/\n/g, "<br>");
     let post: uploadPostType = {
       token: token!,
-      content: postcontent,
+      content: content,
       post_images: croppedImgList,
     };
     if (matches) {
@@ -145,7 +165,6 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
     dispatch(uploadPost({ post }) as any);
     openModal();
     handleCloseModal();
-    //uploadPost(token!, postContent);
   };
   return (
     <div>
@@ -157,9 +176,9 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
       >
         <div className="create-post">
           <div className="create-post-title">
-            새 게시물 만들기
+            {post ? "게시물 수정" : "새 게시물 만들기"}
             <Button
-              disabled={postcontent === "" || showImages.length === 0}
+              disabled={postContent === "" || showImages.length === 0}
               className="post-btn"
               onClick={handleuploadPost}
             >
@@ -168,61 +187,113 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
           </div>
           <div className="create-post-container">
             <div className="create-post-content">
-              {showImages.length === 0 ? (
-                <div className="create-post-text">
-                  <label htmlFor="fileInput">
-                    <div className="ipicon">
-                      <ImageSearchIcon sx={{ fontSize: 100 }} />
-                    </div>
-                    당신의 추억을 업로드하세요!
-                  </label>
-                  <input
-                    type="file"
-                    id="fileInput"
-                    accept="image/*,video/*"
-                    onChange={handleAddImages}
-                    multiple
-                  />
-                </div>
-              ) : (
-                <div className="post-image">
-                  <Cropper
-                    image={showImages[currentImageIndex]}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={7 / 7}
-                    onCropChange={setCrop}
-                    onCropComplete={onCropComplete}
-                    onZoomChange={setZoom}
-                    objectFit="cover"
-                  />
-                  {currentImageIndex > 0 && (
-                    <IconButton
-                      className="back-btn"
-                      aria-label="fingerprint"
-                      color="secondary"
-                      style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-                      onClick={onPrevClick}
-                    >
-                      <ChevronLeftIcon style={{ color: "black" }} />
-                    </IconButton>
-                  )}
-                  {showImages.length > 1 &&
-                    currentImageIndex < showImages.length - 1 && (
-                      <IconButton
-                        className="next-btn"
-                        aria-label="fingerprint"
-                        color="secondary"
-                        style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }}
-                        onClick={onNextClick}
-                      >
-                        <NavigateNextIcon style={{ color: "black" }} />
-                      </IconButton>
+                {post ? (
+                  <div className="pmedia">
+                    {currentImageIndex > 0 && (
+                      <div className="c-back-btn">
+                        <IconButton
+                          aria-label="fingerprint"
+                          color="secondary"
+                          style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                          }}
+                          onClick={onPrevClick}
+                        >
+                          <ChevronLeftIcon style={{ color: "black" }} />
+                        </IconButton>
+                      </div>
                     )}
-                </div>
-              )}
+                    {post &&
+                      post.mediaList &&
+                      post.mediaList.length > 1 &&
+                      currentImageIndex < post.mediaList.length - 1 && (
+                        <div className="c-next-btn">
+                          <IconButton
+                            aria-label="fingerprint"
+                            color="secondary"
+                            style={{
+                              backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            }}
+                            onClick={onNextClick}
+                          >
+                            <NavigateNextIcon style={{ color: "black" }} />
+                          </IconButton>
+                        </div>
+                      )}
+                    <div>
+                      <div
+                        className="medias-wrapper"
+                        style={{
+                          transform: `translateX(-${currentImageIndex * 100}%)`,
+                        }}
+                      >
+                        {post.mediaList.map((media, index) => (
+                          <img key={index} src={media.mediaPath} alt="img" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {showImages.length === 0 ? (
+                      <div className="create-post-text">
+                        <label htmlFor="fileInput">
+                          <div className="ipicon">
+                            <ImageSearchIcon sx={{ fontSize: 100 }} />
+                          </div>
+                          당신의 추억을 업로드하세요!
+                        </label>
+                        <input
+                          type="file"
+                          id="fileInput"
+                          accept="image/*,video/*"
+                          onChange={handleAddImages}
+                          multiple
+                        />
+                      </div>
+                    ) : (
+                      <div className="post-image">
+                        <Cropper
+                          image={showImages[currentImageIndex]}
+                          crop={crop}
+                          zoom={zoom}
+                          aspect={7 / 7}
+                          onCropChange={setCrop}
+                          onCropComplete={onCropComplete}
+                          onZoomChange={setZoom}
+                          objectFit="cover"
+                        />
+                        {currentImageIndex > 0 && (
+                          <IconButton
+                            className="back-btn"
+                            aria-label="fingerprint"
+                            color="secondary"
+                            style={{
+                              backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            }}
+                            onClick={onPrevClick}
+                          >
+                            <ChevronLeftIcon style={{ color: "black" }} />
+                          </IconButton>
+                        )}
+                        {showImages.length > 1 &&
+                          currentImageIndex < showImages.length - 1 && (
+                            <IconButton
+                              className="next-btn"
+                              aria-label="fingerprint"
+                              color="secondary"
+                              style={{
+                                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                              }}
+                              onClick={onNextClick}
+                            >
+                              <NavigateNextIcon style={{ color: "black" }} />
+                            </IconButton>
+                          )}
+                      </div>
+                    )}
+                  </>
+                )}
             </div>
             <div className="post-text">
               <div>
@@ -247,6 +318,7 @@ const PostForm: React.FC<PostModalProps> = ({ postConfig, setPostConfig, openMod
                     variant="standard"
                     className="post-textField"
                     placeholder="문구를 입력하세요..."
+                    value={postContent}
                     rows={6}
                     multiline
                     onChange={handlePostContent}
