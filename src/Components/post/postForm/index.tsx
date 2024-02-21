@@ -9,8 +9,8 @@ import { Avatar, Button, Modal } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
-import { postType, uploadPostType } from "../../../Interfaces/post";
-import { uploadPost } from "../../../Redux/post";
+import { postType, updatePostType, uploadPostType } from "../../../Interfaces/post";
+import { updatePost, uploadPost } from "../../../Redux/post";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 interface PostModalProps {
   postConfig: boolean;
@@ -35,7 +35,7 @@ const PostForm: React.FC<PostModalProps> = ({
   const [zoom, setZoom] = useState(1);
   useEffect(() => {
     if(post){
-      const content = post.content.replace(/<br>/g, '\n');
+      const content = post.content.replace(/<br>/g, '\n').replace(/<span style="color: rgb\(0, 55, 107\);">#([^<]+)<\/span>/g, '#$1');
       setPostContent(content);
     }
   }, [post, postConfig]);
@@ -152,9 +152,11 @@ const PostForm: React.FC<PostModalProps> = ({
     }
     const regex = /#([a-zA-Z0-9가-힣_]+)/g;
     const matches = postContent.match(regex);
-    const content = postContent.replace(/\n/g, "<br>");
+    const content = postContent.replace(/\n/g, "<br>").replace(
+      /#([^\s]+)/g,
+      '<span style="color: rgb(0, 55, 107);">#$1</span>'
+    );
     let post: uploadPostType = {
-      token: token!,
       content: content,
       post_images: croppedImgList,
     };
@@ -162,10 +164,31 @@ const PostForm: React.FC<PostModalProps> = ({
       const tags = matches.map((match) => match.replace(/^#/, ""));
       post.hashtags = tags;
     }
-    dispatch(uploadPost({ post }) as any);
+    if(token)
+    dispatch(uploadPost({ post, token }) as any);
     openModal();
     handleCloseModal();
   };
+  const handleUpdatePost = async() => {
+    const regex = /#([a-zA-Z0-9가-힣_]+)/g;
+    const matches = postContent.match(regex);
+    const content = postContent.replace(/\n/g, "<br>").replace(
+      /#([^\s]+)/g,
+      '<span style="color: rgb(0, 55, 107);">#$1</span>'
+    );
+    if(post){
+      let postInfo: updatePostType = {
+        content: content,
+        postId: post.id.toString()
+      };
+      if (matches) {
+        const tags = matches.map((match) => match.replace(/^#/, ""));
+        postInfo.hashtags = tags;
+      }
+      if(token)
+      dispatch(updatePost({postInfo, token}) as any);
+    }
+  }
   return (
     <div>
       <Modal
@@ -178,11 +201,11 @@ const PostForm: React.FC<PostModalProps> = ({
           <div className="create-post-title">
             {post ? "게시물 수정" : "새 게시물 만들기"}
             <Button
-              disabled={postContent === "" || showImages.length === 0}
+              disabled={post? false : (postContent === "" || showImages.length === 0)}
               className="post-btn"
-              onClick={handleuploadPost}
+              onClick={post ? handleUpdatePost:handleuploadPost}
             >
-              게시
+              완료
             </Button>
           </div>
           <div className="create-post-container">

@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { uploadPostType } from "../Interfaces/post";
+import { updatePostType, uploadPostType } from "../Interfaces/post";
 import { INIT, POST_API } from "../Utils/api-url";
 
 interface postState {
@@ -35,7 +35,7 @@ export default postSlice.reducer;
 export const uploadPost = createAsyncThunk(
   "post/uploadPost",
   async (
-    { post }: { post: uploadPostType },
+    { post , token}: { post: uploadPostType, token : string },
     { dispatch }
   ) => {
     try {
@@ -57,7 +57,7 @@ export const uploadPost = createAsyncThunk(
         formData,
         {
           headers: {
-            Authorization: `Bearer ${post.token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -73,6 +73,33 @@ export const uploadPost = createAsyncThunk(
   }
 );
 
+export const updatePost = createAsyncThunk(
+  "post/updatePost",
+  async({postInfo, token}:{postInfo : updatePostType, token : string}, {dispatch}) => {
+    try{
+      const formData = new FormData();
+      formData.append("content", postInfo.content);
+      formData.append("postId", postInfo.postId);
+      if (postInfo.hashtags) {
+        postInfo.hashtags.forEach((tag, index) => {
+          formData.append(`hashtags[${index}]`, tag);
+        });
+      };
+      const response = await axios.patch(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      )
+    }catch{
+
+    }
+  }
+)
 export const deletePost = (token: string, postId: number) => {
   axios.delete(
     `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,

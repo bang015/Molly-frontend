@@ -1,10 +1,13 @@
 export interface uploadPostType {
-  token: string;
   content: string;
   post_images: Blob[];
   hashtags?: string[];
 }
-
+export interface updatePostType {
+  content: string;
+  postId: string;
+  hashtags?: string[];
+}
 export interface postType {
   id: number;
   userId: number;

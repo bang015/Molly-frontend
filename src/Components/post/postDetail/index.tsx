@@ -36,6 +36,7 @@ import PostMoreModal from "../../EditDeleteModal/post";
 import DeleteModal from "../../EditDeleteModal/delete";
 import PostUtilIcon from "../postUtilIcon";
 import PostLikeCount from "../postLikeCount";
+import PostForm from "../postForm";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -78,6 +79,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [postConfig, setPostConfig] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
@@ -238,12 +240,14 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       setCheckLiked(check);
     }
   };
+  // 게시물 수정, 삭제 모달
   const handleModalOpen = () => {
     setOpen(true);
   };
   const handleModalClose = () => {
     setOpen(false);
   };
+  // 게시물 삭제 확인 모달
   const onDeleteOpen = () => {
     setDeleteOpen(true);
   };
@@ -253,10 +257,17 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   // 게시물 수정 모달
   const onEditOpen = () => {
     setPostConfig(true);
-  }
+  };
   const onEditClose = () => {
     setPostConfig(false);
-  }
+  };
+  // 게시물 수정 로딩 모달
+  const onEditLoadingOpen = () => {
+    setLoading(true);
+  };
+  const onEditLoadingClose = () => {
+    setLoading(false);
+  };
   return (
     <div>
       {post && (
@@ -340,17 +351,23 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </IconButton>
                     </div>
                   </div>
-                  <PostMoreModal
+                  <PostMoreModal // 게시물 수정, 삭제 모달
                     open={open}
                     onClose={handleModalClose}
                     onDeleteOpen={onDeleteOpen}
                     onEditOpen={onEditOpen}
                     post={post}
                   />
-                  <DeleteModal
+                  <DeleteModal // 게시물 삭제 확인 모달
                     postId={postId}
                     deleteOpen={deleteOpen}
                     onDeleteClose={onDeleteClose}
+                  />
+                  <PostForm // 게시물 수정 모달
+                    postConfig={postConfig}
+                    setPostConfig={setPostConfig}
+                    openModal={onEditLoadingOpen}
+                    post={post}
                   />
                 </div>
                 <div className="comment-main">
