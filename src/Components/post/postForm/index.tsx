@@ -187,6 +187,7 @@ const PostForm: React.FC<PostModalProps> = ({
       }
       if(token)
       dispatch(updatePost({postInfo, token}) as any);
+      setPostConfig(false);
     }
   }
   return (

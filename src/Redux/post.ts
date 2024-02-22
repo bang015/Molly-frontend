@@ -2,15 +2,21 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { updatePostType, uploadPostType } from "../Interfaces/post";
 import { INIT, POST_API } from "../Utils/api-url";
-
+import { getPostByPostId } from "./postList";
+interface updatedPost {
+  postId: number | null;
+  updatedPost: string | null
+}
 interface postState {
   posting: boolean;
   message: string;
+  updatedPost: updatedPost
 }
 
 const initialState: postState = {
   posting: false,
   message: "",
+  updatedPost: {postId: null, updatedPost: null}
 };
 const postSlice = createSlice({
   name: "post",
@@ -27,9 +33,12 @@ const postSlice = createSlice({
       state.posting = false;
       state.message = action.payload;
     },
+    postUpdate : (state, action: PayloadAction<updatedPost>) => {
+      state.updatedPost = action.payload;
+    }
   },
 });
-export const { postStart, postSuccess, postFailure } = postSlice.actions;
+export const { postStart, postSuccess, postFailure, postUpdate } = postSlice.actions;
 export default postSlice.reducer;
 
 export const uploadPost = createAsyncThunk(
@@ -94,7 +103,12 @@ export const updatePost = createAsyncThunk(
             'Content-Type': 'multipart/form-data',
           }
         }
-      )
+      );
+      if(response.status === 200) {
+        const postId = parseInt(postInfo.postId);
+        dispatch(getPostByPostId(postId));
+        dispatch(postUpdate(response.data));
+      }
     }catch{
 
     }

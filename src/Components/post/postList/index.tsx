@@ -36,6 +36,7 @@ const PostList: React.FC<postListProps> = (post) => {
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const updatedPost = useSelector((state: RootState) => state.postReducer.updatedPost);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [comment, setComment] = useState("");
   const textFieldRef = useRef<HTMLInputElement | null>(null);
@@ -47,12 +48,14 @@ const PostList: React.FC<postListProps> = (post) => {
   const [open, setOpen] = useState(false);
   const [postConfig, setPostConfig] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState("");
   useEffect(() => {
     const myComment = async () => {
       const result = await getMyCommentByPost(user?.id!, post.post.id);
       setCommentList(result.commentList);
     };
     myComment();
+    setContent(post.post.content);
   }, [user, post]);
   useEffect(() => {
     const like = async () => {
@@ -62,6 +65,13 @@ const PostList: React.FC<postListProps> = (post) => {
     };
     like();
   }, [post, checkLiked]);
+  useEffect(() => {
+    if(updatedPost){
+      if(post.post.id === updatedPost.postId){
+        setContent(updatedPost.updatedPost!);
+      }
+    }
+  }, [updatedPost]);
   const onPrevClick = () => {
     setCurrentImageIndex(
       (prevIndex) =>
@@ -241,7 +251,7 @@ const PostList: React.FC<postListProps> = (post) => {
           </div>
           <div
             className="c3"
-            dangerouslySetInnerHTML={{ __html: post.post.content }}
+            dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
         <div className="cabtn">
