@@ -2,7 +2,7 @@ import { Modal } from "@mui/material";
 import React from "react";
 import "./index.css";
 import { deletePost } from "../../../Redux/post";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 interface deleteModalProps {
   postId: number;
@@ -14,10 +14,11 @@ const DeleteModal: React.FC<deleteModalProps> = ({
   deleteOpen,
   onDeleteClose,
 }) => {
+  const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.authReducer.token);
   const postDelete = async () => {
     if (token) {
-      deletePost(token, postId);
+      dispatch(deletePost({token, postId}) as any);
     }
   };
   return (

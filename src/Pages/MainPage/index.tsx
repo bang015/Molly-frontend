@@ -15,16 +15,24 @@ const Main: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const postList = useSelector((state: RootState) => state.postListReducer.mainPostList);
+  const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages);
   const [page, setPage] = useState(1);
   useEffect(() => {
     const userId = user?.id;
     if(userId){
       dispatch(getMainPost({page, userId}) as any);
     };
-  },[user]);
+  },[user, page]);
   const handlesignOut = () => {
     dispatch(signOut() as any);
   };
+  window.addEventListener('scroll', function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if(page < totalPages){
+        setPage(page + 1);
+      }
+    }
+  });
   return (
     <div className="mainPage">
       <div className="nav-container">

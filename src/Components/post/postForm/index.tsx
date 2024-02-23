@@ -14,13 +14,13 @@ import { updatePost, uploadPost } from "../../../Redux/post";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 interface PostModalProps {
   postConfig: boolean;
-  setPostConfig: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose: () => void;
   openModal: () => void;
   post: postType | null;
 }
 const PostForm: React.FC<PostModalProps> = ({
   postConfig,
-  setPostConfig,
+  onClose,
   openModal,
   post,
 }) => {
@@ -40,13 +40,13 @@ const PostForm: React.FC<PostModalProps> = ({
     }
   }, [post, postConfig]);
   const handleCloseModal = () => {
-    setPostConfig(false);
     setShowImages([]);
     setCurrentImageIndex(0);
     setPostContent("");
     setCroppedAreaList([]);
     setCrop({ x: 0, y: 0 });
     setZoom(1);
+    onClose();
   };
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
@@ -187,7 +187,7 @@ const PostForm: React.FC<PostModalProps> = ({
       }
       if(token)
       dispatch(updatePost({postInfo, token}) as any);
-      setPostConfig(false);
+      onClose()
     }
   }
   return (

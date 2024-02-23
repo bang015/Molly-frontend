@@ -365,7 +365,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                   />
                   <PostForm // 게시물 수정 모달
                     postConfig={postConfig}
-                    setPostConfig={setPostConfig}
+                    onClose={onEditClose}
                     openModal={onEditLoadingOpen}
                     post={post}
                   />

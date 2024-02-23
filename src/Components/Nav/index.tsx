@@ -34,6 +34,12 @@ const Nav: React.FC = () => {
   const handleCloseModal = () => {
     setOpen(false);
   }
+  const onPostOpen = () => {
+    setPostConfig(true);
+  }
+  const onPostClose = () => {
+    setPostConfig(false);
+  }
   return (
     <div className="n">
     <div className="nav">
@@ -85,7 +91,7 @@ const Nav: React.FC = () => {
         <ListItemButton
           component="a"
           onClick={() => {
-            setPostConfig(true);
+            onPostOpen();
           }}
         >
           <ListItemIcon>
@@ -112,7 +118,7 @@ const Nav: React.FC = () => {
           <ListItemText primary="More" />
         </ListItemButton>
       </div>
-      <PostForm postConfig={postConfig} post={null} setPostConfig={setPostConfig} openModal={handleOpenModal}/>
+      <PostForm postConfig={postConfig} post={null} onClose={onPostClose} openModal={handleOpenModal}/>
       <PostLoading open={open} onClose={handleCloseModal}/>
     </div>
     </div>

@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { updatePostType, uploadPostType } from "../Interfaces/post";
 import { INIT, POST_API } from "../Utils/api-url";
-import { getPostByPostId } from "./postList";
+import { getPostByPostId, postDelete } from "./postList";
 interface updatedPost {
   postId: number | null;
   updatedPost: string | null
@@ -10,13 +10,15 @@ interface updatedPost {
 interface postState {
   posting: boolean;
   message: string;
-  updatedPost: updatedPost
+  updatedPost: updatedPost;
+  
 }
 
 const initialState: postState = {
   posting: false,
   message: "",
-  updatedPost: {postId: null, updatedPost: null}
+  updatedPost: {postId: null, updatedPost: null},
+
 };
 const postSlice = createSlice({
   name: "post",
@@ -35,7 +37,7 @@ const postSlice = createSlice({
     },
     postUpdate : (state, action: PayloadAction<updatedPost>) => {
       state.updatedPost = action.payload;
-    }
+    },
   },
 });
 export const { postStart, postSuccess, postFailure, postUpdate } = postSlice.actions;
@@ -114,13 +116,24 @@ export const updatePost = createAsyncThunk(
     }
   }
 )
-export const deletePost = (token: string, postId: number) => {
-  axios.delete(
-    `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+
+export const deletePost = createAsyncThunk(
+  "post/deletePost",
+  async({token,postId}:{token: string, postId: number}, {dispatch}) => {
+    try{
+      const response = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if(response.status === 200) {
+        dispatch(postDelete(response.data));
+      }
+    }catch{
+
     }
-  );
-};
+  }
+)

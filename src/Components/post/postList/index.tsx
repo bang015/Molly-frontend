@@ -190,7 +190,7 @@ const PostList: React.FC<postListProps> = (post) => {
         deleteOpen={deleteOpen}
         onDeleteClose={onDeleteClose}
       />
-      <PostForm postConfig={postConfig} setPostConfig={setPostConfig} openModal={onEditLoadingOpen} post={post.post}/>
+      <PostForm postConfig={postConfig} onClose={onEditClose} openModal={onEditLoadingOpen} post={post.post}/>
       <div className="content">
         <div className="media">
           {currentImageIndex > 0 && (

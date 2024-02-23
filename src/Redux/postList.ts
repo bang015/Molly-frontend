@@ -8,13 +8,17 @@ interface postListState{
   mainPostList: postType[];
   getPostLoading : boolean;
   getPostDetail: postType|null;
+  showDeleteBar: boolean;
+  totalPages: number;
 }
 
 const initialState: postListState = {
   allPostList : [],
   mainPostList: [],
   getPostLoading : false,
-  getPostDetail: null
+  getPostDetail: null,
+  showDeleteBar: false,
+  totalPages: 1
 }
 const postListSlice = createSlice({
   name: "postList",
@@ -34,13 +38,18 @@ const postListSlice = createSlice({
       state.getPostLoading = false;
       state.getPostDetail = action.payload;
     },
-    getMainPostList: (state, action: PayloadAction<postType[]>) => {
-      state.mainPostList = [...state.mainPostList, ...action.payload];
+    getMainPostList: (state, action: PayloadAction<{post: postType[], totalPages: number}>) => {
+      state.mainPostList = [...state.mainPostList, ...action.payload.post];
+      state.totalPages = action.payload.totalPages;
+    },
+    postDelete : (state, action: PayloadAction<number>) => {
+      state.mainPostList = state.mainPostList.filter(post => post.id !== action.payload);
+      state.showDeleteBar = true;
     }
   }
 });
 
-export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList } =
+export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList, postDelete } =
 postListSlice.actions;
 export default postListSlice.reducer;
 
