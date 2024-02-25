@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { updatePostType, uploadPostType } from "../Interfaces/post";
 import { INIT, POST_API } from "../Utils/api-url";
-import { getPostByPostId, postDelete } from "./postList";
+import { getPostByPostId, postDelete, postUpload } from "./postList";
 interface updatedPost {
   postId: number | null;
   updatedPost: string | null
@@ -74,7 +74,8 @@ export const uploadPost = createAsyncThunk(
         }
       );
       if(response.status === 200) {
-        dispatch(postSuccess(response.data));
+        dispatch(postSuccess(response.data.message));
+        dispatch(postUpload(response.data.post));
       }else{
         dispatch(postFailure(response.data));
       }

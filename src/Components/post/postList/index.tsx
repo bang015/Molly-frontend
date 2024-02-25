@@ -239,6 +239,7 @@ const PostList: React.FC<postListProps> = (post) => {
           handleLike={handleLike}
           handleChatClick={handleChatClick}
           config={true}
+          postId={post.post.id}
         />
         <PostLikeCount
           config={true}

@@ -424,6 +424,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     handleChatClick={handleChatClick}
                     checkLiked={checkLiked}
                     handleLike={handleLike}
+                    postId={postId}
                   />
                   <PostLikeCount
                     config={false}

@@ -42,23 +42,34 @@ const postListSlice = createSlice({
       state.mainPostList = [...state.mainPostList, ...action.payload.post];
       state.totalPages = action.payload.totalPages;
     },
+    postUpload : (state, action: PayloadAction<postType>) => {
+      state.mainPostList = [action.payload, ...state.mainPostList];
+    },
     postDelete : (state, action: PayloadAction<number>) => {
       state.mainPostList = state.mainPostList.filter(post => post.id !== action.payload);
       state.showDeleteBar = true;
+    },
+    resetDeleteBar : (state) => {
+      state.showDeleteBar = false;
     }
   }
 });
 
-export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList, postDelete } =
+export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList, postDelete, postUpload, resetDeleteBar } =
 postListSlice.actions;
 export default postListSlice.reducer;
 
 export const getMainPost = createAsyncThunk(
   "postList/getMainPost",
-  async({page, userId} : {page: number, userId: number}, {dispatch}) => {
+  async({page, token} : {page: number, token: string}, {dispatch}) => {
     try{
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/${userId}?page=${page}`,
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
       );
       if(response.status === 200) {
         dispatch(getMainPostList(response.data));
@@ -71,11 +82,16 @@ export const getMainPost = createAsyncThunk(
 
 export const getAllPost = createAsyncThunk(
   'postList/getAllPost',
-  async(page : number , {dispatch}) => {
+  async({page, token} : {page: number, token: string} , {dispatch}) => {
     dispatch(getListStart());
     try{
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}?page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
       )
       if(response.status === 200){
         const result = response.data;

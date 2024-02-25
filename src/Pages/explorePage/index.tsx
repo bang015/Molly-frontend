@@ -10,18 +10,30 @@ import { getFollowing } from "../../Redux/follow";
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch();
-  const allPostList = useSelector((state: RootState) => state.postListReducer.allPostList);
+  const allPostList = useSelector(
+    (state: RootState) => state.postListReducer.allPostList
+  );
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const [page, setPage] = useState(1);
-  const [selectedPostId, setSelectedPostId] = useState<number|null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   useEffect(() => {
-    dispatch(getAllPost(page) as any);
+    if(token){
+      dispatch(getAllPost({page, token}) as any);
+    }
   }, [page]);
-  useEffect(()=> {
-    if(user){
+  useEffect(() => {
+    if (user) {
       dispatch(getFollowing(user.id!) as any);
     }
   }, [user]);
+
+  window.addEventListener("scroll", function () {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      setPage(page + 1);
+    }
+  });
+
   const handlePostModal = (id: number) => {
     setSelectedPostId(id);
   };
@@ -38,19 +50,24 @@ const Explore: React.FC = () => {
       <div className="post-content">
         <div className="image-grid">
           {allPostList.map((post) => (
-            <div key={post.id} onClick={() => {handlePostModal(post.id)}}>    
+            <div
+              key={post.id}
+              onClick={() => {
+                handlePostModal(post.id);
+              }}
+            >
               <img
                 className="image-item"
                 srcSet={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format&dpr=2 2x`}
                 src={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format`}
                 alt={post.content}
                 loading="lazy"
-              />        
+              />
             </div>
           ))}
         </div>
         {selectedPostId && (
-          <PostDetail postId={selectedPostId} onClose={closeModal}/>
+          <PostDetail postId={selectedPostId} onClose={closeModal} />
         )}
       </div>
     </div>

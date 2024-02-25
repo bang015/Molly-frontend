@@ -23,3 +23,5 @@ export const FOLLOW_API = "/follow";
 export const COMMENT_API = "/comment";
 /* like */
 export const LIKE_API = "/like";
+/* bookmark */
+export const BOOKMARK_API = "/bookmark";
