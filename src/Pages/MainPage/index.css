@@ -1,17 +1,20 @@
 .mainPage {
-  width: 1300px;
   margin: auto;
   display: flex;
+  height: 100vh;
 }
 .main-left {
   width: 300px;
   border: 1px solid;
 }
 .nav-container {
-  width: 250px;
+  width: 18%;
+  min-width: 240px;
+  border-right: 1px rgb(219, 219, 219) solid;
 }
 .main-center {
-  width: 700px;
+  width: 50%;
+  min-width: 800px;
 }
 .follow-container {
   width: 300px;

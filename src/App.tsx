@@ -48,7 +48,7 @@ const App: React.FC = () => {
           element={!isLogin ? <SignInPage /> : <Navigate to="/" />}
         />
         <Route
-          path="/profile"
+          path="/profile/:nickname"
           element={isLogin ? <ProfilePage /> : <Navigate to="/signin" />}
         />
         <Route

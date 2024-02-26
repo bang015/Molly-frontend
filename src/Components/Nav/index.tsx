@@ -27,100 +27,105 @@ const Nav: React.FC = () => {
   const [open, setOpen] = useState(false);
   const handleSignOut = () => {
     dispatch(signOut() as any);
-  }
+  };
   const handleOpenModal = () => {
     setOpen(true);
-  }
+  };
   const handleCloseModal = () => {
     setOpen(false);
-  }
+  };
   const onPostOpen = () => {
     setPostConfig(true);
-  }
+  };
   const onPostClose = () => {
     setPostConfig(false);
-  }
+  };
   return (
     <div className="n">
-    <div className="nav">
-      <div className="nav-logo">
-        <img
-          className="logo"
-          src="/images/molly_logo.png"
-          width="100px"
-          alt="molly Logo"
+      <div className="nav">
+        <div className="nav-logo">
+          <img
+            className="logo"
+            src="/images/molly_logo.png"
+            width="100px"
+            alt="molly Logo"
+          />
+        </div>
+        <div className="nav-menu">
+          <ListItemButton component="a" href="/">
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/">
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Search" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/explore">
+            <ListItemIcon>
+              <ExploreOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Explore" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/">
+            <ListItemIcon>
+              <MovieCreationOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Clip" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/">
+            <ListItemIcon>
+              <EmailOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Messages" />
+          </ListItemButton>
+          <ListItemButton component="a" href="/">
+            <ListItemIcon>
+              <NotificationsNoneOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Notifications" />
+          </ListItemButton>
+          <ListItemButton
+            component="a"
+            onClick={() => {
+              onPostOpen();
+            }}
+          >
+            <ListItemIcon>
+              <AddBoxOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Post" />
+          </ListItemButton>
+          <ListItemButton component="a" href={`/profile/${user?.nickname}`}>
+            <ListItemAvatar>
+              <Avatar
+                alt="profile"
+                src={user?.ProfileImage?.path}
+                style={{ width: 25, height: 25 }}
+              />
+            </ListItemAvatar>
+            <ListItemText primary="profile" />
+          </ListItemButton>
+        </div>
+        <div className="nav-bottom">
+          <ListItemButton component="a" onClick={handleSignOut}>
+            <ListItemIcon>
+              <MenuOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="More" />
+          </ListItemButton>
+        </div>
+        <PostForm
+          postConfig={postConfig}
+          post={null}
+          onClose={onPostClose}
+          openModal={handleOpenModal}
         />
+        <PostLoading open={open} onClose={handleCloseModal} />
       </div>
-      <div className="nav-menu">
-        <ListItemButton component="a" href="/">
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/">
-          <ListItemIcon>
-            <SearchIcon />
-          </ListItemIcon>
-          <ListItemText primary="Search" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/explore">
-          <ListItemIcon>
-            <ExploreOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Explore" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/">
-          <ListItemIcon>
-            <MovieCreationOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Clip" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/">
-          <ListItemIcon>
-            <EmailOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Messages" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/">
-          <ListItemIcon>
-            <NotificationsNoneOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Notifications" />
-        </ListItemButton>
-        <ListItemButton
-          component="a"
-          onClick={() => {
-            onPostOpen();
-          }}
-        >
-          <ListItemIcon>
-            <AddBoxOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Post" />
-        </ListItemButton>
-        <ListItemButton component="a" href="/">
-          <ListItemAvatar>
-            <Avatar
-              alt="profile"
-              src={user?.ProfileImage?.path}
-              style={{ width: 25, height: 25 }}
-            />
-          </ListItemAvatar>
-          <ListItemText primary="profile" />
-        </ListItemButton>
-      </div>
-      <div className="nav-bottom">
-        <ListItemButton component="a" onClick={handleSignOut}>
-          <ListItemIcon>
-            <MenuOutlinedIcon />
-          </ListItemIcon>
-          <ListItemText primary="More" />
-        </ListItemButton>
-      </div>
-      <PostForm postConfig={postConfig} post={null} onClose={onPostClose} openModal={handleOpenModal}/>
-      <PostLoading open={open} onClose={handleCloseModal}/>
-    </div>
     </div>
   );
 };

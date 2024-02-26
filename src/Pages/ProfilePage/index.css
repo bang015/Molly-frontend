@@ -1,43 +1,63 @@
-.profile{
+.prfile {
+  padding: 30px 20px 0;
+  width: calc(100% - 40px);
+  margin: 0 auto 30px;
+  max-width: 935px;
+}
+.header {
+  display: flex;
+  margin-bottom: 100px;
+}
+.profile_image {
+  flex-grow: 1;
+  margin-right: 30px;
+  justify-content: center;
   display: flex;
 }
-.profileImg{
-  width: 8vw;
-  height: 8vw;
-  border: 1px solid;
-  border-radius: 50%;
-  margin-left: 60px;
+
+.profileImg {
+  width: 150px;
+  height: 150px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.introduction{
-  width: 80%;
+.pui {
+  display: flex;
+  flex-grow: 2;
+  flex-direction: column;
 }
-.profileImg img {
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
+.mgb20 {
+  margin-bottom: 20px;
 }
-.imageCrop{
-  width: 600px;
-  background-color: white;
-  border-radius: 8px;
-  height: 500px;
-  position: absolute;
+.nick {
+  font-size: 20px;
+  font-weight: 400px;
+}
+.fonts14 {
+  font-size: 14px;
+}
+.fontw6 {
+  font-weight: 600;
+}
+.menu {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-top: 1px solid rgb(219, 219, 219);
 }
-.crop-container{
-  width: 97%;
-  height: 70%;
-  position: absolute;
-  overflow: hidden;
+.menu button{
+  display: flex;
+  align-items: center;
+  background: none;
+  border: 0;
+  font-size: 13px;
+  font-weight: 600;
+  padding-top: 20px;
+  color: rgb(142, 142, 142);
+  cursor: pointer;
 }
-.btn-box{
-  position: relative;
-  height: 70px;
-}
-.btn{
-  position: absolute;
-  bottom: 15px;
-  right: 10px;
+.click{
+  border-top: 1px solid !important;
+  color: black !important;
+  margin-top: -1px;
 }

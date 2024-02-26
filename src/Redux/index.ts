@@ -4,12 +4,14 @@ import followReducer from "./follow";
 import postListReducer from "./postList";
 import commentReducer from "./comment";
 import postReducer from "./post";
+import profileReducer from "./profile";
 const rootReducer = combineReducers({
   authReducer,
   followReducer,
   postListReducer,
   commentReducer,
-  postReducer
+  postReducer,
+  profileReducer
 });
 
 export default rootReducer;
