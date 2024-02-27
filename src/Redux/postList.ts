@@ -3,23 +3,27 @@ import axios from "axios";
 import { INIT, POST_API } from "../Utils/api-url";
 import { postType } from "../Interfaces/post";
 
-interface postListState{
+interface postListState {
   allPostList: postType[];
   mainPostList: postType[];
-  getPostLoading : boolean;
-  getPostDetail: postType|null;
+  userPostList: postType[];
+  bookmarkList : postType[];
+  getPostLoading: boolean;
+  getPostDetail: postType | null;
   showDeleteBar: boolean;
   totalPages: number;
 }
 
 const initialState: postListState = {
-  allPostList : [],
+  allPostList: [],
   mainPostList: [],
-  getPostLoading : false,
+  userPostList: [],
+  bookmarkList: [],
+  getPostLoading: false,
   getPostDetail: null,
   showDeleteBar: false,
-  totalPages: 1
-}
+  totalPages: 1,
+};
 const postListSlice = createSlice({
   name: "postList",
   initialState,
@@ -34,89 +38,146 @@ const postListSlice = createSlice({
     getListfailure: (state) => {
       state.getPostLoading = false;
     },
-    getPostDetailSuccess: (state, action: PayloadAction<postType>)=> {
+    getPostDetailSuccess: (state, action: PayloadAction<postType>) => {
       state.getPostLoading = false;
       state.getPostDetail = action.payload;
     },
-    getMainPostList: (state, action: PayloadAction<{post: postType[], totalPages: number}>) => {
+    getMainPostList: (
+      state,
+      action: PayloadAction<{ post: postType[]; totalPages: number }>
+    ) => {
       state.mainPostList = [...state.mainPostList, ...action.payload.post];
       state.totalPages = action.payload.totalPages;
     },
-    postUpload : (state, action: PayloadAction<postType>) => {
+    getUserPostList: (state, action: PayloadAction<postType[]>) => {
+      state.userPostList = [...state.userPostList, ...action.payload];
+    },
+    getbookmarkList: (state, action: PayloadAction<postType[]>) => {
+      state.bookmarkList = [...state.bookmarkList, ...action.payload]
+    },
+    postUpload: (state, action: PayloadAction<postType>) => {
       state.mainPostList = [action.payload, ...state.mainPostList];
     },
-    postDelete : (state, action: PayloadAction<number>) => {
-      state.mainPostList = state.mainPostList.filter(post => post.id !== action.payload);
+    postDelete: (state, action: PayloadAction<number>) => {
+      state.mainPostList = state.mainPostList.filter(
+        (post) => post.id !== action.payload
+      );
+      state.userPostList = state.userPostList.filter(
+        (post) => post.id !== action.payload
+      );
       state.showDeleteBar = true;
     },
-    resetDeleteBar : (state) => {
+    resetDeleteBar: (state) => {
       state.showDeleteBar = false;
+    },
+    clearPostList: (state) => {
+      state.userPostList = [];
+      state.bookmarkList = [];
     }
-  }
+  },
 });
 
-export const { getListStart, getAllPostList, getListfailure, getPostDetailSuccess, getMainPostList, postDelete, postUpload, resetDeleteBar } =
-postListSlice.actions;
+export const {
+  getListStart,
+  getAllPostList,
+  getListfailure,
+  getPostDetailSuccess,
+  getMainPostList,
+  getUserPostList,
+  getbookmarkList,
+  postDelete,
+  postUpload,
+  resetDeleteBar,
+  clearPostList,
+} = postListSlice.actions;
 export default postListSlice.reducer;
 
 export const getMainPost = createAsyncThunk(
   "postList/getMainPost",
-  async({page, token} : {page: number, token: string}, {dispatch}) => {
-    try{
+  async ({ page, token }: { page: number; token: string }, { dispatch }) => {
+    try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          }
+          },
         }
       );
-      if(response.status === 200) {
+      if (response.status === 200) {
         dispatch(getMainPostList(response.data));
       }
-    }catch{
-
-    }
+    } catch {}
   }
-)
+);
 
 export const getAllPost = createAsyncThunk(
-  'postList/getAllPost',
-  async({page, token} : {page: number, token: string} , {dispatch}) => {
+  "postList/getAllPost",
+  async ({ page, token }: { page: number; token: string }, { dispatch }) => {
     dispatch(getListStart());
-    try{
+    try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}?page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          }
+          },
         }
-      )
-      if(response.status === 200){
+      );
+      if (response.status === 200) {
         const result = response.data;
         dispatch(getAllPostList(result));
-      }else{
+      } else {
         dispatch(getListfailure());
       }
-    }catch(err){
+    } catch (err) {
       dispatch(getListfailure());
     }
   }
-)
+);
 
 export const getPostByPostId = createAsyncThunk(
-  'postList/getPostByPostId',
-  async(postId : number, {dispatch}) => {
-    try{
+  "postList/getPostByPostId",
+  async (postId: number, { dispatch }) => {
+    try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
-      )
-      if(response.status === 200) {
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`
+      );
+      if (response.status === 200) {
         dispatch(getPostDetailSuccess(response.data));
       }
-    }catch(err) {
+    } catch (err) {
       dispatch(getListfailure());
+    }
+  }
+);
+
+export const getPostByUserId = createAsyncThunk(
+  "postList/getPostByUserId",
+  async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/my/${userId}?page=${page}`
+      );
+      if (response.status === 200) {
+        dispatch(getUserPostList(response.data.post));
+      }
+    } catch {}
+  }
+);
+
+export const getBookmarkPost = createAsyncThunk(
+  "postList/getBookmarkPost",
+  async ({userId, page} : { userId: number; page: number }, { dispatch }) => {
+    try{
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`
+      )
+      if(response.status === 200) {
+        dispatch(getbookmarkList(response.data));
+      }
+    }catch{
+
     }
   }
 )

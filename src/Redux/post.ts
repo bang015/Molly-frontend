@@ -3,6 +3,7 @@ import axios from "axios";
 import { updatePostType, uploadPostType } from "../Interfaces/post";
 import { INIT, POST_API } from "../Utils/api-url";
 import { getPostByPostId, postDelete, postUpload } from "./postList";
+import { deletePostProfile } from "./profile";
 interface updatedPost {
   postId: number | null;
   updatedPost: string | null
@@ -132,6 +133,7 @@ export const deletePost = createAsyncThunk(
       );
       if(response.status === 200) {
         dispatch(postDelete(response.data));
+        dispatch(deletePostProfile());
       }
     }catch{
 

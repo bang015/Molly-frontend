@@ -47,7 +47,7 @@ const Explore: React.FC = () => {
       <div className="nav-container">
         <Nav></Nav>
       </div>
-      <div className="post-content">
+      <div className="content">
         <div className="image-grid">
           {allPostList.map((post) => (
             <div
@@ -57,7 +57,7 @@ const Explore: React.FC = () => {
               }}
             >
               <img
-                className="image-item"
+                className="image_item"
                 srcSet={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format&dpr=2 2x`}
                 src={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format`}
                 alt={post.content}

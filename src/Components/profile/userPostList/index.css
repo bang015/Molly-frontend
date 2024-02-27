@@ -1,0 +1,15 @@
+.user_post {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 100%;
+}
+.user_post div {
+  aspect-ratio: 1 / 1;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+}
+.user_post img{
+  object-fit: cover;
+}

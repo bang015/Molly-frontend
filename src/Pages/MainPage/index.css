@@ -2,6 +2,8 @@
   margin: auto;
   display: flex;
   height: 100vh;
+  overflow-y: scroll;
+
 }
 .main-left {
   width: 300px;

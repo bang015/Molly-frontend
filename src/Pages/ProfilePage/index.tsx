@@ -13,6 +13,9 @@ import Nav from "../../Components/Nav";
 import { getProfile } from "../../Redux/profile";
 import AppsIcon from "@mui/icons-material/Apps";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import UserPostList from "../../Components/profile/userPostList";
+import Header from "../../Components/profile/header";
+import BookmarkList from "../../Components/profile/bookmarkList";
 
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user);
@@ -41,12 +44,7 @@ const ProfilePage: React.FC = () => {
   const onCropComplete = (croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
-  const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files![0];
-    const currentImageUrl = URL.createObjectURL(file);
-    setShowImage(currentImageUrl);
-    setShowImgModal(true);
-  };
+
   const handleCloseModal = () => {
     setShowImgModal(false);
     setShowImage("");
@@ -89,58 +87,52 @@ const ProfilePage: React.FC = () => {
       <div className="nav-container">
         <Nav></Nav>
       </div>
-      <div className="post-content">
-        <div className="prfile">
-          <div className="header">
-            <div className="profile_image">
-              <label htmlFor="fileInput">
-                <input
-                  key={fileKey}
-                  type="file"
-                  id="fileInput"
-                  onChange={handleProfileImg}
-                />
-                <div className="profileImg">
-                  <Avatar src={user?.ProfileImage?.path} sx={{ width: 150, height: 150 }} />
+      <div className="pcontent">
+        {profile ? (
+          <div className="prfile">
+            <Header profile={profile} />
+            <div>
+              <div className="menu">
+                <div style={{ marginRight: 60 }}>
+                  <button
+                    className={value === 1 ? "click" : ""}
+                    onClick={() => {
+                      setValue(1);
+                    }}
+                  >
+                    <AppsIcon />
+                    게시물
+                  </button>
                 </div>
-              </label>
-            </div>
-            <div className="pui">
-              <div className="mgb20 nick">{profile?.nickname}</div>
-              <div className="mgb20">게시물 팔로워 팔로우</div>
-              <div className="fonts14 fontw6">{profile?.name}</div>
-              <div className="fonts14">{profile?.introduce}</div>
-            </div>
-          </div>
-          <div>
-            <div className="menu">
-              <div style={{ marginRight: 60 }}>
-                <button
-                  className={value === 1 ? "click" : ""}
-                  onClick={() => {
-                    setValue(1);
-                  }}
-                >
-                  <AppsIcon />
-                  게시물
-                </button>
+                <div>
+                  <button
+                    className={value === 2 ? "click" : ""}
+                    onClick={() => {
+                      setValue(2);
+                    }}
+                  >
+                    <BookmarkBorderIcon />
+                    저장됨
+                  </button>
+                </div>
               </div>
-              <div>
-                <button
-                  className={value === 2 ? "click" : ""}
-                  onClick={() => {
-                    setValue(2);
-                  }}
-                >
-                  <BookmarkBorderIcon />
-                  저장됨
-                </button>
+              <div className="mgt20">
+                {value === 1 && (
+                  <div>
+                    <UserPostList userId={profile.id!} />
+                  </div>
+                )}
+                {value === 2 && (
+                  <div>
+                    <BookmarkList userId={profile.id!} />
+                  </div>
+                )}
               </div>
             </div>
-            {value === 1 && <div>1</div>}
-            {value === 2 && <div>2</div>}
           </div>
-        </div>
+        ) : (
+          <div>죄송합니다. 페이지를 사용할 수 없습니다.</div>
+        )}
       </div>
     </div>
     // <div className="signup">

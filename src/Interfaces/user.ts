@@ -11,6 +11,9 @@ export interface userType {
     id:number,
     path:string
   }
+  postCount? : number;
+  followerCount?: number;
+  followCount? : number; 
 }
 export interface updateProfile {
   nickname?: string;

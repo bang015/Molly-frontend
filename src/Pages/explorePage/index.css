@@ -2,14 +2,21 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 5px;
-  margin: auto;
-  width: 800px;
+  margin: 30px auto;
+  width: 900px;
 }
-
-.image-item {
+.image-grid div {
+  aspect-ratio: 1 / 1;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  cursor: pointer;
+}
+.image_item {
   width: 100%;
   height: auto;
   max-width: 100%;
+  cursor: pointer;
 }
 
 .nav-menu{

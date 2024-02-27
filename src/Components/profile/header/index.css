@@ -1,0 +1,61 @@
+.header {
+  display: flex;
+  margin-bottom: 100px;
+}
+.profile_image {
+  flex-grow: 1;
+  margin-right: 30px;
+  justify-content: center;
+  display: flex;
+}
+
+.profileImg {
+  width: 150px;
+  height: 150px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pui {
+  display: flex;
+  flex-grow: 2;
+  flex-direction: column;
+}
+.activity{
+  display: flex;
+}
+.activity div{
+  margin-right: 30px;
+}
+.activity span{
+  font-weight: 600;
+}
+.mgb20 {
+  margin-bottom: 15px;
+}
+.mgt20 {
+  margin-top: 10px;
+}
+.nick {
+  font-size: 20px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+}
+.nick button {
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 15px;
+  background-color: rgb(239, 239, 239);
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 20px;
+}
+.nick button:hover {
+  background-color: rgb(219, 219, 219);
+}
+.fonts14 {
+  font-size: 14px;
+}
+.fontw6 {
+  font-weight: 600;
+}

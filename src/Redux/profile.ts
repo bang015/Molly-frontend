@@ -4,32 +4,39 @@ import { INIT, USER_API } from "../Utils/api-url";
 import { userType } from "../Interfaces/user";
 
 interface profileState {
-  profile : userType | null;
+  profile: userType | null;
 }
-const initialState: profileState ={
-  profile : null,
-}
-const profileSlice = createSlice ({
+const initialState: profileState = {
+  profile: null,
+};
+const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers : {
-    getProfileSuccess : (state, action: PayloadAction<userType>) => {
+  reducers: {
+    getProfileSuccess: (
+      state,
+      action: PayloadAction<userType>
+    ) => {
       state.profile = action.payload;
+    },
+    deletePostProfile: (state) => {
+      if(state.profile && state.profile.postCount !== undefined){
+        state.profile.postCount = state.profile.postCount - 1;
+      }
     }
-  }
+  },
 });
-export const {getProfileSuccess } =
-profileSlice.actions;
+export const { getProfileSuccess, deletePostProfile } = profileSlice.actions;
 export default profileSlice.reducer;
 
 export const getProfile = createAsyncThunk(
   "profile/getProfile",
-  async(nickname: string, {dispatch}) => {
+  async (nickname: string, { dispatch }) => {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}/${nickname}`,
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}/${nickname}`
     );
-    if(response.status === 200) {
+    if (response.status === 200) {
       dispatch(getProfileSuccess(response.data));
     }
   }
-)
+);
