@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { userType } from "../../../Interfaces/user";
 import { Avatar } from "@mui/material";
 import "./index.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
+import FollowList from "../../follow/followList";
+import { clearFollowList } from "../../../Redux/follow";
 interface headerProps {
   profile: userType;
 }
@@ -11,12 +13,28 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   const [fileKey, setFileKey] = useState<number>(0);
   const [showImgModal, setShowImgModal] = useState(false);
   const [showImage, setShowImage] = useState("");
-
+  const [followOpen, setFollowOpen] = useState(false);
+  const [followerOpen, setFollowerOpen] = useState(false);
+  const dispatch = useDispatch();
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     const currentImageUrl = URL.createObjectURL(file);
     setShowImage(currentImageUrl);
     setShowImgModal(true);
+  };
+
+  const onFollowOpen = () => {
+    setFollowOpen(true);
+  };
+  const onFollowClose = () => {
+    setFollowOpen(false);
+    dispatch(clearFollowList());
+  };
+  const onFollowerOpen = () => {
+    setFollowerOpen(true);
+  };
+  const onFollowerClose = () => {
+    setFollowerOpen(false);
   };
   return (
     <div className="header">
@@ -44,10 +62,23 @@ const Header: React.FC<headerProps> = ({ profile }) => {
           </div>
         </div>
         <div className="mgb20 activity">
-          <div>게시물 <span>{profile.postCount}</span></div>
-          <div>팔로워 <span>{profile.followerCount}</span></div>
-          <div>팔로우 <span>{profile.followCount}</span></div>
+          <div>
+            게시물 <span>{profile.postCount}</span>
+          </div>
+          <div onClick={onFollowerOpen}>
+            팔로워 <span>{profile.followerCount}</span>
+          </div>
+          <div onClick={onFollowOpen}>
+            팔로우 <span>{profile.followCount}</span>
+          </div>
         </div>
+        {profile && followOpen && (
+          <FollowList
+            userId={profile.id!}
+            followOpen={followOpen}
+            onFollowClose={onFollowClose}
+          />
+        )}
         <div className="fonts14 fontw6">{profile?.name}</div>
         <div className="fonts14">{profile?.introduce}</div>
       </div>

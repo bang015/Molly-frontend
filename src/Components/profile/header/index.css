@@ -25,6 +25,7 @@
 }
 .activity div{
   margin-right: 30px;
+  cursor: pointer;
 }
 .activity span{
   font-weight: 600;

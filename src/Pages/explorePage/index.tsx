@@ -22,11 +22,6 @@ const Explore: React.FC = () => {
       dispatch(getAllPost({page, token}) as any);
     }
   }, [page]);
-  useEffect(() => {
-    if (user) {
-      dispatch(getFollowing(user.id!) as any);
-    }
-  }, [user]);
 
   window.addEventListener("scroll", function () {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
@@ -47,7 +42,7 @@ const Explore: React.FC = () => {
       <div className="nav-container">
         <Nav></Nav>
       </div>
-      <div className="content">
+      <div className="pcontent">
         <div className="image-grid">
           {allPostList.map((post) => (
             <div

@@ -29,9 +29,3 @@ export interface IUserforSignUp {
   name?: string;
 }
 
-export interface suggestFollower {
-  userId: number;
-  userName: string;
-  userNickname: string;
-  profileImagePath: string|null;
-}

@@ -3,7 +3,7 @@ import {
   createAction,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { userType, IUserforSignUp, updateProfile, suggestFollower } from "../Interfaces/user";
+import { userType, IUserforSignUp, updateProfile, } from "../Interfaces/user";
 import axios from "axios";
 import { AUTH_API, INIT, USER_API } from "../Utils/api-url";
 // 액션 타입들 정의

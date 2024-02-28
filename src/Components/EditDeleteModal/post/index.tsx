@@ -1,9 +1,9 @@
 import { Modal } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { postType } from "../../../Interfaces/post";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
-import { followUser } from "../../../Redux/follow";
+import { followUser, followedCheck } from "../../../Redux/follow";
 import DeleteModal from "../delete";
 interface postMoreModalProps {
   open: boolean;
@@ -22,12 +22,17 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const followingList = useSelector(
-    (state: RootState) => state.followReducer.followingUser
+  const Followed = useSelector(
+    (state: RootState) => state.followReducer.chekcFollowed
   );
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [checkFollowed, setCheckFollowed] = useState(false);
+
   const userId = post.userId;
   const postId = post.id;
+  useEffect(() => {
+    followCheck();
+  }, [post, Followed]);
   const handleUnFollow = () => {
     if (token) {
       const followUserId = post?.userId!;
@@ -35,11 +40,11 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
     }
     onClose();
   };
-  const followCheck = () => {
-    return !(
-      user?.id === post?.userId ||
-      followingList.some((item) => item.userId === post?.userId)
-    );
+  const followCheck = async() => {
+    if (token && post) {
+      const result = await followedCheck(token, post.userId);
+      setCheckFollowed(result);
+    }
   };
   const postDelete = () => {
     onDeleteOpen();
@@ -74,7 +79,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
                 <div>
                   <button className="mbtn1 mbtnc">신고</button>
                 </div>
-                {!followCheck() && (
+                {checkFollowed && (
                   <div>
                     <button className="mbtnc" onClick={handleUnFollow}>
                       팔로우 취소

@@ -30,7 +30,7 @@ import {
 } from "../../../Redux/comment";
 import { addCommentType, commentType } from "../../../Interfaces/comment";
 import { CommentList } from "../comment/commentList";
-import { followUser } from "../../../Redux/follow";
+import { followUser, followedCheck } from "../../../Redux/follow";
 import { getPostLike, likePost } from "../../../Redux/like";
 import PostMoreModal from "../../EditDeleteModal/post";
 import DeleteModal from "../../EditDeleteModal/delete";
@@ -58,9 +58,10 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const deleteComment = useSelector(
     (state: RootState) => state.commentReducer.deletComment
   );
-  const followingList = useSelector(
-    (state: RootState) => state.followReducer.followingUser
+  const Followed = useSelector(
+    (state: RootState) => state.followReducer.chekcFollowed
   );
+
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
@@ -76,6 +77,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   >([]);
   const [likeCount, setLikeCount] = useState<number>(0);
   const [checkLiked, setCheckLiked] = useState(false);
+  const [checkFollowed, setCheckFollowed] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [postConfig, setPostConfig] = useState(false);
@@ -83,8 +85,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
 
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
+
     const fetchData = async () => {
-      if (user && post) {
+      if (user) {
         const otherCommentResult = await getComment(user.id!, postId, page);
         if (page === 1) {
           const myCommentResult = await getMyCommentByPost(user.id!, postId);
@@ -103,6 +106,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     fetchData();
   }, [user, postId, page]);
+  useEffect(() => {
+    followCheck();
+  }, [user, postId, Followed]);
   useEffect(() => {
     const like = async () => {
       const result = await getPostLike(token!, postId);
@@ -144,11 +150,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       }
     }
   }, [updatePending, updateCommentId]);
-  const followCheck = () => {
-    return !(
-      user?.id === post?.userId ||
-      followingList.some((item) => item.userId === post?.userId)
-    );
+  const followCheck = async () => {
+    if (token && post) {
+      const result = await followedCheck(token, post.userId);
+      setCheckFollowed(result);
+    }
   };
 
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -335,7 +341,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                       <div className="uf">
                         <div className="un">{post.nickname}</div>
-                        {followCheck() && (
+                        {!checkFollowed && (
                           <div>
                             <span>•</span>
                             <button onClick={handleFollow}>
