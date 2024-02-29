@@ -23,6 +23,9 @@ const profileSlice = createSlice({
       if(state.profile && state.profile.postCount !== undefined){
         state.profile.postCount = state.profile.postCount - 1;
       }
+    },
+    updateFollowCount: (state, action: PayloadAction<number>) => {
+
     }
   },
 });

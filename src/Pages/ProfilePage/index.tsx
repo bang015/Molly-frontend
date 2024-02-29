@@ -23,6 +23,9 @@ const ProfilePage: React.FC = () => {
   const profile = useSelector(
     (state: RootState) => state.profileReducer.profile
   );
+  const chekcFollowed = useSelector(
+    (state: RootState) => state.followReducer.chekcFollowed
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [fileKey, setFileKey] = useState<number>(0);
@@ -40,7 +43,7 @@ const ProfilePage: React.FC = () => {
     if (nickname) {
       dispatch(getProfile(nickname) as any);
     }
-  }, [nickname]);
+  }, [nickname, chekcFollowed]);
   const onCropComplete = (croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };

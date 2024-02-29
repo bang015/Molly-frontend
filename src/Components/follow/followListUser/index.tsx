@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Typography,
 } from "@mui/material";
 
 interface followListUserProps {
@@ -16,14 +17,16 @@ interface followListUserProps {
 }
 const FollowListUser: React.FC<followListUserProps> = ({ user }) => {
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const checkFollowed = useSelector((state: RootState) => state.followReducer.chekcFollowed);
+  const checkFollowed = useSelector(
+    (state: RootState) => state.followReducer.chekcFollowed
+  );
   const dispatch = useDispatch();
   const [followed, setFollowed] = useState(false);
   useEffect(() => {
     const check = async () => {
       if (token) {
         const result = await followedCheck(token, user.userId);
-        setFollowed(result)
+        setFollowed(result);
       }
     };
     check();
@@ -33,10 +36,13 @@ const FollowListUser: React.FC<followListUserProps> = ({ user }) => {
       dispatch(followUser({ token, followUserId }) as any);
     }
   };
+  const goToProfilePage = () => {
+    window.location.href = `/profile/${user.userNickname}`;
+  };
   return (
     <ListItem
       key={user.userId}
-      style={{ zIndex: 99 }}
+      style={{ zIndex: 99, paddingTop: 0, paddingBottom: 0 }}
       secondaryAction={
         <Button
           variant={followed ? "outlined" : "contained"}
@@ -48,14 +54,25 @@ const FollowListUser: React.FC<followListUserProps> = ({ user }) => {
         </Button>
       }
     >
-      <ListItemAvatar>
+      <ListItemAvatar onClick={goToProfilePage}>
         {user.profileImagePath !== null ? (
           <Avatar src={user.profileImagePath} />
         ) : (
           <Avatar src="" />
         )}
       </ListItemAvatar>
-      <ListItemText primary={user.userNickname} secondary={user.userName} />
+      <ListItemText
+        style={{ cursor: "pointer" }}
+        onClick={goToProfilePage}
+        primary={
+          <Typography style={{ fontWeight: "600", fontSize: "14px" }}>
+            {user.userNickname}
+          </Typography>
+        }
+        secondary={
+          <Typography style={{ fontSize: "14px" }}>{user.userName}</Typography>
+        }
+      />
     </ListItem>
   );
 };

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import FollowList from "../../follow/followList";
 import { clearFollowList } from "../../../Redux/follow";
+import Follow from "../../follow/follow";
 interface headerProps {
   profile: userType;
 }
@@ -14,7 +15,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   const [showImgModal, setShowImgModal] = useState(false);
   const [showImage, setShowImage] = useState("");
   const [followOpen, setFollowOpen] = useState(false);
-  const [followerOpen, setFollowerOpen] = useState(false);
+  const [followType, setFollowType] = useState("");
   const dispatch = useDispatch();
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
@@ -23,19 +24,16 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     setShowImgModal(true);
   };
 
-  const onFollowOpen = () => {
+  const onFollowOpen = (type:string) => {
     setFollowOpen(true);
+    setFollowType(type);
   };
   const onFollowClose = () => {
     setFollowOpen(false);
     dispatch(clearFollowList());
+    setFollowType("");
   };
-  const onFollowerOpen = () => {
-    setFollowerOpen(true);
-  };
-  const onFollowerClose = () => {
-    setFollowerOpen(false);
-  };
+  
   return (
     <div className="header">
       <div className="profile_image">
@@ -65,16 +63,17 @@ const Header: React.FC<headerProps> = ({ profile }) => {
           <div>
             게시물 <span>{profile.postCount}</span>
           </div>
-          <div onClick={onFollowerOpen}>
+          <div onClick={() => onFollowOpen("follower")}>
             팔로워 <span>{profile.followerCount}</span>
           </div>
-          <div onClick={onFollowOpen}>
+          <div onClick={() => onFollowOpen("follow")}>
             팔로우 <span>{profile.followCount}</span>
           </div>
         </div>
         {profile && followOpen && (
-          <FollowList
+          <Follow
             userId={profile.id!}
+            followType={followType}
             followOpen={followOpen}
             onFollowClose={onFollowClose}
           />

@@ -10,6 +10,7 @@ interface checkFollowedState {
 interface FollowState {
   suggestList: followType[];
   followingUser: followType[];
+  followerUser: followType[];
   followLoading: boolean;
   followed: boolean;
   chekcFollowed: checkFollowedState;
@@ -18,6 +19,7 @@ interface FollowState {
 const initialState: FollowState = {
   suggestList: [],
   followingUser: [],
+  followerUser: [],
   followLoading: false,
   followed: false,
   chekcFollowed: { check: false, followUserId: null },
@@ -51,8 +53,12 @@ const followSlice = createSlice({
     getFollowingSuccess: (state, action: PayloadAction<followType[]>) => {
       state.followingUser = [...state.followingUser, ...action.payload];
     },
+    getFollowerSuccess: (state, action: PayloadAction<followType[]>) => {
+      state.followerUser = [...state.followerUser, ...action.payload];
+    },
     clearFollowList: (state) => {
       state.followingUser = [];
+      state.followerUser = [];
     },
   },
 });
@@ -63,6 +69,7 @@ export const {
   followUserFailure,
   getSuggestFollowSuccess,
   getFollowingSuccess,
+  getFollowerSuccess,
   clearFollowList,
 } = followSlice.actions;
 export default followSlice.reducer;
@@ -119,10 +126,10 @@ export const getSuggestFollow = createAsyncThunk(
 
 export const getFollowing = createAsyncThunk(
   "follow/getFollowing",
-  async ({userId, page}: {userId: number, page: number}, { dispatch }) => {
+  async ({userId, page, keyword}: {userId: number, page: number, keyword: string}, { dispatch }) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/${userId}?page=${page}`
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/${userId}/?page=${page}&query=${keyword}`
       );
       if (response.status === 200) {
         dispatch(getFollowingSuccess(response.data));
@@ -131,6 +138,19 @@ export const getFollowing = createAsyncThunk(
   }
 );
 
+export const getFollower = createAsyncThunk(
+  "follow/getFollower",
+  async ({userId, page, keyword}: {userId: number, page: number, keyword: string}, { dispatch }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/r/${userId}/?page=${page}&query=${keyword}`
+      );
+      if (response.status === 200) {
+        dispatch(getFollowerSuccess(response.data));
+      }
+    } catch {}
+  }
+)
 export const followedCheck = async (token: string, userId: number) => {
   try {
     const response = await axios.get(

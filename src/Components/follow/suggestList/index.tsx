@@ -20,11 +20,6 @@ export const SuggestList: React.FC<SuggestListProps>= ({ limit }) => {
   const suggestList = useSelector(
     (state: RootState) => state.followReducer.suggestList
   );
-  const followedList = useSelector(
-    (state: RootState) => state.followReducer.followingUser
-  );
-
-
   return (
     <div className="list">
       {suggestList.map((user) => (
