@@ -96,7 +96,7 @@ const ProfilePage: React.FC = () => {
             <Header profile={profile} />
             <div>
               <div className="menu">
-                <div style={{ marginRight: 60 }}>
+                <div>
                   <button
                     className={value === 1 ? "click" : ""}
                     onClick={() => {
@@ -107,19 +107,21 @@ const ProfilePage: React.FC = () => {
                     게시물
                   </button>
                 </div>
-                <div>
-                  <button
-                    className={value === 2 ? "click" : ""}
-                    onClick={() => {
-                      setValue(2);
-                    }}
-                  >
-                    <BookmarkBorderIcon />
-                    저장됨
-                  </button>
-                </div>
+                {profile.id === user?.id && (
+                  <div style={{ marginLeft: 60 }}>
+                    <button
+                      className={value === 2 ? "click" : ""}
+                      onClick={() => {
+                        setValue(2);
+                      }}
+                    >
+                      <BookmarkBorderIcon />
+                      저장됨
+                    </button>
+                  </div>
+                )}
               </div>
-              <div className="mgt20">
+              <div>
                 {value === 1 && (
                   <div>
                     <UserPostList userId={profile.id!} />

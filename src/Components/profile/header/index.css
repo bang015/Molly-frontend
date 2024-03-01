@@ -60,3 +60,16 @@
 .fontw6 {
   font-weight: 600;
 }
+.followbtn{
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 15px;
+  background-color: rgb(0, 149, 246) !important;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 20px;
+}
+.followbtn:hover{
+  background-color: rgb(24, 119, 242) !important; 
+}

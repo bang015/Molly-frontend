@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostList, getBookmarkPost, getPostByUserId } from "../../../Redux/postList";
+import { clearPostList, getBookmarkPost } from "../../../Redux/postList";
 import { RootState } from "../../../Redux";
 import PostDetail from "../../post/postDetail";
 import { clearComment } from "../../../Redux/comment";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 interface bookmarkListProps {
   userId: number;
 }
@@ -28,19 +29,38 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
   };
   return (
     <div>
-      <div className="user_post">
-        {post &&
-          post.map((post) => (
-            <div
-              key={post.id}
-              onClick={() => {
-                handlePostModal(post.id);
-              }}
-            >
-              <img className="image_item" src={post.mediaList[0].mediaPath} />
-            </div>
-          ))}
+      <div className="bookmarkT">
+        저장한 내용은 회원님만 볼 수 있습니다.
       </div>
+      {post.length ? (
+        <div className="user_post">
+          {post &&
+            post.map((post) => (
+              <div
+                key={post.id}
+                onClick={() => {
+                  handlePostModal(post.id);
+                }}
+              >
+                <img className="image_item" src={post.mediaList[0].mediaPath} />
+              </div>
+            ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <div className="emptyImg">
+            <BookmarkBorderIcon sx={{ width: "40px", height: "40px" }} />
+          </div>
+          <div>
+            <h1>저장</h1>
+          </div>
+          <div className="emptyT">
+            <div>다시 보고 싶은 콘텐츠를 저장하세요.</div>
+            <div>저장된 콘텐츠는 회원님만 볼 수 있습니다.</div>
+          </div>
+        </div>
+      )}
+
       {selectedPostId && (
         <PostDetail postId={selectedPostId} onClose={closeModal} />
       )}

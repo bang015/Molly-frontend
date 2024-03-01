@@ -1,22 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { userType } from "../../../Interfaces/user";
 import { Avatar } from "@mui/material";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import FollowList from "../../follow/followList";
-import { clearFollowList } from "../../../Redux/follow";
+import { clearFollowList, followUser, followedCheck } from "../../../Redux/follow";
 import Follow from "../../follow/follow";
 interface headerProps {
   profile: userType;
 }
 const Header: React.FC<headerProps> = ({ profile }) => {
+  const user = useSelector((state: RootState) => state.authReducer.user);
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const [fileKey, setFileKey] = useState<number>(0);
   const [showImgModal, setShowImgModal] = useState(false);
   const [showImage, setShowImage] = useState("");
   const [followOpen, setFollowOpen] = useState(false);
   const [followType, setFollowType] = useState("");
+  const [checkFollowed, setCheckFollowed] = useState(false);
   const dispatch = useDispatch();
+  useEffect(() => {
+    if(profile.id !== user?.id) {
+      const check = async() => {
+        if(token){
+          const result = await followedCheck(token, profile.id!);
+          setCheckFollowed(result);
+        }
+      }
+      check();
+    }
+  })
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     const currentImageUrl = URL.createObjectURL(file);
@@ -33,7 +47,12 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     dispatch(clearFollowList());
     setFollowType("");
   };
-  
+  const handleFollow = () => {
+    if (token) {
+      const followUserId = profile?.id!;
+      dispatch(followUser({ token, followUserId }) as any);
+    }
+  };
   return (
     <div className="header">
       <div className="profile_image">
@@ -56,7 +75,13 @@ const Header: React.FC<headerProps> = ({ profile }) => {
         <div className="mgb20 mgt20 nick">
           <div>{profile?.nickname}</div>
           <div>
-            <button>프로필 편집</button>
+            {
+              profile.id === user?.id ? (
+                <button>프로필 편집</button>
+              ) : (
+                <button onClick={handleFollow} className={checkFollowed ? "" : "followbtn"}>{checkFollowed ? ("팔로잉"):("팔로우")}</button>
+              )
+            }
           </div>
         </div>
         <div className="mgb20 activity">

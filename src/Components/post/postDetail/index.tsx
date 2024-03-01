@@ -78,10 +78,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [open, setOpen] = useState(false);
   const [postConfig, setPostConfig] = useState(false);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
-
     const fetchData = async () => {
       if (user) {
         const otherCommentResult = await getComment(user.id!, postId, page);
@@ -104,7 +102,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   }, [user, postId, page]);
   useEffect(() => {
     followCheck();
-  }, [user, postId, Followed]);
+  }, [user, post, Followed]);
+  const followCheck = async () => {
+    if (token && post) {
+      const result = await followedCheck(token, post.userId);
+      setCheckFollowed(result);
+    }
+  };
   useEffect(() => {
     const like = async () => {
       const result = await getPostLike(token!, postId);
@@ -146,12 +150,6 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       }
     }
   }, [updatePending, updateCommentId]);
-  const followCheck = async () => {
-    if (token && post) {
-      const result = await followedCheck(token, post.userId);
-      setCheckFollowed(result);
-    }
-  };
 
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value;
@@ -337,7 +335,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                       <div className="uf">
                         <div className="un">{post.nickname}</div>
-                        {!checkFollowed && (
+                        {!checkFollowed && post.userId !== user?.id && (
                           <div>
                             <span>•</span>
                             <button onClick={handleFollow}>
