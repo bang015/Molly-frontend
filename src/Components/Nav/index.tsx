@@ -118,12 +118,15 @@ const Nav: React.FC = () => {
             <ListItemText primary="More" />
           </ListItemButton>
         </div>
-        <PostForm
-          postConfig={postConfig}
-          post={null}
-          onClose={onPostClose}
-          openModal={handleOpenModal}
-        />
+        {postConfig && (
+          <PostForm
+            postConfig={postConfig}
+            post={null}
+            onClose={onPostClose}
+            openModal={handleOpenModal}
+          />
+        )}
+
         <PostLoading open={open} onClose={handleCloseModal} />
       </div>
     </div>

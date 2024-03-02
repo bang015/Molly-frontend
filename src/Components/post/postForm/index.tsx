@@ -190,6 +190,7 @@ const PostForm: React.FC<PostModalProps> = ({
       onClose()
     }
   }
+  console.log(showImages)
   return (
     <div>
       <Modal
@@ -281,7 +282,7 @@ const PostForm: React.FC<PostModalProps> = ({
                           image={showImages[currentImageIndex]}
                           crop={crop}
                           zoom={zoom}
-                          aspect={7 / 7}
+                          aspect={1 / 1}
                           onCropChange={setCrop}
                           onCropComplete={onCropComplete}
                           onZoomChange={setZoom}

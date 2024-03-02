@@ -24,9 +24,7 @@ const profileSlice = createSlice({
         state.profile.postCount = state.profile.postCount - 1;
       }
     },
-    updateFollowCount: (state, action: PayloadAction<number>) => {
-
-    }
+    
   },
 });
 export const { getProfileSuccess, deletePostProfile } = profileSlice.actions;
@@ -43,3 +41,26 @@ export const getProfile = createAsyncThunk(
     }
   }
 );
+
+export const editProfileImage = createAsyncThunk(
+  "profile/editProfileImage",
+  async({token, profileImg}: {token: string, profileImg: Blob}) => {
+    try{
+      const formData = new FormData();
+      const profileImageFile = new File([profileImg], 'profile_image.jpg');
+        formData.append('profile_image', profileImageFile);
+      const response = await axios.patch(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+    }catch{
+
+    }
+  }
+)

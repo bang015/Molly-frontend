@@ -28,15 +28,15 @@ const ProfilePage: React.FC = () => {
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [fileKey, setFileKey] = useState<number>(0);
-  const [showImage, setShowImage] = useState("");
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [showImgModal, setShowImgModal] = useState(false);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [introduction, setIntroduction] = useState<string>("");
-  const [profileImg, setProfileImg] = useState<Blob | null>(null);
+  // const [fileKey, setFileKey] = useState<number>(0);
+  // const [showImage, setShowImage] = useState("");
+  // const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  // const [zoom, setZoom] = useState(1);
+  // const [showImgModal, setShowImgModal] = useState(false);
+  // const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  // const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  // const [introduction, setIntroduction] = useState<string>("");
+  // const [profileImg, setProfileImg] = useState<Blob | null>(null);
   const [value, setValue] = useState<number>(1);
   const { nickname } = useParams();
   useEffect(() => {
@@ -44,46 +44,46 @@ const ProfilePage: React.FC = () => {
       dispatch(getProfile(nickname) as any);
     }
   }, [nickname, chekcFollowed]);
-  const onCropComplete = (croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
+  // const onCropComplete = (croppedAreaPixels: Area) => {
+  //   setCroppedAreaPixels(croppedAreaPixels);
+  // };
 
-  const handleCloseModal = () => {
-    setShowImgModal(false);
-    setShowImage("");
-    setFileKey((prevKey) => prevKey + 1);
-  };
-  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-  };
-  const handleCroppedImage = async () => {
-    try {
-      const croppedImage = await getCroppedImg(showImage, croppedAreaPixels!);
-      setProfileImg(croppedImage);
-      setCroppedImage(URL.createObjectURL(croppedImage!));
-      setShowImgModal(false);
-      setShowImage("");
-      setFileKey((prevKey) => prevKey + 1);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  const handleIntro = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIntroduction(e.target.value);
-  };
-  const handleSaveProfile = async () => {
-    const newInfo = {
-      introduce: introduction,
-      profile_image: profileImg,
-    };
-    if (token) {
-      const profile = await dispatch(updateUser({ token, newInfo }) as any);
-      if (profile) {
-        navigate("/");
-      } else {
-      }
-    }
-  };
+  // const handleCloseModal = () => {
+  //   setShowImgModal(false);
+  //   setShowImage("");
+  //   setFileKey((prevKey) => prevKey + 1);
+  // };
+  // const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   e.stopPropagation();
+  // };
+  // const handleCroppedImage = async () => {
+  //   try {
+  //     const croppedImage = await getCroppedImg(showImage, croppedAreaPixels!);
+  //     setProfileImg(croppedImage);
+  //     setCroppedImage(URL.createObjectURL(croppedImage!));
+  //     setShowImgModal(false);
+  //     setShowImage("");
+  //     setFileKey((prevKey) => prevKey + 1);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+  // const handleIntro = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setIntroduction(e.target.value);
+  // };
+  // const handleSaveProfile = async () => {
+  //   const newInfo = {
+  //     introduce: introduction,
+  //     profile_image: profileImg,
+  //   };
+  //   if (token) {
+  //     const profile = await dispatch(updateUser({ token, newInfo }) as any);
+  //     if (profile) {
+  //       navigate("/");
+  //     } else {
+  //     }
+  //   }
+  // };
 
   return (
     <div className="mainPage">

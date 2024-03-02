@@ -73,3 +73,6 @@
 .followbtn:hover{
   background-color: rgb(24, 119, 242) !important; 
 }
+#profileImageInput{
+  display: none;
+}
