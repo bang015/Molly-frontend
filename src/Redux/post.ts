@@ -6,20 +6,20 @@ import { getPostByPostId, postDelete, postUpload } from "./postList";
 import { deletePostProfile } from "./profile";
 interface updatedPost {
   postId: number | null;
-  updatedPost: string | null
+  updatedPost: string | null;
 }
 interface postState {
   posting: boolean;
   message: string;
   updatedPost: updatedPost;
-  
+  showSnackBar: boolean;
 }
 
 const initialState: postState = {
   posting: false,
   message: "",
-  updatedPost: {postId: null, updatedPost: null},
-
+  updatedPost: { postId: null, updatedPost: null },
+  showSnackBar: false,
 };
 const postSlice = createSlice({
   name: "post",
@@ -36,18 +36,34 @@ const postSlice = createSlice({
       state.posting = false;
       state.message = action.payload;
     },
-    postUpdate : (state, action: PayloadAction<updatedPost>) => {
+    postUpdate: (state, action: PayloadAction<updatedPost>) => {
       state.updatedPost = action.payload;
+      state.showSnackBar = true;
+      state.message="게시물이 수정되었습니다."
+    },
+    showSnackBar: (state, action: PayloadAction<string>) => {
+      state.showSnackBar = true;
+      state.message = action.payload;
+    },
+    resetSnackBar: (state) => {
+      state.showSnackBar = false;
     },
   },
 });
-export const { postStart, postSuccess, postFailure, postUpdate } = postSlice.actions;
+export const {
+  postStart,
+  postSuccess,
+  postFailure,
+  postUpdate,
+  showSnackBar,
+  resetSnackBar,
+} = postSlice.actions;
 export default postSlice.reducer;
 
 export const uploadPost = createAsyncThunk(
   "post/uploadPost",
   async (
-    { post , token}: { post: uploadPostType, token : string },
+    { post, token }: { post: uploadPostType; token: string },
     { dispatch }
   ) => {
     try {
@@ -74,10 +90,10 @@ export const uploadPost = createAsyncThunk(
           },
         }
       );
-      if(response.status === 200) {
+      if (response.status === 200) {
         dispatch(postSuccess(response.data.message));
         dispatch(postUpload(response.data.post));
-      }else{
+      } else {
         dispatch(postFailure(response.data));
       }
     } catch {
@@ -88,8 +104,11 @@ export const uploadPost = createAsyncThunk(
 
 export const updatePost = createAsyncThunk(
   "post/updatePost",
-  async({postInfo, token}:{postInfo : updatePostType, token : string}, {dispatch}) => {
-    try{
+  async (
+    { postInfo, token }: { postInfo: updatePostType; token: string },
+    { dispatch }
+  ) => {
+    try {
       const formData = new FormData();
       formData.append("content", postInfo.content);
       formData.append("postId", postInfo.postId);
@@ -97,32 +116,33 @@ export const updatePost = createAsyncThunk(
         postInfo.hashtags.forEach((tag, index) => {
           formData.append(`hashtags[${index}]`, tag);
         });
-      };
+      }
       const response = await axios.patch(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-      if(response.status === 200) {
+      if (response.status === 200) {
         const postId = parseInt(postInfo.postId);
         dispatch(getPostByPostId(postId));
         dispatch(postUpdate(response.data));
       }
-    }catch{
-
-    }
+    } catch {}
   }
-)
+);
 
 export const deletePost = createAsyncThunk(
   "post/deletePost",
-  async({token,postId}:{token: string, postId: number}, {dispatch}) => {
-    try{
+  async (
+    { token, postId }: { token: string; postId: number },
+    { dispatch }
+  ) => {
+    try {
       const response = await axios.delete(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
         {
@@ -131,12 +151,11 @@ export const deletePost = createAsyncThunk(
           },
         }
       );
-      if(response.status === 200) {
-        dispatch(postDelete(response.data));
+      if (response.status === 200) {
+        dispatch(postDelete(response.data.postId));
         dispatch(deletePostProfile());
+        dispatch(showSnackBar(response.data.message));
       }
-    }catch{
-
-    }
+    } catch {}
   }
-)
+);

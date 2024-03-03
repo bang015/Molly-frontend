@@ -6,6 +6,8 @@ import {
 import { userType, IUserforSignUp, updateProfile, } from "../Interfaces/user";
 import axios from "axios";
 import { AUTH_API, INIT, USER_API } from "../Utils/api-url";
+import { showSnackBar } from "./post";
+import { updatedProfile } from "./profile";
 // 액션 타입들 정의
 const SET_TOKEN = "auth/SET_TOKEN";
 const REMOVE_TOKEN = "auth/REMOVE_TOKEN";
@@ -145,7 +147,7 @@ export const getUser = createAsyncThunk(
 
 export const updateUser =createAsyncThunk(
   "auth/updateUser",
-  async ({token, newInfo}: { token: string, newInfo: updateProfile }) =>{
+  async ({token, newInfo}: { token: string, newInfo: updateProfile },{dispatch}) =>{
     try {
       const formData = new FormData();
       if(newInfo.name) formData.append('name', newInfo.name);
@@ -166,8 +168,8 @@ export const updateUser =createAsyncThunk(
         },
       );
       if(response.status === 200){
-        const result = response.data;
-        return result;
+        dispatch(showSnackBar(response.data.message));
+        dispatch(updatedProfile(response.data.user));
       }else{
         return null;
       }

@@ -12,19 +12,19 @@ import {
 } from "../../../Redux/follow";
 import Follow from "../../follow/follow";
 import EditImage from "../profileImage/editImage";
+import EditProfile from "../editProfile";
 interface headerProps {
   profile: userType;
 }
 const Header: React.FC<headerProps> = ({ profile }) => {
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const [fileKey, setFileKey] = useState<number>(0);
-  // const [showImgModal, setShowImgModal] = useState(false);
   const [showImage, setShowImage] = useState("");
   const [followOpen, setFollowOpen] = useState(false);
   const [followType, setFollowType] = useState("");
   const [checkFollowed, setCheckFollowed] = useState(false);
   const [editImage, setEditImage] = useState(false);
+  const [editProfile, setEditProfile] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -37,14 +37,12 @@ const Header: React.FC<headerProps> = ({ profile }) => {
       };
       check();
     }
-  });
+  }, [profile]);
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
-    console.log(file);
     const currentImageUrl = URL.createObjectURL(file);
     setEditImage(true);
     setShowImage(currentImageUrl);
-    // setShowImgModal(true);
   };
 
   const onFollowOpen = (type: string) => {
@@ -56,31 +54,40 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     dispatch(clearFollowList());
     setFollowType("");
   };
-  const onEditImgClose =() => {
+  const onEditImgClose = () => {
     setEditImage(false);
-  }
+  };
   const handleFollow = () => {
     if (token) {
       const followUserId = profile?.id!;
       dispatch(followUser({ token, followUserId }) as any);
     }
   };
+  const EditProfileOpen = () => {
+    setEditProfile(true);
+  };
+  const EditProfileClose = () => {
+    setEditProfile(false);
+  };
   return (
     <div className="header">
       <div className="profile_image">
         <label className="profileImg" htmlFor="profileImageInput">
           <input
-            key={fileKey}
             type="file"
             id="profileImageInput"
             onChange={handleProfileImg}
           />
           {editImage && (
-            <EditImage open={editImage} onClose={onEditImgClose} showImage={showImage}/>
+            <EditImage
+              open={editImage}
+              onClose={onEditImgClose}
+              showImage={showImage}
+            />
           )}
           <div className="profileImg">
             <Avatar
-              src={showImage ? showImage :profile?.ProfileImage?.path}
+              src={profile?.ProfileImage?.path}
               sx={{ width: 150, height: 150 }}
             />
           </div>
@@ -91,7 +98,16 @@ const Header: React.FC<headerProps> = ({ profile }) => {
           <div>{profile?.nickname}</div>
           <div>
             {profile.id === user?.id ? (
-              <button>프로필 편집</button>
+              <div>
+                <button onClick={EditProfileOpen}>프로필 편집</button>
+                {editProfile && (
+                  <EditProfile
+                    open={editProfile}
+                    onClose={EditProfileClose}
+                    profile={profile}
+                  />
+                )}
+              </div>
             ) : (
               <button
                 onClick={handleFollow}

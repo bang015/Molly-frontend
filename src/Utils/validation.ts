@@ -15,7 +15,7 @@ export const checkEmailValidation = async (email: string) => {
   const regExp =
     /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
   let isValid;
-  let helperText;
+  let helperText ="";
   if (!email) {
     isValid = false;
     helperText = "이메일을 입력해주세요.";
@@ -29,7 +29,7 @@ export const checkEmailValidation = async (email: string) => {
       helperText = "이미 사용중인 이메일입니다.";
     } else {
       isValid = true;
-      helperText = "사용 가능한 이메일입니다.";
+      helperText = "";
     }
   }
   return { isValid, helperText };
@@ -50,28 +50,28 @@ export const checkNickValidation = async (nickname: string) => {
   const regExp = /^[가-힣A-Za-z0-9_.]{3,30}$/;
   const isSpecial = /\W/;
   let isValid;
-  let helperText;
+  let helperText = "";
 
   if (!nickname) {
     isValid = false;
-    helperText = "닉네임을 입력해주세요.";
+    helperText = "사용자 이름을 입력해주세요.";
   } else if (!regExp.test(nickname)) {
     isValid = false;
     if (isSpecial.test(nickname)) {
       helperText = "특수 문자는 사용할 수 없습니다.";
     } else if (nickname.length < 3) {
-      helperText = "닉네임은 최소 3자 이상 입력해주세요.";
+      helperText = "사용자 이름은 최소 3자 이상 입력해주세요.";
     } else if (nickname.length > 30) {
-      helperText = "닉네임은 최대 30자까지 입력 가능합니다.";
+      helperText = "사용자 이름은 최대 30자까지 입력 가능합니다.";
     }
   } else {
     const result = await checkNickExists(nickname);
     if (result) {
       isValid = false;
-      helperText = "이미 사용 중인 닉네임입니다.";
+      helperText = "이미 사용 중인 이름입니다.";
     } else {
       isValid = true;
-      helperText = "사용 가능한 닉네임입니다.";
+      helperText = "";
     }
   }
 
@@ -81,7 +81,7 @@ export const checkNickValidation = async (nickname: string) => {
 export const checkNameValidation = (name: string) => {
   const regExp = /^[가-힣]{2,10}$/;
   let isValid;
-  let helperText;
+  let helperText ="";
 
   if (!name) {
     isValid = false;
@@ -105,7 +105,7 @@ export const checkPasswordValidation = (password: string) => {
   const isNum = /^(?=.*[0-9])/;
   const isChar = /^(?=.*[a-zA-Z])/;
   let isValid;
-  let helperText;
+  let helperText = "";
 
   if (!password) {
     isValid = false;
@@ -123,7 +123,7 @@ export const checkPasswordValidation = (password: string) => {
     }
   } else {
     isValid = true;
-    helperText = "사용 가능한 비밀번호입니다.";
+    helperText = "";
   }
 
   return { isValid, helperText };

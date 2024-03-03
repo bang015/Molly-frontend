@@ -32,9 +32,12 @@ const SignUpPage: React.FC = () => {
   };
 
   const handleSignUp = async (user: IUserforSignUp, dispatch: Dispatch) => {
+    if(isValid){
       await dispatch(postUser(user) as any);
       await dispatch(postSignIn({email:user.email!, password: user.password!}) as any)
-      navigate("/profile")
+    }
+      
+      // navigate("/profile")
   };
   const handleSignUpBtn = () => {
     handleSignUp(user, dispatch);

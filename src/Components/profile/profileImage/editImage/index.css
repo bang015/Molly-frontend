@@ -1,9 +1,8 @@
-.profileImg_crop {
+.modal_content {
   display: flex;
   flex-direction: column;
   pointer-events: auto;
   position: relative;
-
 }
 .cropTitle{
   background-color: white;

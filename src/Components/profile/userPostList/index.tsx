@@ -57,6 +57,9 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
               }}
             >
               <img className="image_item" src={post.mediaList[0].mediaPath} />
+              {selectedPostId && (
+                <PostDetail postId={selectedPostId} onClose={closeModal} />
+              )}
             </div>
           ))}
         </div>
@@ -80,9 +83,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
           )}
         </div>
       )}
-      {selectedPostId && (
-        <PostDetail postId={selectedPostId} onClose={closeModal} />
-      )}
+
       {postConfig && (
         <PostForm
           postConfig={postConfig}

@@ -10,7 +10,6 @@ interface postListState {
   bookmarkList : postType[];
   getPostLoading: boolean;
   getPostDetail: postType | null;
-  showDeleteBar: boolean;
   totalPages: number;
 }
 
@@ -21,7 +20,6 @@ const initialState: postListState = {
   bookmarkList: [],
   getPostLoading: false,
   getPostDetail: null,
-  showDeleteBar: false,
   totalPages: 1,
 };
 const postListSlice = createSlice({
@@ -65,11 +63,8 @@ const postListSlice = createSlice({
       state.userPostList = state.userPostList.filter(
         (post) => post.id !== action.payload
       );
-      state.showDeleteBar = true;
     },
-    resetDeleteBar: (state) => {
-      state.showDeleteBar = false;
-    },
+    
     clearPostList: (state) => {
       state.userPostList = [];
       state.bookmarkList = [];
@@ -87,7 +82,6 @@ export const {
   getbookmarkList,
   postDelete,
   postUpload,
-  resetDeleteBar,
   clearPostList,
 } = postListSlice.actions;
 export default postListSlice.reducer;

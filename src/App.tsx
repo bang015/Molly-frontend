@@ -9,19 +9,31 @@ import PeoplePage from "./Pages/peoplePage";
 import ExplorePage from "./Pages/explorePage";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./Redux/auth";
+import { Snackbar } from "@mui/material";
+import { resetSnackBar } from "./Redux/post";
 const App: React.FC = () => {
   const isLogin = useSelector((state: RootState) => state.authReducer.isLogin);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const followed = useSelector(
     (state: RootState) => state.followReducer.followed
   );
+  const updateProfile = useSelector(
+    (state: RootState) => state.profileReducer.updateProfile
+  );
+  const showSnackBar = useSelector((state: RootState) => state.postReducer.showSnackBar);
+  const message = useSelector((state: RootState) => state.postReducer.message);
   const dispatch = useDispatch();
   useEffect(() => {
     if (isLogin && token) {
       dispatch(getUser(token) as any);
     }
-  }, [token, isLogin]);
-
+  }, [token, isLogin, updateProfile]);
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    dispatch(resetSnackBar());
+  }
   return (
     <BrowserRouter>
       <Routes>
@@ -60,7 +72,14 @@ const App: React.FC = () => {
           element={isLogin ? <PeoplePage /> : <Navigate to="/signin" />}
         />
       </Routes>
+      <Snackbar
+        open={showSnackBar}
+        autoHideDuration={2000}
+        onClose={handleClose}
+        message={message}
+      />
     </BrowserRouter>
+    
   );
 };
 

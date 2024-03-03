@@ -7,8 +7,9 @@ import { SuggestList } from "../../Components/follow/suggestList";
 import { Button, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PostList from "../../Components/post/postList";
-import { getMainPost, resetDeleteBar } from "../../Redux/postList";
+import { getMainPost } from "../../Redux/postList";
 import { RootState } from "../../Redux";
+import { resetSnackBar } from "../../Redux/post";
 const Main: React.FC = () => {
   const dispatch = useDispatch();
   const limit = 5;
@@ -16,16 +17,15 @@ const Main: React.FC = () => {
   const token = useSelector((state: RootState) => state.authReducer.token);
   const postList = useSelector((state: RootState) => state.postListReducer.mainPostList);
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages);
-  const showDeleteBar = useSelector((state: RootState) => state.postListReducer.showDeleteBar);
+  const showSnackBar = useSelector((state: RootState) => state.postReducer.showSnackBar);
+  const message = useSelector((state: RootState) => state.postReducer.message);
+  
   const [page, setPage] = useState(1);
   useEffect(() => {
     if(token){
       dispatch(getMainPost({page, token}) as any)
     };
   },[token, page]);
-  const handlesignOut = () => {
-    dispatch(signOut() as any);
-  };
   window.addEventListener('scroll', function() {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
       if(page < totalPages){
@@ -37,7 +37,7 @@ const Main: React.FC = () => {
     if (reason === 'clickaway') {
       return;
     }
-    dispatch(resetDeleteBar());
+    dispatch(resetSnackBar());
   }
   return (
     <div className="mainPage">
@@ -50,10 +50,10 @@ const Main: React.FC = () => {
         ))}
       </div>
       <Snackbar
-        open={showDeleteBar}
+        open={showSnackBar}
         autoHideDuration={2000}
         onClose={handleClose}
-        message="게시물이 삭제되었습니다."
+        message={message}
       />
       <div className="follow-container">
         <div className="more">

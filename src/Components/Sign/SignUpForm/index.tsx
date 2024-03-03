@@ -30,8 +30,20 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     nickname: "",
     password: "",
   });
-  
+
   const [isValid, setIsValid] = useState<ValidationState>({
+    email: false,
+    name: false,
+    nickname: false,
+    password: false,
+  });
+  const [helperText, setHelperText] = useState({
+    email: "",
+    name: "",
+    nickname: "",
+    password: "",
+  });
+  const [error, setError] = useState({
     email: false,
     name: false,
     nickname: false,
@@ -59,23 +71,30 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     setUser({ ...user, email: e.target.value });
     const result = await checkEmailValidation(e.target.value);
     setIsValid({ ...isValid, email: result.isValid });
+    setHelperText({ ...helperText, email: result.helperText });
+    setError({ ...error, email: !result.isValid });
   };
   const handleName = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, name: e.target.value });
     const result = checkNameValidation(e.target.value);
-    
+    setHelperText({ ...helperText, name: result.helperText });
     setIsValid({ ...isValid, name: result.isValid });
+    setError({ ...error, name: !result.isValid });
     console.log(isValid.name);
   };
   const handleNick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, nickname: e.target.value });
     const result = await checkNickValidation(e.target.value);
+    setHelperText({ ...helperText, nickname: result.helperText });
     setIsValid({ ...isValid, nickname: result.isValid });
+    setError({ ...error, nickname: !result.isValid });
   };
   const handlePassword = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, password: e.target.value });
     const result = checkPasswordValidation(e.target.value);
+    setHelperText({ ...helperText, password: result.helperText });
     setIsValid({ ...isValid, password: result.isValid });
+    setError({ ...error, password: !result.isValid });
   };
 
   const handleFocus = (field: string) => {
@@ -87,14 +106,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   };
 
   const renderAdornment = (fieldName: string) => {
-    
     if (focusedField !== fieldName) {
       return (
         <InputAdornment position="end">
           {isValid[fieldName] ? (
             <CheckCircleOutlineIcon />
           ) : (
-            <HighlightOffIcon style={{ color: 'red' }} />
+            <HighlightOffIcon style={{ color: "red" }} />
           )}
         </InputAdornment>
       );
@@ -109,12 +127,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           type="email"
           label="이메일을 입력해주세요."
           required
+          helperText={helperText.email}
+          error={error.email}
           onFocus={() => handleFocus("email")}
           onBlur={handleBlur}
           onChange={handleEmail}
           onKeyDown={handleEnter}
           InputProps={{
-            endAdornment: user.email !== ""&&renderAdornment('email'),
+            endAdornment: user.email !== "" && renderAdornment("email"),
           }}
         />
       </div>
@@ -122,14 +142,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type="text"
-          label="이름을 입력해주세요."
+          placeholder="성명을 입력해주세요."
           onFocus={() => handleFocus("name")}
           onBlur={handleBlur}
           required
+          helperText={helperText.name}
+          error={error.name}
           onChange={handleName}
           onKeyDown={handleEnter}
           InputProps={{
-            endAdornment: user.name !== "" && renderAdornment('name'),
+            endAdornment: user.name !== "" && renderAdornment("name"),
           }}
         />
       </div>
@@ -137,14 +159,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type="text"
-          label="닉네임을 입력해주세요."
+          label="사용자 이름을 입력해주세요."
           onFocus={() => handleFocus("nickname")}
           onBlur={handleBlur}
           required
+          helperText={helperText.nickname}
+          error={error.nickname}
           onChange={handleNick}
           onKeyDown={handleEnter}
           InputProps={{
-            endAdornment: user.nickname !== "" &&  renderAdornment('nickname'),
+            endAdornment: user.nickname !== "" && renderAdornment("nickname"),
           }}
         />
       </div>
@@ -156,10 +180,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           onFocus={() => handleFocus("password")}
           onBlur={handleBlur}
           required
+          helperText={helperText.password}
+          error={error.password}
           onChange={handlePassword}
           onKeyDown={handleEnter}
           InputProps={{
-            endAdornment: user.password !== "" &&  renderAdornment('password'),
+            endAdornment: user.password !== "" && renderAdornment("password"),
           }}
         />
       </div>
