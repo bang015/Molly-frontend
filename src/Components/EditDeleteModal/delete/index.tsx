@@ -1,5 +1,5 @@
 import { Modal } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import "./index.css";
 import { deletePost } from "../../../Redux/post";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,9 +16,18 @@ const DeleteModal: React.FC<deleteModalProps> = ({
 }) => {
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const userPostList = useSelector(
+    (state: RootState) => state.postListReducer.userPostList
+  );
+  useEffect(() => {
+    const result = userPostList.filter((post) => post.id === postId);
+    if(result.length === 0){
+      onDeleteClose();
+    }
+  }, [userPostList, postId]);
   const postDelete = async () => {
     if (token) {
-      dispatch(deletePost({token, postId}) as any);
+      dispatch(deletePost({ token, postId }) as any);
     }
   };
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { userType } from "../../../Interfaces/user";
-import { Avatar } from "@mui/material";
+import { Avatar, CircularProgress } from "@mui/material";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
@@ -19,13 +19,16 @@ interface headerProps {
 const Header: React.FC<headerProps> = ({ profile }) => {
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const loading = useSelector(
+    (state: RootState) => state.profileReducer.editLoading
+  );
   const [showImage, setShowImage] = useState("");
   const [followOpen, setFollowOpen] = useState(false);
   const [followType, setFollowType] = useState("");
   const [checkFollowed, setCheckFollowed] = useState(false);
   const [editImage, setEditImage] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-
+  console.log(loading);
   const dispatch = useDispatch();
   useEffect(() => {
     if (profile.id !== user?.id) {
@@ -86,6 +89,11 @@ const Header: React.FC<headerProps> = ({ profile }) => {
             />
           )}
           <div className="profileImg">
+            {loading && (
+              <div className="loading">
+                <CircularProgress />
+              </div>
+            )}
             <Avatar
               src={profile?.ProfileImage?.path}
               sx={{ width: 150, height: 150 }}

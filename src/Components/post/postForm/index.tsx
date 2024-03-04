@@ -190,7 +190,6 @@ const PostForm: React.FC<PostModalProps> = ({
       onClose()
     }
   }
-  console.log(showImages)
   return (
     <div>
       <Modal

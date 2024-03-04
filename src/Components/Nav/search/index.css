@@ -1,0 +1,80 @@
+.search {
+  position: fixed;
+  top: 0;
+  left: -200px; /* 초기에는 왼쪽으로 숨겨진 상태로 설정 */
+  width: 400px;
+  height: 100vh;
+  transition: transform 0.3s ease;
+  background-color: white;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-top: 1px solid rgb(219, 219, 219);
+  border-right: 1px solid rgb(219, 219, 219);
+  border-bottom: 1px solid rgb(219, 219, 219);
+}
+.slide-in {
+  transform: translateX(281px); /* 검색창이 나타나는 애니메이션에 대한 변환 */
+}
+.slide-out {
+  transform: translateX(-200px); /* 검색창이 사라지는 애니메이션에 대한 변환 */
+}
+.search .header{
+  display: flex;
+  flex-direction: column;
+  border-top-right-radius: 12px;
+  
+  padding-top: 12px;
+  padding-bottom: 1px;
+  padding-right: 14px;
+  padding-left: 24px;
+  margin-bottom: 0;
+}
+.search .content {
+  display: flex;
+  flex-direction: column;
+  padding-top: 12px;
+  height: 100%;
+  border-bottom-right-radius: 12px;
+  width: 100%;
+}
+.content .sc1{
+  border-bottom: 1px solid rgb(219, 219, 219);
+  padding-bottom: 20px;
+  padding-right: 40px;
+  position: relative;
+}
+.content .sc1 div{
+  margin: 0 20px;
+}
+.content .sc1 button{
+  background: none;
+  border: none;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  cursor: pointer;
+}
+.content .sc1 input {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background-color: rgb(239, 239, 239);
+  font-size: 16px;
+}
+.content .sc2{
+  padding-top: 20px;
+  padding-right: 14px;
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.sc2 div{
+  font-size: 16px;
+  font-weight: 600;
+}
+.content .searchList{
+  flex-grow: 1;
+}

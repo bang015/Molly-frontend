@@ -7,10 +7,12 @@ import { showSnackBar } from "./post";
 interface profileState {
   profile: userType | null;
   updateProfile: userType | null;
+  editLoading: boolean;
 }
 const initialState: profileState = {
   profile: null,
   updateProfile: null,
+  editLoading: false
 };
 const profileSlice = createSlice({
   name: "profile",
@@ -24,12 +26,16 @@ const profileSlice = createSlice({
         state.profile.postCount = state.profile.postCount - 1;
       }
     },
-    updatedProfile: (state, action: PayloadAction<userType>) => {
+    updatedProfileStart: (state) => {
+      state.editLoading = true;
+    },
+    updatedProfileSucces: (state, action: PayloadAction<userType>) => {
       state.updateProfile = action.payload;
+      state.editLoading = false;
     },
   },
 });
-export const { getProfileSuccess, deletePostProfile, updatedProfile } = profileSlice.actions;
+export const { getProfileSuccess, deletePostProfile, updatedProfileStart, updatedProfileSucces } = profileSlice.actions;
 export default profileSlice.reducer;
 
 export const getProfile = createAsyncThunk(
@@ -44,29 +50,4 @@ export const getProfile = createAsyncThunk(
   }
 );
 
-export const editProfileImage = createAsyncThunk(
-  "profile/editProfileImage",
-  async (
-    { token, profileImg }: { token: string; profileImg: Blob },
-    { dispatch }
-  ) => {
-    try {
-      const formData = new FormData();
-      const profileImageFile = new File([profileImg], "profile_image.jpg");
-      formData.append("profile_image", profileImageFile);
-      const response = await axios.patch(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        dispatch(showSnackBar(response.data.message));
-        dispatch(updatedProfile(response.data.user));
-      }
-    } catch {}
-  }
-);
+

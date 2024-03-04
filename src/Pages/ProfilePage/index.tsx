@@ -9,7 +9,7 @@ import { Point, Area } from "react-easy-crop/types";
 import { RootState } from "../../Redux";
 import getCroppedImg from "../../Utils/image-crop";
 import { updateUser } from "../../Redux/auth";
-import Nav from "../../Components/Nav";
+import Nav from "../../Components/Nav/navBar";
 import { getProfile } from "../../Redux/profile";
 import AppsIcon from "@mui/icons-material/Apps";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";

@@ -19,7 +19,7 @@ export interface updateProfile {
   nickname?: string;
   name?: string;
   introduce?: string;
-  profile_image?: Blob|null;
+  profileImg?: Blob|null;
   password?: string;
 }
 export interface IUserforSignUp {

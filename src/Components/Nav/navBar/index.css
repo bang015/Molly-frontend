@@ -1,0 +1,46 @@
+.nav-container {
+  width: 18%;
+  min-width: 240px;
+  position: relative;
+  z-index: 900;
+}
+.n {
+  position: fixed;
+  width: inherit;
+}
+.nav {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  z-index: 900;
+  padding: 10px;
+
+  border-right: 1px rgb(219, 219, 219) solid;
+  transition: width 0.3s ease;
+}
+.nav-logo {
+  height: 73px;
+  padding-left: 12px;
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sNav {
+  width: 60px;
+}
+.hidden {
+  display: none;
+}
+.nav-menu svg,
+img {
+  margin: 4px 0;
+}
+.activeTab span {
+  font-weight: 600;
+}
+.nav-bottom{
+  margin-bottom: 20px;
+}

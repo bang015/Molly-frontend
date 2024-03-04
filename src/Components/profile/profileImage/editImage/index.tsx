@@ -4,8 +4,9 @@ import Cropper, { Area, Point } from "react-easy-crop";
 import "./index.css";
 import getCroppedImg from "../../../../Utils/image-crop";
 import { useDispatch, useSelector } from "react-redux";
-import { editProfileImage } from "../../../../Redux/profile";
 import { RootState } from "../../../../Redux";
+import { updateUser } from "../../../../Redux/auth";
+import { updateProfile } from "../../../../Interfaces/user";
 interface editImageProps {
   open: boolean;
   onClose: () => void;
@@ -24,7 +25,8 @@ const EditImage: React.FC<editImageProps> = ({ open, onClose, showImage }) => {
   };
   const SaveProfileImg = () => {
     if(token && profileImg){
-      dispatch(editProfileImage({token, profileImg}) as any);
+      const newInfo = {profileImg} as updateProfile;
+      dispatch(updateUser({token, newInfo}) as any);
     }
     onClose();
   };

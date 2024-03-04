@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../Redux/auth";
-import Nav from "../../Components/Nav";
+import Nav from "../../Components/Nav/navBar";
 import { SuggestList } from "../../Components/follow/suggestList";
 import { Button, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -15,38 +15,45 @@ const Main: React.FC = () => {
   const limit = 5;
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.authReducer.token);
-  const postList = useSelector((state: RootState) => state.postListReducer.mainPostList);
-  const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages);
-  const showSnackBar = useSelector((state: RootState) => state.postReducer.showSnackBar);
+  const postList = useSelector(
+    (state: RootState) => state.postListReducer.mainPostList
+  );
+  const totalPages = useSelector(
+    (state: RootState) => state.postListReducer.totalPages
+  );
+  const showSnackBar = useSelector(
+    (state: RootState) => state.postReducer.showSnackBar
+  );
   const message = useSelector((state: RootState) => state.postReducer.message);
-  
+
   const [page, setPage] = useState(1);
   useEffect(() => {
-    if(token){
-      dispatch(getMainPost({page, token}) as any)
-    };
-  },[token, page]);
-  window.addEventListener('scroll', function() {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      if(page < totalPages){
+    if (token) {
+      dispatch(getMainPost({ page, token }) as any);
+    }
+  }, [token, page]);
+  window.addEventListener("scroll", function () {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      if (page < totalPages) {
         setPage(page + 1);
       }
     }
   });
-  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
       return;
     }
     dispatch(resetSnackBar());
-  }
+  };
   return (
     <div className="mainPage">
-      <div className="nav-container">
         <Nav></Nav>
-      </div>
       <div className="main-center">
         {postList.map((post) => (
-          <PostList key={post.id} post={post}/>
+          <PostList key={post.id} post={post} />
         ))}
       </div>
       <Snackbar
@@ -58,9 +65,17 @@ const Main: React.FC = () => {
       <div className="follow-container">
         <div className="more">
           <div>회원님을 위한 추천</div>
-          <div><Button onClick={()=>{navigate('/explore/people')}}>모두보기</Button></div>
+          <div>
+            <Button
+              onClick={() => {
+                navigate("/explore/people");
+              }}
+            >
+              모두보기
+            </Button>
+          </div>
         </div>
-        <SuggestList limit={limit}/>
+        <SuggestList limit={limit} />
       </div>
     </div>
   );

@@ -60,6 +60,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
 
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const userPostList = useSelector(
+    (state: RootState) => state.postListReducer.userPostList
+  );
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -100,6 +103,17 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     fetchData();
   }, [user, postId, page]);
+
+  useEffect(() => {
+    if(user?.id === post?.userId){
+      const result = userPostList.filter((post) => post.id === postId);
+      if (result.length === 0) {
+        onClose();
+      }
+    }
+    
+  }, [userPostList, postId]);
+
   useEffect(() => {
     followCheck();
   }, [user, post, Followed]);

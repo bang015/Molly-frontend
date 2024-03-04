@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPost } from "../../Redux/postList";
 import { RootState } from "../../Redux";
-import Nav from "../../Components/Nav";
+import Nav from "../../Components/Nav/navBar";
 import "./index.css";
 import PostDetail from "../../Components/post/postDetail";
 import { clearComment } from "../../Redux/comment";
@@ -18,8 +18,8 @@ const Explore: React.FC = () => {
   const [page, setPage] = useState(1);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   useEffect(() => {
-    if(token){
-      dispatch(getAllPost({page, token}) as any);
+    if (token) {
+      dispatch(getAllPost({ page, token }) as any);
     }
   }, [page]);
 

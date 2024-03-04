@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { userType } from "../../../Interfaces/user";
-import { Avatar, Modal, TextField } from "@mui/material";
+import { Avatar, CircularProgress, Modal, TextField } from "@mui/material";
 import "./index.css";
 import {
   checkNameValidation,
@@ -23,6 +23,9 @@ const EditProfile: React.FC<editProfileProps> = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const loading = useSelector(
+    (state: RootState) => state.profileReducer.editLoading
+  );
   const [newInfo, setNewInfo] = useState({
     name: profile.name,
     nickname: profile.nickname,
@@ -81,6 +84,11 @@ const EditProfile: React.FC<editProfileProps> = ({
             <div className="user">
               <div className="img">
                 <label className="profileImg" htmlFor="profileImageInput">
+                  {loading && (
+                    <div className="loading">
+                      <CircularProgress />
+                    </div>
+                  )}
                   <Avatar
                     src={profile.ProfileImage?.path}
                     sx={{ width: 150, height: 150 }}

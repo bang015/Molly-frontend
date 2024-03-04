@@ -9,11 +9,7 @@
   width: 300px;
   border: 1px solid;
 }
-.nav-container {
-  width: 18%;
-  min-width: 240px;
-  border-right: 1px rgb(219, 219, 219) solid;
-}
+
 .main-center {
   width: 50%;
   min-width: 800px;
