@@ -11,7 +11,7 @@ import { ReactComponent as SmallLogo } from "../../../icons/smallMolly.svg";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-import ExploreIcon from '@mui/icons-material/Explore';
+import ExploreIcon from "@mui/icons-material/Explore";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieCreationOutlinedIcon from "@mui/icons-material/MovieCreationOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -24,7 +24,7 @@ import "./index.css";
 import PostForm from "../../post/postForm";
 import { signOut } from "../../../Redux/auth";
 import PostLoading from "../../post/postLoading";
-import Search from "../search";
+import Search from "../search/search";
 import { useLocation, useParams } from "react-router-dom";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
@@ -112,7 +112,7 @@ const Nav: React.FC = () => {
               href="/explore"
             >
               <ListItemIcon>
-              {location.pathname === "/explore" ? (
+                {location.pathname === "/explore" ? (
                   <ExploreIcon sx={{ fontSize: 30, color: "black" }} />
                 ) : (
                   <ExploreOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
@@ -126,7 +126,9 @@ const Nav: React.FC = () => {
               href="/"
             >
               <ListItemIcon>
-                <MovieCreationOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+                <MovieCreationOutlinedIcon
+                  sx={{ fontSize: 30, color: "black" }}
+                />
               </ListItemIcon>
               <ListItemText className="text" primary="Clip" />
             </ListItemButton>
@@ -146,7 +148,9 @@ const Nav: React.FC = () => {
               href="/"
             >
               <ListItemIcon>
-                <NotificationsNoneOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+                <NotificationsNoneOutlinedIcon
+                  sx={{ fontSize: 30, color: "black" }}
+                />
               </ListItemIcon>
               <ListItemText className="text" primary="Notifications" />
             </ListItemButton>

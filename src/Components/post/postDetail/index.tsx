@@ -105,14 +105,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   }, [user, postId, page]);
 
   useEffect(() => {
-    if(user?.id === post?.userId){
+    if (user?.id === post?.userId && userPostList.length) {
       const result = userPostList.filter((post) => post.id === postId);
       if (result.length === 0) {
         onClose();
       }
     }
-    
-  }, [userPostList, postId]);
+  }, [userPostList, postId, post]);
 
   useEffect(() => {
     followCheck();
@@ -164,7 +163,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       }
     }
   }, [updatePending, updateCommentId]);
-
+  const goToProfilePage = () => {
+    if (post) {
+      window.location.href = `/profile/${post.nickname}`;
+    }
+  };
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value;
     if (!commentContent.includes("@")) {
@@ -335,7 +338,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                 <div className="comment-header">
                   <div className="ch1">
                     <div className="cht1">
-                      <div className="pi">
+                      <div className="pi" onClick={goToProfilePage}>
                         {post && (
                           <Avatar
                             alt="Remy Sharp"
@@ -348,7 +351,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         )}
                       </div>
                       <div className="uf">
-                        <div className="un">{post.nickname}</div>
+                        <div className="un" onClick={goToProfilePage}>{post.nickname}</div>
                         {!checkFollowed && post.userId !== user?.id && (
                           <div>
                             <span>•</span>
@@ -389,7 +392,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     <ul className="comment-list">
                       <li>
                         <div className="p-content">
-                          <div className="c1">
+                          <div className="c1" onClick={goToProfilePage}>
                             {post && (
                               <Avatar
                                 alt="profile"
@@ -402,7 +405,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                             )}
                           </div>
                           <div>
-                            <div className="c2">
+                            <div className="c2" onClick={goToProfilePage}>
                               <span>{post.nickname}</span>
                             </div>
                             <div

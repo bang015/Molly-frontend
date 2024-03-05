@@ -28,7 +28,6 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   const [checkFollowed, setCheckFollowed] = useState(false);
   const [editImage, setEditImage] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-  console.log(loading);
   const dispatch = useDispatch();
   useEffect(() => {
     if (profile.id !== user?.id) {

@@ -34,7 +34,7 @@ const Follow: React.FC<followProps> = ({
             <div className="follow_container">
               <div className="follow_content">
                 <div className="follow_section1">
-                  <div>팔로잉</div>
+                  <div>{followType === "follow" ? "팔로잉" : "팔로워"}</div>
                   <button onClick={onFollowClose}>
                     <CloseIcon fontSize="medium" />
                   </button>

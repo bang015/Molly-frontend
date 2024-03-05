@@ -116,6 +116,9 @@ const PostList: React.FC<postListProps> = (post) => {
       textFieldRef.current.focus();
     }
   };
+  const goToProfilePage = () => {
+    window.location.href = `/profile/${post.post.nickname}`;
+  };
   // 게시물 상세보기 모달
   const handlePostModal = (id: number) => {
     setSelectedPostId(id);
@@ -155,7 +158,7 @@ const PostList: React.FC<postListProps> = (post) => {
   return (
     <div className="container">
       <div className="ph1">
-        <div className="pht1">
+        <div className="pht1" onClick={goToProfilePage}>
           <div>
             <Avatar
               alt="Remy Sharp"

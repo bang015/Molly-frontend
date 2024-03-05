@@ -5,13 +5,15 @@ import postListReducer from "./postList";
 import commentReducer from "./comment";
 import postReducer from "./post";
 import profileReducer from "./profile";
+import searchReducer from"./search";
 const rootReducer = combineReducers({
   authReducer,
   followReducer,
   postListReducer,
   commentReducer,
   postReducer,
-  profileReducer
+  profileReducer,
+  searchReducer
 });
 
 export default rootReducer;
