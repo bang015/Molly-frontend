@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { resultType } from "../../../../Interfaces/search";
 import { Avatar } from "@mui/material";
 import { ReactComponent as TagIcon } from "../../../../icons/tagIcon.svg";
 import "./index.css";
+import { useDispatch, useSelector } from "react-redux";
+import { saveSearchHistory } from "../../../../Redux/search";
+import { RootState } from "../../../../Redux";
 interface resultProps {
   result: resultType;
 }
 const Result: React.FC<resultProps> = ({ result }) => {
+  const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
+  const token = useSelector((state: RootState) => state.authReducer.token);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -20,8 +25,10 @@ const Result: React.FC<resultProps> = ({ result }) => {
     if(result.type === "user"){
       window.location.href = `/profile/${result.nickname}`;
     }else{
-      window.location.href = `/post/${result.name}`;
+      window.location.href = `/explore/tags/${result.name}`;
     }
+    if(token)
+    dispatch(saveSearchHistory({token, result}) as any);
   }
   return (
     <div

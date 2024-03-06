@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { getSearchResult, resetResult } from "../../../../Redux/search";
+import {
+  getSearchHistory,
+  getSearchResult,
+  resetResult,
+} from "../../../../Redux/search";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../Redux";
 import Result from "../result";
@@ -13,6 +17,11 @@ const Search: React.FC<searchProps> = ({ open }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const dispatch = useDispatch();
   const result = useSelector((state: RootState) => state.searchReducer.result);
+  const history = useSelector(
+    (state: RootState) => state.searchReducer.history
+  );
+  const token = useSelector((state: RootState) => state.authReducer.token);
+
   useEffect(() => {
     const search = document.querySelector(".search");
     if (!search) return;
@@ -35,6 +44,10 @@ const Search: React.FC<searchProps> = ({ open }) => {
       document.querySelector(".nav")?.classList.add("sNav");
     }
   }, [open]);
+
+  useEffect(() => {
+    if (token) dispatch(getSearchHistory(token) as any);
+  }, [dispatch]);
   useEffect(() => {
     if (keyword === "") {
       dispatch(resetResult());
@@ -58,6 +71,7 @@ const Search: React.FC<searchProps> = ({ open }) => {
   const handleBlur = () => {
     setInputFocused(false);
   };
+  console.log(history);
   return (
     <div className="search">
       <div className="header">
@@ -80,11 +94,21 @@ const Search: React.FC<searchProps> = ({ open }) => {
           </button>
         </div>
         <div className="sc2">
-          {!result.length && <div>최근 검색 항목</div>}
+          {keyword === "" && <div>최근 검색 항목</div>}
           <div className="searchList">
-            {result.map((res, index) => (
-              <Result key={index} result={res} />
-            ))}
+            {keyword === "" ? (
+              <>
+                {history.map((res,index) => (
+                  <Result key={index} result={res} />
+                ))}
+              </>
+            ) : (
+              <>
+                {result.map((res, index) => (
+                  <Result key={index} result={res} />
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

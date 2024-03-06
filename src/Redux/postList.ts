@@ -7,7 +7,7 @@ interface postListState {
   allPostList: postType[];
   mainPostList: postType[];
   userPostList: postType[];
-  bookmarkList : postType[];
+  bookmarkList: postType[];
   getPostLoading: boolean;
   getPostDetail: postType | null;
   totalPages: number;
@@ -31,7 +31,11 @@ const postListSlice = createSlice({
     },
     getAllPostList: (state, action: PayloadAction<postType[]>) => {
       state.getPostLoading = false;
-      state.allPostList = [...state.allPostList, ...action.payload];
+      const post = [...state.allPostList, ...action.payload];
+      const filter = post.filter(
+        (post, index, self) => index === self.findIndex((p) => p.id === post.id)
+      );
+      state.allPostList = filter;
     },
     getListfailure: (state) => {
       state.getPostLoading = false;
@@ -44,14 +48,18 @@ const postListSlice = createSlice({
       state,
       action: PayloadAction<{ post: postType[]; totalPages: number }>
     ) => {
-      state.mainPostList = [...state.mainPostList, ...action.payload.post];
+      const post = [...state.mainPostList, ...action.payload.post];
+      const filter = post.filter(
+        (post, index, self) => index === self.findIndex((p) => p.id === post.id)
+      );
+      state.mainPostList = filter;
       state.totalPages = action.payload.totalPages;
     },
     getUserPostList: (state, action: PayloadAction<postType[]>) => {
       state.userPostList = [...state.userPostList, ...action.payload];
     },
     getbookmarkList: (state, action: PayloadAction<postType[]>) => {
-      state.bookmarkList = [...state.bookmarkList, ...action.payload]
+      state.bookmarkList = [...state.bookmarkList, ...action.payload];
     },
     postUpload: (state, action: PayloadAction<postType>) => {
       state.mainPostList = [action.payload, ...state.mainPostList];
@@ -64,11 +72,11 @@ const postListSlice = createSlice({
         (post) => post.id !== action.payload
       );
     },
-    
+
     clearPostList: (state) => {
       state.userPostList = [];
       state.bookmarkList = [];
-    }
+    },
   },
 });
 
@@ -159,19 +167,33 @@ export const getPostByUserId = createAsyncThunk(
     } catch {}
   }
 );
+export const getPostByTagName = createAsyncThunk(
+  "postList/getPostByTagName",
+  async (
+    { tagName, page }: { tagName: string; page: number },
+    { dispatch }
+  ) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`
+      );
+      if (response.status === 200) {
+        dispatch(getUserPostList(response.data.post));
+      }
+    } catch {}
+  }
+);
 
 export const getBookmarkPost = createAsyncThunk(
   "postList/getBookmarkPost",
-  async ({userId, page} : { userId: number; page: number }, { dispatch }) => {
-    try{
+  async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
+    try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`
-      )
-      if(response.status === 200) {
+      );
+      if (response.status === 200) {
         dispatch(getbookmarkList(response.data));
       }
-    }catch{
-
-    }
+    } catch {}
   }
-)
+);
