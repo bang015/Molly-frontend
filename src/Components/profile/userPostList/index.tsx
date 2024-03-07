@@ -26,6 +26,9 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   useEffect(() => {
     dispatch(getPostByUserId({ userId, page }) as any);
   }, [userId, page]);
+  useEffect(() => {
+    dispatch(clearPostList());
+  }, [userId]);
   const handlePostModal = (id: number) => {
     setSelectedPostId(id);
   };

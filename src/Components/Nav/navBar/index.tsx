@@ -64,6 +64,9 @@ const Nav: React.FC = () => {
     event.stopPropagation();
     setSearchOpen((prevState) => !prevState);
   };
+  const handleCloseSearch = () => {
+    setSearchOpen(false);
+  }
   const onPostOpen = () => {
     setPostConfig(true);
   };
@@ -206,7 +209,7 @@ const Nav: React.FC = () => {
         </div>
       </div>
       <div ref={searchRef}>
-        <Search open={searchOpen} />
+        <Search open={searchOpen} onClose={handleCloseSearch}/>
       </div>
     </div>
   );

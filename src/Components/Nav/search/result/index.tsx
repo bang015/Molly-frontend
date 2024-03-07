@@ -4,13 +4,21 @@ import { Avatar } from "@mui/material";
 import { ReactComponent as TagIcon } from "../../../../icons/tagIcon.svg";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { saveSearchHistory } from "../../../../Redux/search";
+import {
+  deleteSearchHistory,
+  saveSearchHistory,
+} from "../../../../Redux/search";
 import { RootState } from "../../../../Redux";
+import { useNavigate } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
 interface resultProps {
   result: resultType;
+  onClose: () => void;
+  type: string;
 }
-const Result: React.FC<resultProps> = ({ result }) => {
+const Result: React.FC<resultProps> = ({ result, onClose, type }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const token = useSelector((state: RootState) => state.authReducer.token);
 
@@ -22,22 +30,28 @@ const Result: React.FC<resultProps> = ({ result }) => {
     setIsHovered(false);
   };
   const goToPage = () => {
-    if(result.type === "user"){
-      window.location.href = `/profile/${result.nickname}`;
-    }else{
-      window.location.href = `/explore/tags/${result.name}`;
+    if (result.type === "user") {
+      navigate(`/profile/${result.nickname}`);
+      // window.location.href = `/profile/${result.nickname}`;
+    } else {
+      navigate(`/explore/tags/${result.name}`);
+      // window.location.href = `/explore/tags/${result.name}`;
     }
-    if(token)
-    dispatch(saveSearchHistory({token, result}) as any);
-  }
+    onClose();
+    if (token) dispatch(saveSearchHistory({ token, result }) as any);
+  };
+  const deleteHistory = () => {
+    const history = JSON.stringify(result);
+
+    if (token) dispatch(deleteSearchHistory({ token, history }) as any);
+  };
   return (
     <div
       className={isHovered ? "search_result hov" : "search_result"}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={goToPage}
     >
-      <div className="se1">
+      <div className="se1" onClick={goToPage}>
         {result.type === "user" ? (
           <div>
             <Avatar
@@ -51,7 +65,7 @@ const Result: React.FC<resultProps> = ({ result }) => {
           </div>
         )}
       </div>
-      <div className="se2">
+      <div className="se2" onClick={goToPage}>
         <div>
           {result.type === "user" ? (
             <div>{result.nickname}</div>
@@ -67,6 +81,13 @@ const Result: React.FC<resultProps> = ({ result }) => {
           )}
         </div>
       </div>
+      {type === "history" && (
+        <div className="se3">
+          <button onClick={deleteHistory}>
+            <CloseIcon sx={{ fontSize: 23 }} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

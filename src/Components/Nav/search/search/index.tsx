@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
+  deleteSearchHistory,
   getSearchHistory,
   getSearchResult,
   resetResult,
@@ -11,8 +12,9 @@ import { RootState } from "../../../../Redux";
 import Result from "../result";
 interface searchProps {
   open: boolean;
+  onClose: () => void;
 }
-const Search: React.FC<searchProps> = ({ open }) => {
+const Search: React.FC<searchProps> = ({ open, onClose }) => {
   const [keyword, setKeyword] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const dispatch = useDispatch();
@@ -55,7 +57,6 @@ const Search: React.FC<searchProps> = ({ open }) => {
   }, [keyword]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-    console.log(e.target.value);
     if (e.target.value !== "") {
       dispatch(getSearchResult(e.target.value) as any);
     }
@@ -71,7 +72,11 @@ const Search: React.FC<searchProps> = ({ open }) => {
   const handleBlur = () => {
     setInputFocused(false);
   };
-  console.log(history);
+  const deleteHistory = () => {
+    const history = null;
+    if(token)
+    dispatch(deleteSearchHistory({token,history}) as any)
+  }
   return (
     <div className="search">
       <div className="header">
@@ -94,18 +99,25 @@ const Search: React.FC<searchProps> = ({ open }) => {
           </button>
         </div>
         <div className="sc2">
-          {keyword === "" && <div>최근 검색 항목</div>}
+          {keyword === "" && (
+            <div className="history">
+              <div>최근 검색 항목</div>
+              <div>
+                <button onClick={deleteHistory}>모두 지우기</button>
+              </div>
+            </div>
+          )}
           <div className="searchList">
             {keyword === "" ? (
               <>
-                {history.map((res,index) => (
-                  <Result key={index} result={res} />
+                {history.map((res, index) => (
+                  <Result key={index} result={res} onClose={onClose} type="history"/>
                 ))}
               </>
             ) : (
               <>
                 {result.map((res, index) => (
-                  <Result key={index} result={res} />
+                  <Result key={index} result={res} onClose={onClose} type="result"/>
                 ))}
               </>
             )}

@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { INIT, POST_API } from "../Utils/api-url";
 import { postType } from "../Interfaces/post";
+import { updatedPost } from "./post";
 
 interface postListState {
   allPostList: postType[];
@@ -56,13 +57,32 @@ const postListSlice = createSlice({
       state.totalPages = action.payload.totalPages;
     },
     getUserPostList: (state, action: PayloadAction<postType[]>) => {
-      state.userPostList = [...state.userPostList, ...action.payload];
+      const post = [...state.userPostList, ...action.payload];
+      const filter = post.filter(
+        (post, index, self) => index === self.findIndex((p) => p.id === post.id)
+      );
+      state.userPostList = filter;
     },
     getbookmarkList: (state, action: PayloadAction<postType[]>) => {
-      state.bookmarkList = [...state.bookmarkList, ...action.payload];
+      const post = [...state.bookmarkList, ...action.payload];
+      const filter = post.filter(
+        (post, index, self) => index === self.findIndex((p) => p.id === post.id)
+      );
+      state.bookmarkList = filter;
     },
     postUpload: (state, action: PayloadAction<postType>) => {
       state.mainPostList = [action.payload, ...state.mainPostList];
+    },
+    postUpdateList: (state, action: PayloadAction<updatedPost>) => {
+      const postList = [...state.mainPostList];
+      let newList: postType[] = [];
+      for(let post of postList){
+        if (post.id === action.payload.postId) {
+          post.content = action.payload.updatedPost!
+        }
+        newList.push(post);
+      }
+      state.mainPostList = newList;
     },
     postDelete: (state, action: PayloadAction<number>) => {
       state.mainPostList = state.mainPostList.filter(
@@ -72,7 +92,6 @@ const postListSlice = createSlice({
         (post) => post.id !== action.payload
       );
     },
-
     clearPostList: (state) => {
       state.userPostList = [];
       state.bookmarkList = [];
@@ -89,6 +108,7 @@ export const {
   getUserPostList,
   getbookmarkList,
   postDelete,
+  postUpdateList,
   postUpload,
   clearPostList,
 } = postListSlice.actions;
@@ -178,7 +198,7 @@ export const getPostByTagName = createAsyncThunk(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`
       );
       if (response.status === 200) {
-        dispatch(getUserPostList(response.data.post));
+        dispatch(getUserPostList(response.data));
       }
     } catch {}
   }

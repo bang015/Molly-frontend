@@ -71,6 +71,23 @@
   flex-direction: column;
   flex-grow: 1;
 }
+.content .sc2 .history{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+.history button{
+  font-size: 14px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  color: rgb(0, 149, 246);
+}
+.history button:hover{
+  color: rgb(0, 55, 107);
+}
 .sc2 div{
   font-size: 16px;
   font-weight: 600;
