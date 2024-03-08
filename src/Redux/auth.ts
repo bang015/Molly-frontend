@@ -30,8 +30,8 @@ type AuthState = {
 };
 
 const initialState: AuthState = {
-  isLogin: !!localStorage.getItem("token"),
-  token: localStorage.getItem("token"),
+  isLogin: !!sessionStorage.getItem("token"),
+  token: sessionStorage.getItem("token"),
   user: null,
 };
 
@@ -39,13 +39,13 @@ const authReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(setToken, (state, action) => {
       if (action.payload) {
-        localStorage.setItem("token", action.payload);
+        sessionStorage.setItem("token", action.payload);
         state.isLogin = true;
         state.token = action.payload;
       }
     })
     .addCase(removeToken, (state) => {
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       state.isLogin = false;
       state.token = null;
     })
