@@ -35,7 +35,7 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
         <div className="post-detail">
           <div className="modal-container">
             {userId === user!.id ? (
-              <div>
+              <div className="editBtn">
                 <div>
                   <button className="mbtn1 mbtnc" onClick={updateComment}>
                     수정
@@ -48,11 +48,11 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div>
+              <div className="editBtn">
                 <button className="mbtn1 mbtnc">신고</button>
               </div>
             )}
-            <div>
+            <div className="editBtn">
               <button className="mbtn2" onClick={onClose}>
                 취소
               </button>

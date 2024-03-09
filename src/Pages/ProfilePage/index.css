@@ -6,6 +6,7 @@
 }
 .pcontent{
   width: calc(100% - 18%);
+  margin-left: 350px;
 }
 .menu {
   display: flex;

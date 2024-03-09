@@ -3,7 +3,7 @@
   flex-direction: column;
   pointer-events: auto;
 }
-.modal-container button {
+.modal-container .editBtn button {
   width: 400px;
   height: 50px;
   background-color: rgb(255, 255, 255);

@@ -41,12 +41,13 @@ export const {
 export default searchSlice.reducer;
 export const getSearchResult = createAsyncThunk(
   "search/getSearchResult",
-  async (keyword: string, { dispatch }) => {
-    console.log(keyword);
-
+  async (
+    { keyword, type }: { keyword: string; type: string },
+    { dispatch }
+  ) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/?query=${keyword}`
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/${type}/?query=${keyword}`
       );
       if (response.status === 200) {
         dispatch(getResultSuccess(response.data));

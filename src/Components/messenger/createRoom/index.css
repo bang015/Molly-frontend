@@ -1,0 +1,74 @@
+.create_message{
+  width: 550px;
+  height: 56px;
+  background-color: white;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid rgb(219, 219, 219);
+}
+.create_message button{
+  position: absolute;
+  width: 50px;
+  right: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.search_user{
+  display: flex;
+  background-color: white;
+  padding-left: 16px;
+  padding-right: 16px;
+  align-items: center;
+}
+.search_user .se1{
+  flex-grow: 0;
+  display: flex;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.search_user .se2{
+  flex-grow: 1;
+  display: flex;
+}
+.search_user input{
+  line-height: 30px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding-left: 20px;
+  padding-right: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  flex-grow: 1;
+}
+.result_list{
+  flex-grow: 1;
+  background-color: white;
+  overflow-y: scroll;
+  border-top: 1px solid rgb(219, 219, 219);
+}
+.result_list div:hover{
+  background-color: rgb(239, 239, 239);
+}
+.message_btn{
+  padding: 20px 15px;
+  background-color: white;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.message_btn button{
+  width: 100%;
+  border: none;
+  color: white;
+}
+.se3 input[type="radio"] {
+  
+}

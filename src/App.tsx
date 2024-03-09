@@ -8,6 +8,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import PeoplePage from "./Pages/peoplePage";
 import ExplorePage from "./Pages/explorePage";
 import TagsPage from "./Pages/tagPage";
+import MessengerPage from "./Pages/MessengerPage";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./Redux/auth";
 import { Snackbar } from "@mui/material";
@@ -79,6 +80,10 @@ const App: React.FC = () => {
         <Route
           path="/explore/tags/:tagName"
           element={isLogin ? <TagsPage /> : <Navigate to="/signin" />}
+        />
+        <Route
+          path="/messenger"
+          element={isLogin ? <MessengerPage /> : <Navigate to="/signin" />}
         />
       </Routes>
       <Snackbar

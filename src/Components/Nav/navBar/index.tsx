@@ -14,6 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExploreIcon from "@mui/icons-material/Explore";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieCreationOutlinedIcon from "@mui/icons-material/MovieCreationOutlined";
+import EmailIcon from '@mui/icons-material/Email';
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
@@ -25,7 +26,7 @@ import PostForm from "../../post/postForm";
 import { signOut } from "../../../Redux/auth";
 import PostLoading from "../../post/postLoading";
 import Search from "../search/search";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -49,6 +50,19 @@ const Nav: React.FC = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+  useEffect(() => {
+    if (location.pathname === "/messenger") {
+      document.querySelectorAll(".text").forEach((element) => {
+        element.classList.add("hidden");
+      });
+      document.querySelector(".nav")?.classList.add("sNav");
+    } else {
+      document.querySelectorAll(".text").forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      document.querySelector(".nav")?.classList.remove("sNav");
+    }
+  }, [location.pathname]);
   const handleSignOut = () => {
     dispatch(signOut() as any);
   };
@@ -66,7 +80,7 @@ const Nav: React.FC = () => {
   };
   const handleCloseSearch = () => {
     setSearchOpen(false);
-  }
+  };
   const onPostOpen = () => {
     setPostConfig(true);
   };
@@ -78,7 +92,7 @@ const Nav: React.FC = () => {
       <div className="n">
         <div className="nav">
           <div className="nav-logo">
-            {searchOpen ? <SmallLogo width={40} /> : <Logo width={110} />}
+            {searchOpen || location.pathname === "/messenger" ? <SmallLogo width={40} /> : <Logo width={110} />}
           </div>
           <div className="nav-menu">
             <ListItemButton
@@ -138,10 +152,15 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/"
+              href="/messenger"
             >
               <ListItemIcon>
-                <EmailOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+              {location.pathname === "/messenger" ? (
+                  <EmailIcon sx={{ fontSize: 30, color: "black" }} />
+                ) : (
+                  <EmailOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+                )}
+                
               </ListItemIcon>
               <ListItemText className="text" primary="Messages" />
             </ListItemButton>
@@ -209,7 +228,7 @@ const Nav: React.FC = () => {
         </div>
       </div>
       <div ref={searchRef}>
-        <Search open={searchOpen} onClose={handleCloseSearch}/>
+        <Search open={searchOpen} onClose={handleCloseSearch} />
       </div>
     </div>
   );

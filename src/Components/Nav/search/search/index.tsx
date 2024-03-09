@@ -10,11 +10,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../Redux";
 import Result from "../result";
+import { useLocation } from "react-router-dom";
 interface searchProps {
   open: boolean;
   onClose: () => void;
 }
 const Search: React.FC<searchProps> = ({ open, onClose }) => {
+  const location = useLocation();
   const [keyword, setKeyword] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
   const dispatch = useDispatch();
@@ -29,12 +31,14 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
     if (!search) return;
     if (!open) {
       // 검색창이 열려있는 경우
+      if (location.pathname !== "/messenger") {
+        document.querySelectorAll(".text").forEach((element) => {
+          element.classList.remove("hidden");
+        });
+        document.querySelector(".nav")?.classList.remove("sNav");
+      }
       search.classList.remove("slide-in");
       search.classList.add("slide-out");
-      document.querySelectorAll(".text").forEach((element) => {
-        element.classList.remove("hidden");
-      });
-      document.querySelector(".nav")?.classList.remove("sNav");
       setKeyword("");
     } else {
       // 검색창이 닫혀있는 경우
@@ -57,8 +61,20 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
   }, [keyword]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-    if (e.target.value !== "") {
-      dispatch(getSearchResult(e.target.value) as any);
+    let keyword = e.target.value;
+
+    const firstChar = keyword.charAt(0);
+    let type;
+    if (firstChar === "#") {
+      type = "tag";
+    } else if (firstChar === "@") {
+      type = "user";
+    } else {
+      type = "all";
+    }
+    keyword = keyword.slice(1); 
+    if (keyword !== "" && keyword !== "@" && keyword !== "#") {
+      dispatch(getSearchResult({keyword, type}) as any);
     }
   };
   const handleSearchReset = () => {
@@ -74,9 +90,8 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
   };
   const deleteHistory = () => {
     const history = null;
-    if(token)
-    dispatch(deleteSearchHistory({token,history}) as any)
-  }
+    if (token) dispatch(deleteSearchHistory({ token, history }) as any);
+  };
   return (
     <div className="search">
       <div className="header">
@@ -111,13 +126,23 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
             {keyword === "" ? (
               <>
                 {history.map((res, index) => (
-                  <Result key={index} result={res} onClose={onClose} type="history"/>
+                  <Result
+                    key={index}
+                    result={res}
+                    onClose={onClose}
+                    type="history"
+                  />
                 ))}
               </>
             ) : (
               <>
                 {result.map((res, index) => (
-                  <Result key={index} result={res} onClose={onClose} type="result"/>
+                  <Result
+                    key={index}
+                    result={res}
+                    onClose={onClose}
+                    type="result"
+                  />
                 ))}
               </>
             )}

@@ -56,12 +56,7 @@ const Main: React.FC = () => {
           <PostList key={post.id} post={post} />
         ))}
       </div>
-      <Snackbar
-        open={showSnackBar}
-        autoHideDuration={2000}
-        onClose={handleClose}
-        message={message}
-      />
+      
       <div className="follow-container">
         <div className="more">
           <div>회원님을 위한 추천</div>

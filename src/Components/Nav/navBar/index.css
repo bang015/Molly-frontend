@@ -1,22 +1,23 @@
 .nav-container {
-  width: 18%;
-  min-width: 240px;
-  position: relative;
   z-index: 900;
+  position: fixed;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  background-color: white;
 }
 .n {
-  position: fixed;
-  width: inherit;
+  display: flex;
 }
 .nav {
   height: 100dvh;
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 100%;
+  width: 350px;
   z-index: 900;
   padding: 10px;
-
   border-right: 1px rgb(219, 219, 219) solid;
   transition: width 0.3s ease;
 }
