@@ -8,7 +8,7 @@ export interface userType {
   createdAt?: string;
   updatedAt?: string;
   ProfileImage? : {
-    id:number,
+    id?:number,
     path:string
   }
   postCount? : number;

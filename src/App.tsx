@@ -13,10 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "./Redux/auth";
 import { Snackbar } from "@mui/material";
 import { resetSnackBar } from "./Redux/post";
-import io from 'socket.io-client';
 
-const socket = io(`${process.env.REACT_APP_SERVER_URL}`);
-console.log(socket);
 const App: React.FC = () => {
   const isLogin = useSelector((state: RootState) => state.authReducer.isLogin);
   const token = useSelector((state: RootState) => state.authReducer.token);

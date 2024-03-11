@@ -1,0 +1,78 @@
+.room {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid;
+  flex-grow: 1;
+}
+.room .header {
+  margin: 0;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgb(219, 219, 219);
+}
+.room .header div{
+  display: flex;
+  align-items: center;
+}
+.room .header span{
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 10px;
+}
+.room .content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.room .content .list {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.room .content .list .my {
+  justify-content: flex-end;
+}
+.room .content .list .msg_list {
+  display: flex;
+}
+.room .content .list .msg{
+  display: flex;
+  padding: 5px;
+}
+.myMessage {
+  background-color: rgb(0, 149, 246);
+  color: white;
+  padding: 10px;
+}
+.room .content .input {
+  padding: 20px 20px;
+  position: relative;
+}
+.room .content .input textarea {
+  width: calc(100% - 40px);
+  outline: none;
+  border-radius: 50px;
+  border: 1px solid rgb(219, 219, 219);
+  padding: 10px 20px;
+  resize: none;
+  font-size: 16px;
+  display: flex;
+  height: 20px;
+}
+.room .content .input div {
+  position: absolute;
+  bottom: 25px;
+  right: 30px;
+}
+.room .content .input button{
+  padding: 7px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: rgb(0, 149, 246);
+}
+.room .content .input button:hover{
+  color: rgb(0, 55, 107);
+}

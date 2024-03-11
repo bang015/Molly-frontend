@@ -8,6 +8,8 @@ import axios from "axios";
 import { AUTH_API, INIT, USER_API } from "../Utils/api-url";
 import { showSnackBar } from "./post";
 import { updatedProfileSucces, updatedProfileStart } from "./profile";
+import io, { Socket } from "socket.io-client";
+
 // 액션 타입들 정의
 const SET_TOKEN = "auth/SET_TOKEN";
 const REMOVE_TOKEN = "auth/REMOVE_TOKEN";
@@ -22,7 +24,6 @@ const postUserSuccess = createAction(POST_USER_SUCCESS);
 const postUserFail = createAction(POST_USER_FAIL);
 const getUserSuccess = createAction<userType>(GET_USER_SUCCESS);
 const getUserFail = createAction(GET_USER_FAIL);
-
 type AuthState = {
   isLogin: boolean;
   token: string | null;
@@ -34,11 +35,12 @@ const initialState: AuthState = {
   token: sessionStorage.getItem("token"),
   user: null,
 };
-
+export let socket:Socket | null = null;
 const authReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(setToken, (state, action) => {
       if (action.payload) {
+        socket = io(`${process.env.REACT_APP_SERVER_URL}`);
         sessionStorage.setItem("token", action.payload);
         state.isLogin = true;
         state.token = action.payload;
@@ -51,6 +53,7 @@ const authReducer = createReducer(initialState, (builder) => {
     })
     .addCase(getUserSuccess, (state, action) => {
       if (action.payload) {
+        socket = io(`${process.env.REACT_APP_SERVER_URL}`);
         state.user = action.payload;
       }
     })

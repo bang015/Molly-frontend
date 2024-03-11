@@ -6,16 +6,26 @@ import { RootState } from "../../Redux";
 import EditIcon from "@mui/icons-material/Edit";
 import CreateRoom from "../../Components/messenger/createRoom";
 import { resetResult } from "../../Redux/search";
+import { socket } from "../../Redux/auth";
+import ChatRoom from "../../Components/messenger/chatRoom";
+
 const Messenger: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [createOpen, setCreateOpen] = useState(false);
+  const [chatRoom, setChatRoom] = useState<number | null>(null);
   const dispatch = useDispatch();
   const handleCeateOpen = () => {
     setCreateOpen(true);
-  }
+  };
   const handleCeateClose = () => {
     setCreateOpen(false);
     dispatch(resetResult());
+  };
+  if(socket){
+    socket.on("room-created-success",(data): void => {
+      setChatRoom(data)
+    });
+
   }
   return (
     <div className="mainPage">
@@ -31,14 +41,13 @@ const Messenger: React.FC = () => {
           <div className="chat_t">
             <div>메시지</div>
           </div>
-          <div className="chat_content">
-            
-          </div>
-
+          <div className="chat_content"></div>
         </div>
-        <div className="chat_room"></div>
+        <div className="chat_room">
+          <ChatRoom roomId={chatRoom}/>
+        </div>
       </div>
-      <CreateRoom open={createOpen} onClose={handleCeateClose}/>
+      <CreateRoom open={createOpen} onClose={handleCeateClose} />
     </div>
   );
 };

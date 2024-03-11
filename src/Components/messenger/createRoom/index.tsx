@@ -5,6 +5,7 @@ import "./index.css";
 import { getSearchResult } from "../../../Redux/search";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
+import { socket } from "../../../Redux/auth";
 interface createRoomProps {
   open: boolean;
   onClose: () => void;
@@ -12,6 +13,7 @@ interface createRoomProps {
 const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const result = useSelector((state: RootState) => state.searchReducer.result);
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const [chatUser, setChatUser] = useState<string | null>(null);
   const handleSeach = (e: React.ChangeEvent<HTMLInputElement>) => {
     let keyword = e.target.value;
@@ -23,6 +25,12 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
   const handleChatUser = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatUser(e.target.value);
   };
+  const handleCteartChat = () => {
+    if(socket && chatUser && token){
+      socket.emit("create-room",{chatUser,token})
+    }
+    onClose();
+  }
   return (
     <Modal open={open} onClose={onClose}>
       <div className="post-detail">
@@ -56,10 +64,10 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
                   </div>
                   <div className="se2">
                     <div>
-                      <div>{user.nickname}</div>
+                      <div>{user.name}</div>
                     </div>
                     <div className="ch">
-                      <div>{user.name}</div>
+                      <div>{user.nickname}</div>
                     </div>
                   </div>
                   <div className="se3">
@@ -76,7 +84,7 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
             ))}
           </div>
           <div className="message_btn">
-            <Button size="large" variant="contained">
+            <Button size="large" variant="contained" onClick={handleCteartChat}>
               채팅
             </Button>
           </div>
