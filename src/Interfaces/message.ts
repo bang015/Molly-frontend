@@ -5,5 +5,7 @@ export interface messageType {
   id: number,
   isRead: boolean,
   message: string,
+  roomId: number,
+  userId: number,
   userMessage: userType
 }

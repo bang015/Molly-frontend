@@ -63,7 +63,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
         <div className="post-detail">
           <div className="modal-container">
             {userId === user!.id ? (
-              <div>
+              <div className="editBtn">
                 <div>
                   <button className="mbtn1 mbtnc" onClick={postEdit}>수정</button>
                 </div>
@@ -75,7 +75,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
                 )}
               </div>
             ) : (
-              <div>
+              <div className="editBtn">
                 <div>
                   <button className="mbtn1 mbtnc">신고</button>
                 </div>
@@ -88,7 +88,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
                 )}
               </div>
             )}
-            <div>
+            <div className="editBtn">
               <button className="mbtn2" onClick={onClose}>
                 취소
               </button>

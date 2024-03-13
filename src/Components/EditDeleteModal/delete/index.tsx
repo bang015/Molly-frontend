@@ -21,7 +21,7 @@ const DeleteModal: React.FC<deleteModalProps> = ({
   );
   useEffect(() => {
     const result = userPostList.filter((post) => post.id === postId);
-    if(result.length === 0){
+    if (result.length === 0) {
       onDeleteClose();
     }
   }, [userPostList, postId]);
@@ -36,14 +36,16 @@ const DeleteModal: React.FC<deleteModalProps> = ({
         <div className="post-detail">
           <div className="modal-container">
             <div className="dbtnt">게시물을 삭제할까요?</div>
-            <div>
+            <div className="editBtn">
               <button className="mbtnc" onClick={postDelete}>
                 삭제
               </button>
             </div>
-            <button className="mbtn2" onClick={onDeleteClose}>
-              취소
-            </button>
+            <div className="editBtn">
+              <button className="mbtn2" onClick={onDeleteClose}>
+                취소
+              </button>
+            </div>
           </div>
         </div>
       </Modal>

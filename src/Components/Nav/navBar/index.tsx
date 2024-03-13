@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Avatar,
+  Badge,
   ListItemAvatar,
   ListItemButton,
   ListItemIcon,
@@ -14,7 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExploreIcon from "@mui/icons-material/Explore";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import MovieCreationOutlinedIcon from "@mui/icons-material/MovieCreationOutlined";
-import EmailIcon from '@mui/icons-material/Email';
+import EmailIcon from "@mui/icons-material/Email";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
@@ -27,14 +28,17 @@ import { signOut } from "../../../Redux/auth";
 import PostLoading from "../../post/postLoading";
 import Search from "../search/search";
 import { useLocation } from "react-router-dom";
+import { socket } from "../../../Redux/auth";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: RootState) => state.authReducer.user);
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const [postConfig, setPostConfig] = useState(false);
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [_message, set_message] = useState(0);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -44,11 +48,12 @@ const Nav: React.FC = () => {
         setSearchOpen(false);
       }
     }
-
     document.addEventListener("click", handleClickOutside);
+    
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
+    
   }, []);
   useEffect(() => {
     if (location.pathname === "/messenger") {
@@ -63,6 +68,19 @@ const Nav: React.FC = () => {
       document.querySelector(".nav")?.classList.remove("sNav");
     }
   }, [location.pathname]);
+  useEffect(() => {
+    if(socket&&token){
+      socket.emit("getNotReadMessage", token);
+      socket.on("allNotReadMessage", (data) => {
+        set_message(data);
+      });
+      socket.on("newMessage", (data) => {
+        if (data.cUsers.id === user?.id && socket) {
+          socket.emit("getNotReadMessage", token);
+        }
+      });
+    }
+  },[socket, token]);
   const handleSignOut = () => {
     dispatch(signOut() as any);
   };
@@ -92,7 +110,11 @@ const Nav: React.FC = () => {
       <div className="n">
         <div className="nav">
           <div className="nav-logo">
-            {searchOpen || location.pathname === "/messenger" ? <SmallLogo width={40} /> : <Logo width={110} />}
+            {searchOpen || location.pathname === "/messenger" ? (
+              <SmallLogo width={40} />
+            ) : (
+              <Logo width={110} />
+            )}
           </div>
           <div className="nav-menu">
             <ListItemButton
@@ -155,12 +177,13 @@ const Nav: React.FC = () => {
               href="/messenger"
             >
               <ListItemIcon>
-              {location.pathname === "/messenger" ? (
-                  <EmailIcon sx={{ fontSize: 30, color: "black" }} />
-                ) : (
-                  <EmailOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
-                )}
-                
+                <Badge badgeContent={_message} color="primary">
+                  {location.pathname === "/messenger" ? (
+                    <EmailIcon sx={{ fontSize: 30, color: "black" }} />
+                  ) : (
+                    <EmailOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+                  )}
+                </Badge>
               </ListItemIcon>
               <ListItemText className="text" primary="Messages" />
             </ListItemButton>
