@@ -78,6 +78,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
           <input
             type="file"
             id="profileImageInput"
+            accept="image/*"
             onChange={handleProfileImg}
           />
           {editImage && (

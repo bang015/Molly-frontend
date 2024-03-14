@@ -28,12 +28,14 @@ import PostDetail from "../postDetail";
 import PostMoreModal from "../../EditDeleteModal/post";
 import DeleteModal from "../../EditDeleteModal/delete";
 import PostForm from "../postForm";
+import { useNavigate } from "react-router-dom";
 
 interface postListProps {
   post: postType;
 }
 const PostList: React.FC<postListProps> = (post) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -107,7 +109,7 @@ const PostList: React.FC<postListProps> = (post) => {
     }
   };
   const goToProfilePage = () => {
-    window.location.href = `/profile/${post.post.nickname}`;
+    navigate(`/profile/${post.post.nickname}`);
   };
   // 게시물 상세보기 모달
   const handlePostModal = (id: number) => {

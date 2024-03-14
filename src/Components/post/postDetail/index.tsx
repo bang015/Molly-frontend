@@ -33,6 +33,7 @@ import DeleteModal from "../../EditDeleteModal/delete";
 import PostUtilIcon from "../postUtilIcon";
 import PostLikeCount from "../postLikeCount";
 import PostForm from "../postForm";
+import { useNavigate } from "react-router-dom";
 interface PostDetailModalProps {
   postId: number;
   onClose: () => void;
@@ -57,12 +58,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const Followed = useSelector(
     (state: RootState) => state.followReducer.chekcFollowed
   );
-
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const userPostList = useSelector(
     (state: RootState) => state.postListReducer.userPostList
   );
+  const navigate = useNavigate();
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
@@ -165,7 +166,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   }, [updatePending, updateCommentId]);
   const goToProfilePage = () => {
     if (post) {
-      window.location.href = `/profile/${post.nickname}`;
+      navigate(`/profile/${post.nickname}`);
     }
   };
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,9 +283,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const onEditLoadingOpen = () => {
     setLoading(true);
   };
-  const onEditLoadingClose = () => {
-    setLoading(false);
-  };
+
   return (
     <div>
       {post && (
@@ -351,7 +350,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         )}
                       </div>
                       <div className="uf">
-                        <div className="un" onClick={goToProfilePage}>{post.nickname}</div>
+                        <div className="un" onClick={goToProfilePage}>
+                          {post.nickname}
+                        </div>
                         {!checkFollowed && post.userId !== user?.id && (
                           <div>
                             <span>•</span>

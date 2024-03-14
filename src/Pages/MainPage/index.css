@@ -16,16 +16,21 @@
   margin-left: 350px;
 }
 .follow-container {
-  width: 300px;
+  width: 30%;
   position: relative !important;
-
   z-index: 1 !important;
 }
-
+.follow-container .content{
+  display: flex;
+  flex-direction: column;
+  max-width: 320px;
+  padding: 25px 10px;
+}
 .more {
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   z-index: 1;
+  padding-right: 10px;
 }

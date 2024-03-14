@@ -7,6 +7,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditDeleteModal from "../../../EditDeleteModal/comment";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../Redux";
+import { useNavigate } from "react-router-dom";
 
 interface subCommentListProps {
   postId: number;
@@ -29,6 +30,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
   const [page, setPage] = useState(1);
   const [subComment, setSubComment] = useState<commentType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
   useEffect(() => {
     const subList = async () => {
       setSubComment([]);
@@ -83,11 +85,21 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
     setPage(page + 1);
   };
   const subCommentPages = Math.ceil(subcommentCount / 3);
+  const goToProfilePage = (nickname: string) => {
+    if (nickname) {
+      navigate(`/profile/${nickname}`);
+    }
+  };
   return (
     <div>
       {subComment.map((comment) => (
         <div key={comment.id} className="cml">
-          <div className="c1">
+          <div
+            className="c1"
+            onClick={() => {
+              goToProfilePage(comment.nickname);
+            }}
+          >
             <Avatar
               alt="profile"
               src={
@@ -98,7 +110,12 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
             />
           </div>
           <div style={{ flexGrow: 1 }}>
-            <div className="c2">
+            <div
+              className="c2"
+              onClick={() => {
+                goToProfilePage(comment.nickname);
+              }}
+            >
               <span>{comment.nickname}</span>
             </div>
             <div

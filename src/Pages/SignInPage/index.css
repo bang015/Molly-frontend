@@ -2,20 +2,8 @@ body {
   margin: 0;
   background-color: white;
 }
-.signup {
-  margin: 0 auto;
-  padding: 0;
-}
-.signup-container {
-  justify-content: center;
-  display: flex;
-}
-.signup-right {
-  margin-top: 15vw;
-  display: inline-block;
-  width: 100vw;
-  text-align: center;
-}
+
+
 .paper {
   width: 30vw;
   border-radius: 1.8rem !important;
@@ -30,17 +18,24 @@ body {
   margin: 0.5vw !important;
 }
 
-.ignup-input-box {
+.signup-input-box {
   margin: 0.5vw;
 }
-
+.false{
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(115, 115, 115);
+}
 .signup-btn {
   width: 10.7vw;
   height: 3vw;
   display: inline-block !important;
-  background-color: #f8f0f1 !important;
+  background-color: rgb(0, 149, 246) !important;
   font-size: 16px !important;
   font-weight: bold !important;
-  color: black !important;
+  color: white !important;
   margin: 1vw 0.5rem !important;
+}
+.signup-btn:hover{
+  background-color: rgb(24, 119, 242) !important;
 }

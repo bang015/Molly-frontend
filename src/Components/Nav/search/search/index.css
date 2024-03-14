@@ -18,11 +18,10 @@
 .slide-out {
   transform: translateX(-400px); /* 검색창이 사라지는 애니메이션에 대한 변환 */
 }
-.search .header{
+.search .header {
   display: flex;
   flex-direction: column;
   border-top-right-radius: 12px;
-  
   padding-top: 12px;
   padding-bottom: 1px;
   padding-right: 14px;
@@ -37,16 +36,16 @@
   border-bottom-right-radius: 12px;
   width: 100%;
 }
-.content .sc1{
+.content .sc1 {
   border-bottom: 1px solid rgb(219, 219, 219);
   padding-bottom: 20px;
   padding-right: 40px;
   position: relative;
 }
-.content .sc1 div{
+.content .sc1 div {
   margin: 0 20px;
 }
-.content .sc1 button{
+.content .sc1 button {
   background: none;
   border: none;
   position: absolute;
@@ -63,7 +62,7 @@
   background-color: rgb(239, 239, 239);
   font-size: 16px;
 }
-.content .sc2{
+.content .sc2 {
   padding-top: 20px;
   padding-right: 14px;
   padding-left: 14px;
@@ -71,27 +70,41 @@
   flex-direction: column;
   flex-grow: 1;
 }
-.content .sc2 .history{
+.content .sc2 .history {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-left: 10px;
   margin-bottom: 10px;
 }
-.history button{
+.history button {
   font-size: 14px;
   font-weight: 600;
   background: none;
   border: none;
   color: rgb(0, 149, 246);
 }
-.history button:hover{
+.history button:hover {
   color: rgb(0, 55, 107);
 }
-.sc2 div{
+.sc2 div {
   font-size: 16px;
   font-weight: 600;
 }
-.content .searchList{
+.content .searchList {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.searchList .historyEmpty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding-bottom: 150px;
+}
+.searchList .historyEmpty div{
+  font-size: 14px;
+  color: rgb(115, 115, 115);
 }

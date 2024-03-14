@@ -21,10 +21,6 @@ const Main: React.FC = () => {
   const totalPages = useSelector(
     (state: RootState) => state.postListReducer.totalPages
   );
-  const showSnackBar = useSelector(
-    (state: RootState) => state.postReducer.showSnackBar
-  );
-  const message = useSelector((state: RootState) => state.postReducer.message);
 
   const [page, setPage] = useState(1);
   useEffect(() => {
@@ -39,38 +35,32 @@ const Main: React.FC = () => {
       }
     }
   });
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    dispatch(resetSnackBar());
-  };
+
   return (
     <div className="mainPage">
-        <Nav></Nav>
+      <Nav></Nav>
       <div className="main-center">
         {postList.map((post) => (
           <PostList key={post.id} post={post} />
         ))}
       </div>
-      
+
       <div className="follow-container">
-        <div className="more">
-          <div>회원님을 위한 추천</div>
-          <div>
-            <Button
-              onClick={() => {
-                navigate("/explore/people");
-              }}
-            >
-              모두보기
-            </Button>
+        <div className="content">
+          <div className="more">
+            <div>회원님을 위한 추천</div>
+            <div>
+              <Button
+                onClick={() => {
+                  navigate("/explore/people");
+                }}
+              >
+                모두보기
+              </Button>
+            </div>
           </div>
+          <SuggestList limit={limit} />
         </div>
-        <SuggestList limit={limit} />
       </div>
     </div>
   );

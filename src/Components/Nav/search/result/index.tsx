@@ -37,8 +37,9 @@ const Result: React.FC<resultProps> = ({ result, onClose, type }) => {
       navigate(`/explore/tags/${result.name}`);
       // window.location.href = `/explore/tags/${result.name}`;
     }
-    onClose();
+    console.log(1)
     if (token) dispatch(saveSearchHistory({ token, result }) as any);
+    onClose();
   };
   const deleteHistory = () => {
     const history = JSON.stringify(result);

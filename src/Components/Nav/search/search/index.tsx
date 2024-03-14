@@ -25,7 +25,6 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
     (state: RootState) => state.searchReducer.history
   );
   const token = useSelector((state: RootState) => state.authReducer.token);
-
   useEffect(() => {
     const search = document.querySelector(".search");
     if (!search) return;
@@ -62,19 +61,19 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
     let keyword = e.target.value;
-
     const firstChar = keyword.charAt(0);
     let type;
     if (firstChar === "#") {
       type = "tag";
+      keyword = keyword.slice(1);
     } else if (firstChar === "@") {
       type = "user";
+      keyword = keyword.slice(1);
     } else {
       type = "all";
     }
-    keyword = keyword.slice(1); 
     if (keyword !== "" && keyword !== "@" && keyword !== "#") {
-      dispatch(getSearchResult({keyword, type}) as any);
+      dispatch(getSearchResult({ keyword, type }) as any);
     }
   };
   const handleSearchReset = () => {
@@ -125,14 +124,22 @@ const Search: React.FC<searchProps> = ({ open, onClose }) => {
           <div className="searchList">
             {keyword === "" ? (
               <>
-                {history.map((res, index) => (
-                  <Result
-                    key={index}
-                    result={res}
-                    onClose={onClose}
-                    type="history"
-                  />
-                ))}
+                {history.length ? (
+                  <>
+                    {history.map((res, index) => (
+                      <Result
+                        key={index}
+                        result={res}
+                        onClose={onClose}
+                        type="history"
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <div className="historyEmpty">
+                    <div>최근 검색 내역 없음.</div>
+                  </div>
+                )}
               </>
             ) : (
               <>

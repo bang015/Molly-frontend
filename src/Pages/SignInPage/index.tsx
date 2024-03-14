@@ -6,13 +6,33 @@ import Paper from "@mui/material/Paper";
 import { getUser, postSignIn } from "../../Redux/auth";
 import "./index.css";
 import { useDispatch } from "react-redux";
+import { ReactComponent as Logo } from "../../icons/Molly.svg";
+import { ReactComponent as SmallLogo } from "../../icons/smallMolly.svg";
 const SignInPage: React.FC = () => {
   const dispatch = useDispatch();
+  const [userData, setUserData] = useState<{ email: string; password: string }>(
+    {
+      email: "",
+      password: "",
+    }
+  );
+  const [helperText, setHelperText] = useState<{
+    email: string;
+    password: string;
+    falseLogin: string;
+  }>({
+    email: "",
+    password: "",
+    falseLogin: "",
+  });
+
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, email: e.target.value });
+    setHelperText({ ...helperText, email: "" });
   };
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, password: e.target.value });
+    setHelperText({ ...helperText, password: "" });
   };
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter") handleSignIn();
@@ -20,39 +40,30 @@ const SignInPage: React.FC = () => {
   const handleSignIn = async () => {
     if (userData.email === "" || userData.password === "") {
       if (userData.email === "") {
-        setHelperText("이메일을 입력해주세요.");
+        setHelperText({ ...helperText, email: "이메일을 입력해주세요." });
       } else if (userData.password === "") {
-        setHelperText("비밀번호를 입력해주세요.");
+        setHelperText({ ...helperText, password: "비밀번호를 입력해주세요." });
       }
-    }else{
+    } else {
       const token = await dispatch(postSignIn(userData) as any);
-      if(token.payload !== null){
+      if (token.payload !== null) {
         await dispatch(getUser(token.payload) as any);
         navigate("/");
-      }else{
-        setHelperText("아이디 또는 비밀번호를 확인해주세요.")
+      } else {
+        setHelperText({
+          ...helperText,
+          falseLogin: "아이디 또는 비밀번호를 확인해주세요.",
+        });
       }
     }
   };
-  
-  const [userData, setUserData] = useState<{ email: string; password: string }>(
-    {
-      email: "",
-      password: "",
-    }
-  );
-  const [helperText, setHelperText] = useState("");
+
   const navigate = useNavigate();
   return (
     <div className="signup">
       <div className="signup-container">
         <div className="signup-left">
-          <img
-            className="logo"
-            src="/images/molly.jpg"
-            width="100%"
-            alt="molly Logo"
-          />
+          <Logo width={"600px"}/>
         </div>
         <div className="signup-right">
           <Paper className="paper">
@@ -63,7 +74,7 @@ const SignInPage: React.FC = () => {
                 type="email"
                 label="이메일"
                 required
-                helperText={helperText}
+                helperText={helperText.email}
                 onChange={handleEmail}
                 onKeyDown={handleEnter}
               />
@@ -74,10 +85,12 @@ const SignInPage: React.FC = () => {
                 type="text"
                 label="비밀번호"
                 required
+                helperText={helperText.password}
                 onChange={handlePassword}
                 onKeyDown={handleEnter}
               />
             </div>
+            <div className="false">{helperText.falseLogin}</div>
             <div>
               <Button
                 className="signup-btn"

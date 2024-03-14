@@ -6,6 +6,7 @@ import { displayCreateAt } from "../../../../Utils/moment";
 import { NewCommentList } from "../newCommentList";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditDeleteModal from "../../../EditDeleteModal/comment";
+import { useNavigate } from "react-router-dom";
 
 interface commentListProps {
   comment: commentType;
@@ -23,7 +24,7 @@ export const CommentList: React.FC<commentListProps> = ({
 }) => {
   const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   const handleSubCommentList = () => {
     setIsSubCommentVisible(!isSubCommentVisible);
     const updatedCommentList = newCommentList.filter(
@@ -38,10 +39,15 @@ export const CommentList: React.FC<commentListProps> = ({
   const handleModalClose = () => {
     setOpen(false);
   };
+  const goToProfilePage = () => {
+    if (comment) {
+      navigate(`/profile/${comment.nickname}`);
+    }
+  };
   return (
     <div key={comment.id}>
       <div className="cml">
-        <div className="c1">
+        <div className="c1" onClick={goToProfilePage}>
           <Avatar
             alt="profile"
             src={
@@ -52,7 +58,7 @@ export const CommentList: React.FC<commentListProps> = ({
           />
         </div>
         <div style={{ flexGrow: 1 }}>
-          <div className="c2">
+          <div className="c2" onClick={goToProfilePage}>
             <span>{comment.nickname}</span>
           </div>
           <div

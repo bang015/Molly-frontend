@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
 import SignUpForm from "../../Components/Sign/SignUpForm";
 import { Button } from "@mui/material";
+import { ReactComponent as Logo } from "../../icons/Molly.svg";
+import { ReactComponent as SmallLogo } from "../../icons/smallMolly.svg";
 const SignUpPage: React.FC = () => {
   const [userState, setUserState] = useState<{
     user: IUserforSignUp;
@@ -22,45 +24,47 @@ const SignUpPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleValidation = useCallback((user: IUserforSignUp, isValid: boolean) => {
-    if (isValid) setUserState({ user, isValid: true });
-    else setUserState({ ...userState, isValid: false });
-  }, []);
+  const handleValidation = useCallback(
+    (user: IUserforSignUp, isValid: boolean) => {
+      if (isValid) setUserState({ user, isValid: true });
+      else setUserState({ ...userState, isValid: false });
+    },
+    []
+  );
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (isValid && e.key == "Enter") handleSignUp(user, dispatch);
   };
 
   const handleSignUp = async (user: IUserforSignUp, dispatch: Dispatch) => {
-    if(isValid){
+    if (isValid) {
       await dispatch(postUser(user) as any);
-      await dispatch(postSignIn({email:user.email!, password: user.password!}) as any)
+      await dispatch(
+        postSignIn({ email: user.email!, password: user.password! }) as any
+      );
     }
-      
-      // navigate("/profile")
+
+    navigate("/");
   };
   const handleSignUpBtn = () => {
     handleSignUp(user, dispatch);
-  }
+  };
   return (
     <div className="signup">
       <div className="signup-container">
         <div className="signup-left">
-          <img
-            className="logo"
-            src="/images/molly.jpg"
-            width="100%"
-            alt="molly Logo"
-          />
+          <Logo width={"600px"} />
         </div>
-        <div className="signup-right1">
+        <div className="signup-right">
           <Paper className="paper">
             <h1 className="paper-title">회원가입</h1>
             <SignUpForm
               handleValidation={handleValidation}
               handleEnter={handleEnter}
             />
-            <Button className="signup-btn1" onClick={handleSignUpBtn}>가입</Button>
+            <Button className="signup-btn1" onClick={handleSignUpBtn}>
+              가입
+            </Button>
             <div className="goToSignIn">
               계정이 있으신가요? <Link to={"/signin"}>로그인</Link>
             </div>

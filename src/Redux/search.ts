@@ -47,7 +47,7 @@ export const getSearchResult = createAsyncThunk(
   ) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/${type}/?query=${keyword}`
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/q/${type}/?query=${keyword}`
       );
       if (response.status === 200) {
         dispatch(getResultSuccess(response.data));
@@ -81,7 +81,7 @@ export const getSearchHistory = createAsyncThunk(
   "search/getSearchHistory",
   async (token: string, { dispatch }) => {
     const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history`,
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history1`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -93,6 +93,7 @@ export const getSearchHistory = createAsyncThunk(
     }
   }
 );
+
 export const deleteSearchHistory = createAsyncThunk(
   "search/deleteSearchHistory",
   async (

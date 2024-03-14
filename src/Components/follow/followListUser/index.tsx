@@ -11,12 +11,14 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface followListUserProps {
   user: followType;
 }
 const FollowListUser: React.FC<followListUserProps> = ({ user }) => {
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const navigate = useNavigate();
   const checkFollowed = useSelector(
     (state: RootState) => state.followReducer.chekcFollowed
   );
@@ -37,12 +39,12 @@ const FollowListUser: React.FC<followListUserProps> = ({ user }) => {
     }
   };
   const goToProfilePage = () => {
-    window.location.href = `/profile/${user.userNickname}`;
+    navigate(`/profile/${user.userNickname}`);
   };
   return (
     <ListItem
       key={user.userId}
-      style={{ zIndex: 99, paddingTop: 0, paddingBottom: 0 }}
+      style={{ zIndex: 99, padding:0 }}
       secondaryAction={
         <Button
           variant={followed ? "outlined" : "contained"}

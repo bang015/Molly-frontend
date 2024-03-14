@@ -27,11 +27,12 @@ import PostForm from "../../post/postForm";
 import { signOut } from "../../../Redux/auth";
 import PostLoading from "../../post/postLoading";
 import Search from "../search/search";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { socket } from "../../../Redux/auth";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
@@ -121,7 +122,10 @@ const Nav: React.FC = () => {
               className={location.pathname === "/" ? "activeTab" : ""}
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/"
+              // href="/"
+              onClick={() => {
+                navigate("/");
+              }}
             >
               <ListItemIcon>
                 {location.pathname === "/" ? (
@@ -148,7 +152,10 @@ const Nav: React.FC = () => {
               className={location.pathname === "/explore" ? "activeTab" : ""}
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/explore"
+              // href="/explore"
+              onClick={() => {
+                navigate("/explore");
+              }}
             >
               <ListItemIcon>
                 {location.pathname === "/explore" ? (
@@ -174,7 +181,10 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/messenger"
+              // href="/messenger"
+              onClick={() => {
+                navigate("/messenger");
+              }}
             >
               <ListItemIcon>
                 <Badge badgeContent={_message} color="primary">
@@ -214,7 +224,10 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              href={`/profile/${user?.nickname}`}
+              // href={`/profile/${user?.nickname}`}
+              onClick={() => {
+                navigate(`/profile/${user?.nickname}`);
+              }}
             >
               <ListItemAvatar>
                 <Avatar

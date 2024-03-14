@@ -7,13 +7,10 @@ const People: React.FC = () => {
   const limit = 30;
   return (
     <div className="mainPage">
-      <div className="nav-container">
-        <Nav></Nav>
-      </div>
+      <Nav></Nav>
       <div className="follow-center">
         <div className="segFollow">
           <div className="seg">추천</div>
-
           <SuggestList limit={limit} />
         </div>
       </div>
