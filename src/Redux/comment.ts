@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { addCommentType, commentType } from "../Interfaces/comment";
 import axios from "axios";
 import { COMMENT_API, INIT } from "../Utils/api-url";
+import { showSnackBar } from "./post";
 interface commentState {
   deletComment: number[];
   updatePending: boolean;
@@ -13,7 +14,7 @@ const initialState: commentState = {
   deletComment: [],
   updatePending: false,
   updateCommentId: null,
-  updatedComment: null
+  updatedComment: null,
 };
 
 const commentSlice = createSlice({
@@ -27,8 +28,8 @@ const commentSlice = createSlice({
       state.updatePending = true;
       state.updateCommentId = action.payload;
     },
-    updateCommentSuccess : (state, action: PayloadAction<commentType>) => {
-      state.updatedComment = action.payload
+    updateCommentSuccess: (state, action: PayloadAction<commentType>) => {
+      state.updatedComment = action.payload;
     },
     clearComment: (state) => {
       state.deletComment = [];
@@ -41,7 +42,7 @@ export const {
   deleteCommentSuccess,
   updatePending,
   clearComment,
-  updateCommentSuccess
+  updateCommentSuccess,
 } = commentSlice.actions;
 export default commentSlice.reducer;
 
@@ -49,23 +50,25 @@ export const addComment = async (
   token: string,
   commentInfo: addCommentType
 ) => {
-  try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
-      commentInfo,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.status === 200) {
-      return response.data;
+  const response = await axios.post(
+    `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
+    commentInfo,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
-  } catch (err) {}
+  );
+  if (response.status === 200) {
+    return response.data;
+  }
 };
 
-export const getComment = async ( userId: number, postId: number, page: number) => {
+export const getComment = async (
+  userId: number,
+  postId: number,
+  page: number
+) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${userId}/${postId}?page=${page}`
@@ -81,13 +84,13 @@ export const getMyCommentByPost = async (userId: number, postId: number) => {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${userId}/${postId}`
     );
-    if(response.status === 200) {
+    if (response.status === 200) {
       return response.data;
     }
-  }catch{
-
+  } catch {
+    return [];
   }
-}
+};
 export const getSubComment = async (
   postId: number,
   id: number,
@@ -101,7 +104,9 @@ export const getSubComment = async (
     if (response.status === 200) {
       return response.data;
     }
-  } catch {}
+  } catch {
+    return [];
+  }
 };
 export const deleteComment = createAsyncThunk(
   "comment/deleteComment",
@@ -118,29 +123,33 @@ export const deleteComment = createAsyncThunk(
       if (response.status === 200) {
         dispatch(deleteCommentSuccess(response.data));
       }
-    } catch {}
+    } catch {
+      dispatch(showSnackBar("다시 시도해주세요"));
+    }
   }
 );
 
 export const updateComment = createAsyncThunk(
   "comment/updateComment",
-  async ({token, id, content} : {token: string, id:number, content: string} , {dispatch}) => {
-    try{
+  async (
+    { token, id, content }: { token: string; id: number; content: string },
+    { dispatch }
+  ) => {
+    try {
       const response = await axios.patch(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
-        {content},
+        { content },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      if(response.status === 200) {
+      if (response.status === 200) {
         dispatch(updateCommentSuccess(response.data));
       }
-    }catch{
-
+    } catch {
+      dispatch(showSnackBar("다시 시도해주세요"));
     }
   }
-)
-
+);

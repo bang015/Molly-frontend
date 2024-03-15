@@ -62,4 +62,5 @@
 .followList .follow{
   height: auto;
   overflow: hidden auto;
+  padding-left: 20px;
 }

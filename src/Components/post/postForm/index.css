@@ -1,6 +1,6 @@
 
 .post-image {
-  width: 900px;
+  width: 700px;
   height: 700px;
   position: absolute;
   overflow: hidden;
@@ -112,4 +112,21 @@
   pointer-events: auto;
   position: relative;
   border-radius: 8px 0 0 8px
+}
+.tag_search{
+  height: 200px;
+  overflow-y: scroll;
+}
+.tag_search .tag_result{
+  padding: 5px 10px;
+  border-bottom: 1px solid rgb(219, 219, 219);
+  cursor: pointer;
+}
+.tag_search .tag_result div{
+  font-size: 14px;
+  font-weight: 600;
+}
+.tag_search .tag_result span{
+  font-weight: 400;
+  color: rgb(115, 115, 115);
 }

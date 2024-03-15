@@ -9,9 +9,14 @@ import { Avatar, Button, Modal } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
-import { postType, updatePostType, uploadPostType } from "../../../Interfaces/post";
+import {
+  postType,
+  updatePostType,
+  uploadPostType,
+} from "../../../Interfaces/post";
 import { updatePost, uploadPost } from "../../../Redux/post";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
+import { getSearchResult, resetResult } from "../../../Redux/search";
 interface PostModalProps {
   postConfig: boolean;
   onClose: () => void;
@@ -27,15 +32,22 @@ const PostForm: React.FC<PostModalProps> = ({
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
+  const result = useSelector((state: RootState) => state.searchReducer.result);
   const [showImages, setShowImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([]);
   const [postContent, setPostContent] = useState<string>("");
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [search, setSearch] = useState(false);
   useEffect(() => {
-    if(post){
-      const content = post.content.replace(/<br>/g, '\n').replace(/<span style="color: rgb\(0, 55, 107\);">#([^<]+)<\/span>/g, '#$1');
+    if (post) {
+      const content = post.content
+        .replace(/<br>/g, "\n")
+        .replace(
+          /<span style="color: rgb\(0, 55, 107\);">#([^<]+)<\/span>/g,
+          "#$1"
+        );
       setPostContent(content);
     }
   }, [post, postConfig]);
@@ -133,6 +145,25 @@ const PostForm: React.FC<PostModalProps> = ({
   const handlePostContent = (e: React.ChangeEvent<HTMLInputElement>) => {
     const Content = e.target.value;
     setPostContent(Content);
+    const hashtagRegex = /#(\S+)/g;
+    let keyword = null;
+    let match;
+    const lastChar = Content[Content.length - 1];
+    if (lastChar === " ") {
+      setSearch(false);
+      keyword = null;
+    } else if (lastChar === "#") {
+      setSearch(true);
+    }
+    while ((match = hashtagRegex.exec(Content)) !== null && search) {
+      let hashtag = match[1];
+      keyword = hashtag;
+    }
+    if (keyword !== null) {
+      dispatch(getSearchResult({ keyword, type: "tag" }) as any);
+    } else {
+      dispatch(resetResult());
+    }
   };
   const handleuploadPost = async () => {
     let croppedImgList: Blob[] = [];
@@ -152,10 +183,12 @@ const PostForm: React.FC<PostModalProps> = ({
     }
     const regex = /#([a-zA-Z0-9가-힣_]+)/g;
     const matches = postContent.match(regex);
-    const content = postContent.replace(/\n/g, "<br>").replace(
-      /#([^\s]+)/g,
-      '<span style="color: rgb(0, 55, 107);">#$1</span>'
-    );
+    const content = postContent
+      .replace(/\n/g, "<br>")
+      .replace(
+        /#([^\s]+)/g,
+        '<span style="color: rgb(0, 55, 107);">#$1</span>'
+      );
     let post: uploadPostType = {
       content: content,
       post_images: croppedImgList,
@@ -164,31 +197,36 @@ const PostForm: React.FC<PostModalProps> = ({
       const tags = matches.map((match) => match.replace(/^#/, ""));
       post.hashtags = tags;
     }
-    if(token)
-    dispatch(uploadPost({ post, token }) as any);
+    if (token) dispatch(uploadPost({ post, token }) as any);
     openModal();
     handleCloseModal();
   };
-  const handleUpdatePost = async() => {
+  const handleUpdatePost = async () => {
     const regex = /#([a-zA-Z0-9가-힣_]+)/g;
     const matches = postContent.match(regex);
-    const content = postContent.replace(/\n/g, "<br>").replace(
-      /#([^\s]+)/g,
-      '<span style="color: rgb(0, 55, 107);">#$1</span>'
-    );
-    if(post){
+    const content = postContent
+      .replace(/\n/g, "<br>")
+      .replace(
+        /#([^\s]+)/g,
+        '<span style="color: rgb(0, 55, 107);">#$1</span>'
+      );
+    if (post) {
       let postInfo: updatePostType = {
         content: content,
-        postId: post.id.toString()
+        postId: post.id.toString(),
       };
       if (matches) {
         const tags = matches.map((match) => match.replace(/^#/, ""));
         postInfo.hashtags = tags;
       }
-      if(token)
-      dispatch(updatePost({postInfo, token}) as any);
-      onClose()
+      if (token) dispatch(updatePost({ postInfo, token }) as any);
+      onClose();
     }
+  };
+  const handleHasTag = (name: string) => {
+    const lastIndex = postContent.lastIndexOf('#');
+    const extractedString = postContent.substring(0, lastIndex+1);
+    setPostContent(extractedString+name);
   }
   return (
     <div>
@@ -202,20 +240,96 @@ const PostForm: React.FC<PostModalProps> = ({
           <div className="create-post-title">
             {post ? "게시물 수정" : "새 게시물 만들기"}
             <Button
-              disabled={post? false : (postContent === "" || showImages.length === 0)}
+              disabled={
+                post ? false : postContent === "" || showImages.length === 0
+              }
               className="post-btn"
-              onClick={post ? handleUpdatePost:handleuploadPost}
+              onClick={post ? handleUpdatePost : handleuploadPost}
             >
               완료
             </Button>
           </div>
           <div className="create-post-container">
             <div className="create-post-content">
-                {post ? (
-                  <div className="pmedia">
-                    {currentImageIndex > 0 && (
-                      <div className="c-back-btn">
+              {post ? (
+                <div className="pmedia">
+                  {currentImageIndex > 0 && (
+                    <div className="c-back-btn">
+                      <IconButton
+                        aria-label="fingerprint"
+                        color="secondary"
+                        style={{
+                          backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        }}
+                        onClick={onPrevClick}
+                      >
+                        <ChevronLeftIcon style={{ color: "black" }} />
+                      </IconButton>
+                    </div>
+                  )}
+                  {post &&
+                    post.mediaList &&
+                    post.mediaList.length > 1 &&
+                    currentImageIndex < post.mediaList.length - 1 && (
+                      <div className="c-next-btn">
                         <IconButton
+                          aria-label="fingerprint"
+                          color="secondary"
+                          style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                          }}
+                          onClick={onNextClick}
+                        >
+                          <NavigateNextIcon style={{ color: "black" }} />
+                        </IconButton>
+                      </div>
+                    )}
+                  <div>
+                    <div
+                      className="medias-wrapper"
+                      style={{
+                        transform: `translateX(-${currentImageIndex * 100}%)`,
+                      }}
+                    >
+                      {post.mediaList.map((media, index) => (
+                        <img key={index} src={media.mediaPath} alt="img" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {showImages.length === 0 ? (
+                    <div className="create-post-text">
+                      <label htmlFor="fileInput">
+                        <div className="ipicon">
+                          <ImageSearchIcon sx={{ fontSize: 100 }} />
+                        </div>
+                        당신의 추억을 업로드하세요!
+                      </label>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/*,video/*"
+                        onChange={handleAddImages}
+                        multiple
+                      />
+                    </div>
+                  ) : (
+                    <div className="post-image">
+                      <Cropper
+                        image={showImages[currentImageIndex]}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1 / 1}
+                        onCropChange={setCrop}
+                        onCropComplete={onCropComplete}
+                        onZoomChange={setZoom}
+                        objectFit="cover"
+                      />
+                      {currentImageIndex > 0 && (
+                        <IconButton
+                          className="back-btn"
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
@@ -225,14 +339,11 @@ const PostForm: React.FC<PostModalProps> = ({
                         >
                           <ChevronLeftIcon style={{ color: "black" }} />
                         </IconButton>
-                      </div>
-                    )}
-                    {post &&
-                      post.mediaList &&
-                      post.mediaList.length > 1 &&
-                      currentImageIndex < post.mediaList.length - 1 && (
-                        <div className="c-next-btn">
+                      )}
+                      {showImages.length > 1 &&
+                        currentImageIndex < showImages.length - 1 && (
                           <IconButton
+                            className="next-btn"
                             aria-label="fingerprint"
                             color="secondary"
                             style={{
@@ -242,82 +353,11 @@ const PostForm: React.FC<PostModalProps> = ({
                           >
                             <NavigateNextIcon style={{ color: "black" }} />
                           </IconButton>
-                        </div>
-                      )}
-                    <div>
-                      <div
-                        className="medias-wrapper"
-                        style={{
-                          transform: `translateX(-${currentImageIndex * 100}%)`,
-                        }}
-                      >
-                        {post.mediaList.map((media, index) => (
-                          <img key={index} src={media.mediaPath} alt="img" />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    {showImages.length === 0 ? (
-                      <div className="create-post-text">
-                        <label htmlFor="fileInput">
-                          <div className="ipicon">
-                            <ImageSearchIcon sx={{ fontSize: 100 }} />
-                          </div>
-                          당신의 추억을 업로드하세요!
-                        </label>
-                        <input
-                          type="file"
-                          id="fileInput"
-                          accept="image/*,video/*"
-                          onChange={handleAddImages}
-                          multiple
-                        />
-                      </div>
-                    ) : (
-                      <div className="post-image">
-                        <Cropper
-                          image={showImages[currentImageIndex]}
-                          crop={crop}
-                          zoom={zoom}
-                          aspect={1 / 1}
-                          onCropChange={setCrop}
-                          onCropComplete={onCropComplete}
-                          onZoomChange={setZoom}
-                          objectFit="cover"
-                        />
-                        {currentImageIndex > 0 && (
-                          <IconButton
-                            className="back-btn"
-                            aria-label="fingerprint"
-                            color="secondary"
-                            style={{
-                              backgroundColor: "rgba(255, 255, 255, 0.5)",
-                            }}
-                            onClick={onPrevClick}
-                          >
-                            <ChevronLeftIcon style={{ color: "black" }} />
-                          </IconButton>
                         )}
-                        {showImages.length > 1 &&
-                          currentImageIndex < showImages.length - 1 && (
-                            <IconButton
-                              className="next-btn"
-                              aria-label="fingerprint"
-                              color="secondary"
-                              style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                              }}
-                              onClick={onNextClick}
-                            >
-                              <NavigateNextIcon style={{ color: "black" }} />
-                            </IconButton>
-                          )}
-                      </div>
-                    )}
-                  </>
-                )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
             <div className="post-text">
               <div>
@@ -336,7 +376,6 @@ const PostForm: React.FC<PostModalProps> = ({
                     <div className="uf unts">{user.nickname}</div>
                   </div>
                 )}
-
                 <div>
                   <TextField
                     variant="standard"
@@ -351,6 +390,16 @@ const PostForm: React.FC<PostModalProps> = ({
                       disableUnderline: true,
                     }}
                   />
+                </div>
+                <div className="tag_search">
+                  {result.map((r) => (
+                    <div className="tag_result" key={r.id} onClick={()=> handleHasTag(r.name)}>
+                      <div>#{r.name}</div>
+                      <div>
+                        <span>게시물 {r.tagCount}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

@@ -79,7 +79,7 @@ export const checkNickValidation = async (nickname: string) => {
 };
 
 export const checkNameValidation = (name: string) => {
-  const regExp = /^[가-힣]{2,10}$/;
+  const regExp = /^[가-힣A-Za-z0-9_.]{2,10}$/;
   let isValid;
   let helperText ="";
 

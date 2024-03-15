@@ -14,10 +14,9 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreIcon from "@mui/icons-material/Explore";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import MovieCreationOutlinedIcon from "@mui/icons-material/MovieCreationOutlined";
 import EmailIcon from "@mui/icons-material/Email";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +28,7 @@ import PostLoading from "../../post/postLoading";
 import Search from "../search/search";
 import { useLocation, useNavigate } from "react-router-dom";
 import { socket } from "../../../Redux/auth";
+import { resetResult } from "../../../Redux/search";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -50,11 +50,10 @@ const Nav: React.FC = () => {
       }
     }
     document.addEventListener("click", handleClickOutside);
-    
+
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-    
   }, []);
   useEffect(() => {
     if (location.pathname === "/messenger") {
@@ -70,7 +69,7 @@ const Nav: React.FC = () => {
     }
   }, [location.pathname]);
   useEffect(() => {
-    if(socket&&token){
+    if (socket && token) {
       socket.emit("getNotReadMessage", token);
       socket.on("allNotReadMessage", (data) => {
         set_message(data);
@@ -81,7 +80,7 @@ const Nav: React.FC = () => {
         }
       });
     }
-  },[socket, token]);
+  }, [socket, token]);
   const handleSignOut = () => {
     dispatch(signOut() as any);
   };
@@ -104,6 +103,7 @@ const Nav: React.FC = () => {
     setPostConfig(true);
   };
   const onPostClose = () => {
+    dispatch(resetResult());
     setPostConfig(false);
   };
   return (
@@ -122,7 +122,6 @@ const Nav: React.FC = () => {
               className={location.pathname === "/" ? "activeTab" : ""}
               style={{ borderRadius: "12px" }}
               component="a"
-              // href="/"
               onClick={() => {
                 navigate("/");
               }}
@@ -152,7 +151,6 @@ const Nav: React.FC = () => {
               className={location.pathname === "/explore" ? "activeTab" : ""}
               style={{ borderRadius: "12px" }}
               component="a"
-              // href="/explore"
               onClick={() => {
                 navigate("/explore");
               }}
@@ -169,19 +167,6 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/"
-            >
-              <ListItemIcon>
-                <MovieCreationOutlinedIcon
-                  sx={{ fontSize: 30, color: "black" }}
-                />
-              </ListItemIcon>
-              <ListItemText className="text" primary="Clip" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: "12px" }}
-              component="a"
-              // href="/messenger"
               onClick={() => {
                 navigate("/messenger");
               }}
@@ -200,18 +185,6 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              href="/"
-            >
-              <ListItemIcon>
-                <NotificationsNoneOutlinedIcon
-                  sx={{ fontSize: 30, color: "black" }}
-                />
-              </ListItemIcon>
-              <ListItemText className="text" primary="Notifications" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: "12px" }}
-              component="a"
               onClick={() => {
                 onPostOpen();
               }}
@@ -224,7 +197,6 @@ const Nav: React.FC = () => {
             <ListItemButton
               style={{ borderRadius: "12px" }}
               component="a"
-              // href={`/profile/${user?.nickname}`}
               onClick={() => {
                 navigate(`/profile/${user?.nickname}`);
               }}
@@ -246,9 +218,9 @@ const Nav: React.FC = () => {
               onClick={handleSignOut}
             >
               <ListItemIcon>
-                <MenuOutlinedIcon sx={{ fontSize: 30, color: "black" }} />
+                <LogoutIcon sx={{ fontSize: 30, color: "black" }} />
               </ListItemIcon>
-              <ListItemText className="text" primary="More" />
+              <ListItemText className="text" primary="Logout" />
             </ListItemButton>
           </div>
           {postConfig && (
