@@ -1,6 +1,7 @@
 export interface followType {
-  userId: number;
-  userName: string;
-  userNickname: string;
-  profileImagePath: string|null;
+  id: number;
+  name: string;
+  nickname: string;
+  ProfileImage: {path: string} | null;
+  message? :string;
 }

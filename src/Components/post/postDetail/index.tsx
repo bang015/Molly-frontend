@@ -166,7 +166,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   }, [updatePending, updateCommentId]);
   const goToProfilePage = () => {
     if (post) {
-      navigate(`/profile/${post.nickname}`);
+      navigate(`/profile/${post.User.nickname}`);
     }
   };
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,14 +180,14 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     if (post) {
       setCurrentImageIndex(
         (prevIndex) =>
-          (prevIndex - 1 + post.mediaList.length) % post.mediaList.length
+          (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length
       );
     }
   };
   const onNextClick = (): void => {
     if (post) {
       setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % post.mediaList.length
+        (prevIndex) => (prevIndex + 1) % post.PostMedia.length
       );
     }
   };
@@ -304,9 +304,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                   </div>
                 )}
                 {post &&
-                  post.mediaList &&
-                  post.mediaList.length > 1 &&
-                  currentImageIndex < post.mediaList.length - 1 && (
+                  post.PostMedia &&
+                  post.PostMedia.length > 1 &&
+                  currentImageIndex < post.PostMedia.length - 1 && (
                     <div className="c-next-btn">
                       <IconButton
                         aria-label="fingerprint"
@@ -327,8 +327,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       transform: `translateX(-${currentImageIndex * 100}%)`,
                     }}
                   >
-                    {post.mediaList.map((media, index) => (
-                      <img key={index} src={media.mediaPath} alt="img" />
+                    {post.PostMedia.map((media, index) => (
+                      <img key={index} src={media.path} alt="img" />
                     ))}
                   </div>
                 </div>
@@ -341,17 +341,13 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         {post && (
                           <Avatar
                             alt="Remy Sharp"
-                            src={
-                              post.profileImage
-                                ? post.profileImage.path ?? undefined
-                                : undefined
-                            }
+                            src={post?.User?.ProfileImage?.path}
                           />
                         )}
                       </div>
                       <div className="uf">
                         <div className="un" onClick={goToProfilePage}>
-                          {post.nickname}
+                          {post.User.nickname}
                         </div>
                         {!checkFollowed && post.userId !== user?.id && (
                           <div>
@@ -395,19 +391,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         <div className="p-content">
                           <div className="c1" onClick={goToProfilePage}>
                             {post && (
-                              <Avatar
-                                alt="profile"
-                                src={
-                                  post.profileImage
-                                    ? post.profileImage.path ?? undefined
-                                    : undefined
-                                }
-                              />
+                              <Avatar src={post?.User?.ProfileImage?.path} />
                             )}
                           </div>
                           <div>
                             <div className="c2" onClick={goToProfilePage}>
-                              <span>{post.nickname}</span>
+                              <span>{post.User.nickname}</span>
                             </div>
                             <div
                               className="c3"

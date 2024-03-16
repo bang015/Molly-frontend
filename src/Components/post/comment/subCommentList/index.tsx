@@ -97,15 +97,13 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
           <div
             className="c1"
             onClick={() => {
-              goToProfilePage(comment.nickname);
+              goToProfilePage(comment.user.nickname);
             }}
           >
             <Avatar
               alt="profile"
               src={
-                comment.profileImage
-                  ? comment.profileImage ?? undefined
-                  : undefined
+                comment.user.ProfileImage?.path
               }
             />
           </div>
@@ -113,10 +111,10 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
             <div
               className="c2"
               onClick={() => {
-                goToProfilePage(comment.nickname);
+                goToProfilePage(comment.user.nickname);
               }}
             >
-              <span>{comment.nickname}</span>
+              <span>{comment.user.nickname}</span>
             </div>
             <div
               className="c3"

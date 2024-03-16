@@ -41,7 +41,7 @@ export const CommentList: React.FC<commentListProps> = ({
   };
   const goToProfilePage = () => {
     if (comment) {
-      navigate(`/profile/${comment.nickname}`);
+      navigate(`/profile/${comment.user.nickname}`);
     }
   };
   return (
@@ -51,15 +51,13 @@ export const CommentList: React.FC<commentListProps> = ({
           <Avatar
             alt="profile"
             src={
-              comment.profileImage
-                ? comment.profileImage ?? undefined
-                : undefined
+              comment.user.ProfileImage?.path
             }
           />
         </div>
         <div style={{ flexGrow: 1 }}>
           <div className="c2" onClick={goToProfilePage}>
-            <span>{comment.nickname}</span>
+            <span>{comment.user.nickname}</span>
           </div>
           <div
             className="c3"
@@ -73,7 +71,7 @@ export const CommentList: React.FC<commentListProps> = ({
               <button
                 className="c-btn"
                 onClick={() => {
-                  handleSubComment(comment.nickname, comment.id);
+                  handleSubComment(comment.user.nickname, comment.id);
                 }}
               >
                 답글 달기

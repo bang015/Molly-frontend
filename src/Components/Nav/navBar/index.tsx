@@ -16,9 +16,8 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import EmailIcon from "@mui/icons-material/Email";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from "@mui/icons-material/Logout";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
 import "./index.css";
@@ -208,7 +207,7 @@ const Nav: React.FC = () => {
                   style={{ width: 30, height: 30 }}
                 />
               </ListItemAvatar>
-              <ListItemText className="text" primary="profile" />
+              <ListItemText style={{fontFamily:"none"}} className="text" primary="Profile" />
             </ListItemButton>
           </div>
           <div className="nav-bottom">

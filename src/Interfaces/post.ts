@@ -14,12 +14,12 @@ export interface postType {
   content: string;
   createdAt: string;
   updatedAt: string;
-  nickname: string;
-  profileImage: {path:string | null};
-  mediaList: mediaListType[];
+
+  PostMedia: mediaListType[];
+  User: { nickname: string, ProfileImage?: { path: string} | null };
 }
 
 export interface mediaListType {
-  mediaId: number;
-  mediaPath: string;
+  id: number;
+  path: string;
 }

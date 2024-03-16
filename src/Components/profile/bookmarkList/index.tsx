@@ -42,7 +42,7 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
                   handlePostModal(post.id);
                 }}
               >
-                <img className="image_item" src={post.mediaList[0].mediaPath} />
+                <img className="image_item" src={post.PostMedia[0].path} />
               </div>
             ))}
         </div>

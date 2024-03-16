@@ -1,7 +1,6 @@
-import React, { useState, useEffect, ChangeEvent, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
-import { getMainPost } from "../../../Redux/postList";
 import { postType } from "../../../Interfaces/post";
 import "./index.css";
 import {
@@ -33,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 interface postListProps {
   post: postType;
 }
-const PostList: React.FC<postListProps> = (post) => {
+const PostList: React.FC<postListProps> = ({post}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.authReducer.token);
@@ -51,14 +50,14 @@ const PostList: React.FC<postListProps> = (post) => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const myComment = async () => {
-      const result = await getMyCommentByPost(user?.id!, post.post.id);
+      const result = await getMyCommentByPost(user?.id!, post.id);
       setCommentList(result.commentList);
     };
     myComment();
   }, [user, post]);
   useEffect(() => {
     const like = async () => {
-      const result = await getPostLike(token!, post.post.id);
+      const result = await getPostLike(token!, post.id);
       setLikeCount(result.count);
       setCheckLiked(result.checkLiked);
     };
@@ -67,13 +66,13 @@ const PostList: React.FC<postListProps> = (post) => {
   const onPrevClick = () => {
     setCurrentImageIndex(
       (prevIndex) =>
-        (prevIndex - 1 + post.post.mediaList.length) %
-        post.post.mediaList.length
+        (prevIndex - 1 + post.PostMedia.length) %
+        post.PostMedia.length
     );
   };
   const onNextClick = () => {
     setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % post.post.mediaList.length
+      (prevIndex) => (prevIndex + 1) % post.PostMedia.length
     );
   };
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +87,7 @@ const PostList: React.FC<postListProps> = (post) => {
         '<span style="color: rgb(0, 55, 107);">@$1</span>'
       );
     const commentInfo: addCommentType = {
-      postId: post.post.id,
+      postId: post.id,
       content: commentContent,
     };
     if (token) {
@@ -99,7 +98,7 @@ const PostList: React.FC<postListProps> = (post) => {
   };
   const handleLike = async () => {
     if (token) {
-      const check = await likePost(token, post.post.id);
+      const check = await likePost(token, post.id);
       setCheckLiked(check);
     }
   };
@@ -109,7 +108,7 @@ const PostList: React.FC<postListProps> = (post) => {
     }
   };
   const goToProfilePage = () => {
-    navigate(`/profile/${post.post.nickname}`);
+    navigate(`/profile/${post.User.nickname}`);
   };
   // 게시물 상세보기 모달
   const handlePostModal = (id: number) => {
@@ -144,9 +143,6 @@ const PostList: React.FC<postListProps> = (post) => {
   const onEditLoadingOpen = () => {
     setLoading(true);
   }
-  const onEditLoadingClose= () => {
-    setLoading(false);
-  }
   return (
     <div className="container">
       <div className="ph1">
@@ -155,16 +151,14 @@ const PostList: React.FC<postListProps> = (post) => {
             <Avatar
               alt="Remy Sharp"
               src={
-                post.post.profileImage
-                  ? post.post.profileImage.path ?? undefined
-                  : undefined
+                post.User.ProfileImage?.path
               }
               sx={{ width: 34, height: 34 }}
             />
           </div>
           <div className="fs14 ml10">
-            <div>{post.post.nickname}</div> <div className="ms5 cAt">•</div>{" "}
-            <div className="cAt">{displayCreateAt(post.post.createdAt)}</div>
+            <div>{post.User.nickname}</div> <div className="ms5 cAt">•</div>{" "}
+            <div className="cAt">{displayCreateAt(post.createdAt)}</div>
           </div>
         </div>
         <div>
@@ -178,14 +172,14 @@ const PostList: React.FC<postListProps> = (post) => {
         onClose={handleModalClose}
         onDeleteOpen={onDeleteOpen}
         onEditOpen={onEditOpen}
-        post={post.post}
+        post={post}
       />
       <DeleteModal // 게시물 삭제 확인 모달
-        postId={post.post.id}
+        postId={post.id}
         deleteOpen={deleteOpen}
         onDeleteClose={onDeleteClose}
       />
-      <PostForm postConfig={postConfig} onClose={onEditClose} openModal={onEditLoadingOpen} post={post.post}/>
+      <PostForm postConfig={postConfig} onClose={onEditClose} openModal={onEditLoadingOpen} post={post}/>
       <div className="content">
         <div className="media">
           {currentImageIndex > 0 && (
@@ -203,9 +197,9 @@ const PostList: React.FC<postListProps> = (post) => {
               </IconButton>
             </div>
           )}
-          {post.post.mediaList &&
-            post.post.mediaList.length > 1 &&
-            currentImageIndex < post.post.mediaList.length - 1 && (
+          {post.PostMedia &&
+            post.PostMedia.length > 1 &&
+            currentImageIndex < post.PostMedia.length - 1 && (
               <div className="c-next-btn">
                 <IconButton
                   aria-label="fingerprint"
@@ -224,8 +218,8 @@ const PostList: React.FC<postListProps> = (post) => {
             className="medias-wrapper"
             style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
           >
-            {post.post.mediaList.map((media, index) => (
-              <img key={index} src={media.mediaPath} alt="img" />
+            {post.PostMedia.map((media, index) => (
+              <img key={index} src={media.path} alt="img" />
             ))}
           </div>
         </div>
@@ -234,7 +228,7 @@ const PostList: React.FC<postListProps> = (post) => {
           handleLike={handleLike}
           handleChatClick={handleChatClick}
           config={true}
-          postId={post.post.id}
+          postId={post.id}
         />
         <PostLikeCount
           config={true}
@@ -243,17 +237,17 @@ const PostList: React.FC<postListProps> = (post) => {
         />
         <div className="pct">
           <div className="c2">
-            <span>{post.post.nickname}</span>
+            <span>{post.User.nickname}</span>
           </div>
           <div
             className="c3"
-            dangerouslySetInnerHTML={{ __html: post.post.content }}
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
         <div className="cabtn">
           <button
             onClick={() => {
-              handlePostModal(post.post.id);
+              handlePostModal(post.id);
             }}
           >
             댓글 모두 보기
@@ -267,7 +261,7 @@ const PostList: React.FC<postListProps> = (post) => {
             {commentList.map((comment) => (
               <div key={comment.id}>
                 <div className="c2">
-                  <span>{comment.nickname}</span>
+                  <span>{comment.user.nickname}</span>
                 </div>
                 <div
                   className="c3"

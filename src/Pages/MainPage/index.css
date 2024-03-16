@@ -1,9 +1,36 @@
+@font-face {
+  font-family: 'SF_HambakSnow';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/SF_HambakSnow.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GmarketSansMedium';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+body{
+  font-family: 'Pretendard-Regular' !important;
+}
+button{
+  font-family: 'Pretendard-Regular' !important;
+}
+span{
+  font-family: 'Pretendard-Regular' !important;
+}
+
 .mainPage {
   margin: auto;
   display: flex;
-  height: 100vh;
   overflow-y: scroll;
-
+  height: 100%;
 }
 .main-left {
   width: 300px;
@@ -14,6 +41,7 @@
   width: 50%;
   min-width: 800px;
   margin-left: 350px;
+  height: 100%;
 }
 .follow-container {
   width: 30%;
@@ -33,4 +61,7 @@
   position: relative;
   z-index: 1;
   padding-right: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgb(115, 115, 115);
 }

@@ -4,7 +4,6 @@ import { Avatar, CircularProgress } from "@mui/material";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../Redux";
-import FollowList from "../../follow/followList";
 import {
   clearFollowList,
   followUser,

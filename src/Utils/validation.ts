@@ -47,7 +47,7 @@ export const checkNickExists = async (nickname: string) => {
 };
 
 export const checkNickValidation = async (nickname: string) => {
-  const regExp = /^[가-힣A-Za-z0-9_.]{3,30}$/;
+  const regExp = /^[가-힣A-Za-z0-9_.]{3,12}$/;
   const isSpecial = /\W/;
   let isValid;
   let helperText = "";
@@ -62,7 +62,7 @@ export const checkNickValidation = async (nickname: string) => {
     } else if (nickname.length < 3) {
       helperText = "사용자 이름은 최소 3자 이상 입력해주세요.";
     } else if (nickname.length > 30) {
-      helperText = "사용자 이름은 최대 30자까지 입력 가능합니다.";
+      helperText = "사용자 이름은 최대 12자까지 입력 가능합니다.";
     }
   } else {
     const result = await checkNickExists(nickname);

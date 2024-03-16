@@ -33,15 +33,13 @@ export const NewCommentList: React.FC<newCommentListProps> = ({
             <Avatar
               alt="profile"
               src={
-                comment.profileImage
-                  ? comment.profileImage ?? undefined
-                  : undefined
+                comment.user.ProfileImage?.path
               }
             />
           </div>
           <div style={{"flexGrow": 1}}>
             <div className="c2">
-              <span>{comment.nickname}</span>
+              <span>{comment.user.nickname}</span>
             </div>
             <div
               className="c3"

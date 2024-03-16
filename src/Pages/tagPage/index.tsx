@@ -61,7 +61,7 @@ const Tag: React.FC = () => {
                 >
                   <img
                     className="image_item"
-                    src={post.mediaList[0].mediaPath}
+                    src={post.PostMedia[0].path}
                   />
                 </div>
               ))}

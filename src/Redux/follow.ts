@@ -59,6 +59,7 @@ const followSlice = createSlice({
     clearFollowList: (state) => {
       state.followingUser = [];
       state.followerUser = [];
+      state.suggestList = [];
     },
   },
 });

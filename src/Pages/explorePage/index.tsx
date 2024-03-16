@@ -53,8 +53,8 @@ const Explore: React.FC = () => {
             >
               <img
                 className="image_item"
-                srcSet={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format&dpr=2 2x`}
-                src={`${post.mediaList[0].mediaPath}?w=300&h=300&fit=crop&auto=format`}
+                srcSet={`${post.PostMedia[0].path}?w=300&h=300&fit=crop&auto=format&dpr=2 2x`}
+                src={`${post.PostMedia[0].path}?w=300&h=300&fit=crop&auto=format`}
                 alt={post.content}
                 loading="lazy"
               />

@@ -5,7 +5,6 @@ import { RootState } from "../../../Redux";
 import "./index.css";
 import PostDetail from "../../post/postDetail";
 import { clearComment } from "../../../Redux/comment";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import PostForm from "../../post/postForm";
 import PostLoading from "../../post/postLoading";
@@ -59,7 +58,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
                 handlePostModal(post.id);
               }}
             >
-              <img className="image_item" src={post.mediaList[0].mediaPath} />
+              <img className="image_item" src={post.PostMedia[0].path} />
             </div>
           ))}
           {selectedPostId && (

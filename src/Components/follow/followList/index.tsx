@@ -21,7 +21,7 @@ const FollowList: React.FC<followListProps> = ({ userId, keyword }) => {
   return (
     <div className="follow">
       {follow.map((user) => (
-        <FollowListUser key={user.userId} user={user} />
+        <FollowListUser key={user.id} user={user} type=""/>
       ))}
     </div>
   );

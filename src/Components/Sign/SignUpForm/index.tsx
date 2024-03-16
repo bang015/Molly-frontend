@@ -125,10 +125,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type="email"
-          label="이메일을 입력해주세요."
+          placeholder="이메일을 입력해주세요."
           required
-          helperText={helperText.email}
-          error={error.email}
+          helperText={focusedField !== "email" && helperText.email}
+          error={focusedField !== "email" &&error.email}
           onFocus={() => handleFocus("email")}
           onBlur={handleBlur}
           onChange={handleEmail}
@@ -146,8 +146,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           onFocus={() => handleFocus("name")}
           onBlur={handleBlur}
           required
-          helperText={helperText.name}
-          error={error.name}
+          helperText={focusedField !== "name"&&helperText.name}
+          error={focusedField !== "name"&&error.name}
           onChange={handleName}
           onKeyDown={handleEnter}
           InputProps={{
@@ -159,12 +159,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type="text"
-          label="사용자 이름을 입력해주세요."
+          placeholder="사용자 이름을 입력해주세요."
           onFocus={() => handleFocus("nickname")}
           onBlur={handleBlur}
           required
-          helperText={helperText.nickname}
-          error={error.nickname}
+          helperText={focusedField !== "nickname"&&helperText.nickname}
+          error={focusedField !== "nickname"&&error.nickname}
           onChange={handleNick}
           onKeyDown={handleEnter}
           InputProps={{
@@ -176,12 +176,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type="password"
-          label="비밀번호를 입력해주세요."
+          placeholder="비밀번호를 입력해주세요."
           onFocus={() => handleFocus("password")}
           onBlur={handleBlur}
           required
-          helperText={helperText.password}
-          error={error.password}
+          helperText={focusedField !== "password"&&helperText.password}
+          error={focusedField !== "password"&&error.password}
           onChange={handlePassword}
           onKeyDown={handleEnter}
           InputProps={{

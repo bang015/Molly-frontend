@@ -1,15 +1,13 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { signOut } from "../../Redux/auth";
 import Nav from "../../Components/Nav/navBar";
 import { SuggestList } from "../../Components/follow/suggestList";
-import { Button, Snackbar } from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PostList from "../../Components/post/postList";
 import { getMainPost } from "../../Redux/postList";
 import { RootState } from "../../Redux";
-import { resetSnackBar } from "../../Redux/post";
 const Main: React.FC = () => {
   const dispatch = useDispatch();
   const limit = 5;
@@ -35,7 +33,6 @@ const Main: React.FC = () => {
       }
     }
   });
-
   return (
     <div className="mainPage">
       <Nav></Nav>

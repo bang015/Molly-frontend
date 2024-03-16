@@ -119,7 +119,7 @@ const PostForm: React.FC<PostModalProps> = ({
   };
   const onNextClick = (): void => {
     if (post) {
-      if (currentImageIndex < post.mediaList.length - 1) {
+      if (currentImageIndex < post.PostMedia.length - 1) {
         setCurrentImageIndex(currentImageIndex + 1);
       }
     } else {
@@ -268,9 +268,9 @@ const PostForm: React.FC<PostModalProps> = ({
                     </div>
                   )}
                   {post &&
-                    post.mediaList &&
-                    post.mediaList.length > 1 &&
-                    currentImageIndex < post.mediaList.length - 1 && (
+                    post.PostMedia &&
+                    post.PostMedia.length > 1 &&
+                    currentImageIndex < post.PostMedia.length - 1 && (
                       <div className="c-next-btn">
                         <IconButton
                           aria-label="fingerprint"
@@ -291,8 +291,8 @@ const PostForm: React.FC<PostModalProps> = ({
                         transform: `translateX(-${currentImageIndex * 100}%)`,
                       }}
                     >
-                      {post.mediaList.map((media, index) => (
-                        <img key={index} src={media.mediaPath} alt="img" />
+                      {post.PostMedia.map((media, index) => (
+                        <img key={index} src={media.path} alt="img" />
                       ))}
                     </div>
                   </div>

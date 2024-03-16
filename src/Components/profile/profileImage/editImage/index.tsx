@@ -1,4 +1,4 @@
-import { Avatar, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 import React, { useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import "./index.css";

@@ -32,12 +32,9 @@ const Result: React.FC<resultProps> = ({ result, onClose, type }) => {
   const goToPage = () => {
     if (result.type === "user") {
       navigate(`/profile/${result.nickname}`);
-      // window.location.href = `/profile/${result.nickname}`;
     } else {
       navigate(`/explore/tags/${result.name}`);
-      // window.location.href = `/explore/tags/${result.name}`;
     }
-    console.log(1)
     if (token) dispatch(saveSearchHistory({ token, result }) as any);
     onClose();
   };
