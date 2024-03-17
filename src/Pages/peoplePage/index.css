@@ -1,14 +1,14 @@
-.segFollow{
+.segFollow {
   width: 550px;
-  padding-top: 50px;
+  padding: 50px 0px;
 }
-.follow-center{
+.follow-center {
   width: 100%;
   margin-left: 370px;
   display: flex;
   justify-content: center;
 }
-.seg{
+.seg {
   font-size: 16px;
   font-weight: 600;
   padding-bottom: 20px;

@@ -155,6 +155,7 @@ export const updateUser = createAsyncThunk(
     { dispatch }
   ) => {
     try {
+      console.log(newInfo);
       const formData = new FormData();
       if (newInfo.name) formData.append("name", newInfo.name);
       if (newInfo.nickname) formData.append("nickname", newInfo.nickname);

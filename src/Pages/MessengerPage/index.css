@@ -2,6 +2,7 @@
   display: flex;
   width: 100%;
   margin-left: 80px;
+  height: 100vh;
 }
 .chatList {
   width: 540px;
@@ -22,12 +23,12 @@
   display: flex;
   align-items: center;
 }
-.chatList .chat_t{
+.chatList .chat_t {
   padding: 10px 24px;
   font-size: 16px;
   font-weight: 700;
 }
-.chatList .chat_content{
+.chatList .chat_content {
   flex-grow: 1;
   overflow-y: scroll;
 }

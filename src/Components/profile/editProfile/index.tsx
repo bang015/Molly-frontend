@@ -68,6 +68,7 @@ const EditProfile: React.FC<editProfileProps> = ({
   };
   const editProfile = () => {
     if (isValid.nickname && isValid.name && token) {
+      console.log(newInfo);
       dispatch(updateUser({ token, newInfo }) as any).then(() => {
         const newProfile = `/profile/${newInfo.nickname}`;
         navigate(newProfile);

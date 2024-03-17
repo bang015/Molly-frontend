@@ -6,14 +6,12 @@ import Nav from "../../Components/Nav/navBar";
 import "./index.css";
 import PostDetail from "../../Components/post/postDetail";
 import { clearComment } from "../../Redux/comment";
-import { getFollowing } from "../../Redux/follow";
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch();
   const allPostList = useSelector(
     (state: RootState) => state.postListReducer.allPostList
   );
-  const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const [page, setPage] = useState(1);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);

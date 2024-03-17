@@ -64,13 +64,13 @@
 .back-btn {
   position: relative !important;
   top: 50%;
-  left: 120px;
+  left: 10px;
   transform: translateY(-50%);
 }
 .next-btn {
   position: absolute !important;
   top: 50%;
-  right: 12%;
+  right: 10px;
   transform: translateY(-50%);
 }
 .post-textField {
