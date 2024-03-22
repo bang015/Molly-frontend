@@ -7,7 +7,8 @@ import { getUser, postSignIn } from "../../Redux/auth";
 import "./index.css";
 import { useDispatch } from "react-redux";
 import { ReactComponent as Logo } from "../../icons/Molly.svg";
-import { ReactComponent as SmallLogo } from "../../icons/smallMolly.svg";
+import { IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 const SignInPage: React.FC = () => {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState<{ email: string; password: string }>(
@@ -25,7 +26,7 @@ const SignInPage: React.FC = () => {
     password: "",
     falseLogin: "",
   });
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, email: e.target.value });
     setHelperText({ ...helperText, email: "" });
@@ -57,7 +58,11 @@ const SignInPage: React.FC = () => {
       }
     }
   };
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
   const navigate = useNavigate();
   return (
     <div className="signup">
@@ -82,12 +87,24 @@ const SignInPage: React.FC = () => {
             <div className="signup-input-box">
               <TextField
                 className="signup-input"
-                type="text"
+                type={showPassword ? 'text' : 'password'}
                 label="비밀번호"
                 required
                 helperText={helperText.password}
                 onChange={handlePassword}
                 onKeyDown={handleEnter}
+                InputProps={{
+                  endAdornment:<InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+                }}
               />
             </div>
             <div className="false">{helperText.falseLogin}</div>

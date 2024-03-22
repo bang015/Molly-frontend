@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllPost } from "../../Redux/postList";
+import { clearPostDetail, getAllPost } from "../../Redux/postList";
 import { RootState } from "../../Redux";
 import Nav from "../../Components/Nav/navBar";
 import "./index.css";
@@ -34,6 +34,7 @@ const Explore: React.FC = () => {
   const closeModal = () => {
     setSelectedPostId(null);
     dispatch(clearComment());
+    dispatch(clearPostDetail());
   };
   return (
     <div className="mainPage">

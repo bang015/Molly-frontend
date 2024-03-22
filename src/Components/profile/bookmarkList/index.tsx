@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostList, getBookmarkPost } from "../../../Redux/postList";
+import { clearPostDetail, clearPostList, getBookmarkPost } from "../../../Redux/postList";
 import { RootState } from "../../../Redux";
 import PostDetail from "../../post/postDetail";
 import { clearComment } from "../../../Redux/comment";
@@ -26,6 +26,8 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
   const closeModal = () => {
     setSelectedPostId(null);
     dispatch(clearComment());
+    dispatch(clearPostDetail());
+
   };
   return (
     <div>

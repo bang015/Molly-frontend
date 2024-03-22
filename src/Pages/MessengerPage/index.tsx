@@ -21,6 +21,12 @@ const Messenger: React.FC = () => {
   useEffect(() => {
     if (socket && token) {
       socket.emit("getChatRoomList", token);
+      socket.on("newMessage", (data) => {
+        if (data.user.cUsers.id === user?.id || data.sendUser === user?.id) {
+          socket!.emit("getChatRoomList", token);
+          socket!.emit("getNotReadMessage", token);
+        }
+      });
     }
   }, [token, socket]);
   useEffect(() => {

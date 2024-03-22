@@ -24,9 +24,11 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
     if (socket && roomId && token) {
       socket.emit("getRoomInfo", { roomId, token });
       socket.on("newMessage", (data) => {
-        if (data.cUsers.id === user?.id && socket) {
+        if (data.user.cUsers.id === user?.id && socket) {
+        console.log(roomId)
+
           socket.emit("getRoomInfo", { roomId, token });
-          socket.emit("getChatRoomList", token);
+          
           socket.emit("getNotReadMessage", token);
         }
       });

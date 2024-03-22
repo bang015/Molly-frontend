@@ -81,7 +81,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
           }
         }
         if (!found) {
-          messageByDate1.push({ date: date, message: [data] });
+          messageByDate1.unshift({ date: date, message: [data] });
         }
         setMessageArr(messageByDate1);
       }
@@ -131,7 +131,6 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
                     >
                       {msg.userMessage.id === user?.id ? (
                         <div className="msg">
-                          <div>{msg.createdAt}</div>
                           <div className="myMessage message">{msg.message}</div>
                         </div>
                       ) : (

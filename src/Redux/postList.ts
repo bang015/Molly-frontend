@@ -95,7 +95,11 @@ const postListSlice = createSlice({
     clearPostList: (state) => {
       state.userPostList = [];
       state.bookmarkList = [];
+      state.mainPostList = [];
     },
+    clearPostDetail: (state) => {
+      state.getPostDetail = null;
+    }
   },
 });
 
@@ -111,6 +115,7 @@ export const {
   postUpdateList,
   postUpload,
   clearPostList,
+  clearPostDetail
 } = postListSlice.actions;
 export default postListSlice.reducer;
 
@@ -161,6 +166,7 @@ export const getAllPost = createAsyncThunk(
 export const getPostByPostId = createAsyncThunk(
   "postList/getPostByPostId",
   async (postId: number, { dispatch }) => {
+    dispatch(getListStart());
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`

@@ -28,6 +28,7 @@ import PostMoreModal from "../../EditDeleteModal/post";
 import DeleteModal from "../../EditDeleteModal/delete";
 import PostForm from "../postForm";
 import { useNavigate } from "react-router-dom";
+import { clearPostDetail } from "../../../Redux/postList";
 
 interface postListProps {
   post: postType;
@@ -117,6 +118,8 @@ const PostList: React.FC<postListProps> = ({post}) => {
   const closeModal = () => {
     setSelectedPostId(null);
     dispatch(clearComment());
+    dispatch(clearPostDetail());
+
   };
   // 게시물 수정, 삭제 모달
   const handleModalOpen = () => {

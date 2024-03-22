@@ -28,6 +28,7 @@ import Search from "../search/search";
 import { useLocation, useNavigate } from "react-router-dom";
 import { socket } from "../../../Redux/auth";
 import { resetResult } from "../../../Redux/search";
+import { clearPostList } from "../../../Redux/postList";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -74,13 +75,14 @@ const Nav: React.FC = () => {
         set_message(data);
       });
       socket.on("newMessage", (data) => {
-        if (data.cUsers.id === user?.id && socket) {
+        if (data.user.cUsers.id === user?.id && socket) {
           socket.emit("getNotReadMessage", token);
         }
       });
     }
   }, [socket, token]);
   const handleSignOut = () => {
+    dispatch(clearPostList());
     dispatch(signOut() as any);
   };
   const handleOpenModal = () => {

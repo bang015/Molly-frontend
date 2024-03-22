@@ -19,6 +19,7 @@
   display: flex;
 }
 .post-media {
+  background-color: white;
   max-height: 897px;
   max-width: 897px;
   aspect-ratio: 1 / 1;

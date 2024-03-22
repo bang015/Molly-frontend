@@ -4,11 +4,12 @@ import {
   IconButton,
   InputAdornment,
   Modal,
+  Skeleton,
   TextField,
 } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getPostByPostId } from "../../../Redux/postList";
+import { clearPostDetail, getPostByPostId } from "../../../Redux/postList";
 import { RootState } from "../../../Redux";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -63,6 +64,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const userPostList = useSelector(
     (state: RootState) => state.postListReducer.userPostList
   );
+  const getPostLoading = useSelector(
+    (state: RootState) => state.postListReducer.getPostLoading
+  );
   const navigate = useNavigate();
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;
@@ -81,7 +85,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [postConfig, setPostConfig] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     dispatch(getPostByPostId(postId) as any);
     const fetchData = async () => {
@@ -104,7 +108,6 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     };
     fetchData();
   }, [user, postId, page]);
-
   useEffect(() => {
     if (user?.id === post?.userId && userPostList.length) {
       const result = userPostList.filter((post) => post.id === postId);
@@ -164,6 +167,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
       }
     }
   }, [updatePending, updateCommentId]);
+  useEffect(() => {
+    post ? setLoading(false) : setLoading(true)
+  }, [post])
   const goToProfilePage = () => {
     if (post) {
       navigate(`/profile/${post.User.nickname}`);
@@ -290,49 +296,56 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
         <Modal open={postId !== null} onClose={onClose}>
           <div className="post-detail">
             <div className="post-container">
-              <div className="post-media">
-                {currentImageIndex > 0 && (
-                  <div className="c-back-btn">
-                    <IconButton
-                      aria-label="fingerprint"
-                      color="secondary"
-                      style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
-                      onClick={onPrevClick}
-                    >
-                      <ChevronLeftIcon style={{ color: "black" }} />
-                    </IconButton>
-                  </div>
-                )}
-                {post &&
-                  post.PostMedia &&
-                  post.PostMedia.length > 1 &&
-                  currentImageIndex < post.PostMedia.length - 1 && (
-                    <div className="c-next-btn">
+              {loading ? (
+                <div className="post-media">
+                  <Skeleton variant="rectangular" width={897} height={897} />
+                </div>
+              ) : (
+                <div className="post-media">
+                  {currentImageIndex > 0 && (
+                    <div className="c-back-btn">
                       <IconButton
                         aria-label="fingerprint"
                         color="secondary"
-                        style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }}
-                        onClick={onNextClick}
+                        style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                        onClick={onPrevClick}
                       >
-                        <NavigateNextIcon style={{ color: "black" }} />
+                        <ChevronLeftIcon style={{ color: "black" }} />
                       </IconButton>
                     </div>
                   )}
-                <div>
-                  <div
-                    className="medias-wrapper"
-                    style={{
-                      transform: `translateX(-${currentImageIndex * 100}%)`,
-                    }}
-                  >
-                    {post.PostMedia.map((media, index) => (
-                      <img key={index} src={media.path} alt="img" />
-                    ))}
+                  {post &&
+                    post.PostMedia &&
+                    post.PostMedia.length > 1 &&
+                    currentImageIndex < post.PostMedia.length - 1 && (
+                      <div className="c-next-btn">
+                        <IconButton
+                          aria-label="fingerprint"
+                          color="secondary"
+                          style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                          }}
+                          onClick={onNextClick}
+                        >
+                          <NavigateNextIcon style={{ color: "black" }} />
+                        </IconButton>
+                      </div>
+                    )}
+                  <div>
+                    <div
+                      className="medias-wrapper"
+                      style={{
+                        transform: `translateX(-${currentImageIndex * 100}%)`,
+                      }}
+                    >
+                      {post.PostMedia.map((media, index) => (
+                        <img key={index} src={media.path} alt="img" />
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
               <div className="post-comment">
                 <div className="comment-header">
                   <div className="ch1">

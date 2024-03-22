@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostList, getPostByUserId } from "../../../Redux/postList";
+import { clearPostDetail, clearPostList, getPostByUserId } from "../../../Redux/postList";
 import { RootState } from "../../../Redux";
 import "./index.css";
 import PostDetail from "../../post/postDetail";
@@ -34,6 +34,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   const closeModal = () => {
     setSelectedPostId(null);
     dispatch(clearComment());
+    dispatch(clearPostDetail());
   };
   const onPostOpen = () => {
     setPostConfig(true);
