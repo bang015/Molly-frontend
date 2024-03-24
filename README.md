@@ -2,9 +2,10 @@
 <h2>🔎 프로젝트 정보</h2>
 <div><b>📆 2023.12.19 ~ 2024.03.22 (94일)</b></div>
 <br>
-<div>웹 sns 프로젝트 Molly의 Front-End Repository 입니다. React.js 로 구현되었으며,</div>
+<div>웹 소셜 네트워크 서비스 Molly project의 Front-End Repository 입니다. React.js 로 구현되었으며,</div>
 <div>AWS 의 EC2를 이용한 NGINX 를 통해 배포하였습니다.</div>
-<div>배포 주소 : https://molly.n-e.kr/</div>
+<br>
+<div><b>배포 주소</b> : https://molly.n-e.kr/</div>
 <br>
 <h2>🛠 Stacks</h2>
 <div>
