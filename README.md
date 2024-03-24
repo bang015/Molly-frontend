@@ -13,5 +13,4 @@
   <img src="https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white"/>
   <img src="https://img.shields.io/badge/MUI-007fff?style=flat&logo=mui&logoColor=white"/>
 </div>
-<img src="https://github.com/bang015/Molly-frontend/assets/137017329/ab3fb965-33c7-4109-b8e3-bd885ff17f64"/>
-
+<img width="2242" alt="image" src="https://github.com/bang015/Molly-frontend/assets/137017329/5990a666-26b1-43cd-a185-b81c54312aa4">
