@@ -64,9 +64,6 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
   const userPostList = useSelector(
     (state: RootState) => state.postListReducer.userPostList
   );
-  const getPostLoading = useSelector(
-    (state: RootState) => state.postListReducer.getPostLoading
-  );
   const navigate = useNavigate();
   const textFieldRef = useRef<HTMLInputElement | null>(null);
   const crAt = post?.createdAt as string;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { commentType } from "../../../../Interfaces/comment";
 import { SubCommentList } from "../subCommentList";
 import { Avatar, IconButton } from "@mui/material";
@@ -24,7 +24,13 @@ export const CommentList: React.FC<commentListProps> = ({
 }) => {
   const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
+  const [newSub, setNewSub] = useState<boolean>(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    const check = newCommentList.some(c => c.id === comment.id);
+    if(check)
+    setNewSub(true);
+  }, [newCommentList]);
   const handleSubCommentList = () => {
     setIsSubCommentVisible(!isSubCommentVisible);
     const updatedCommentList = newCommentList.filter(
@@ -32,7 +38,6 @@ export const CommentList: React.FC<commentListProps> = ({
     );
     setNewCommentList(updatedCommentList);
   };
-
   const handleModalOpen = () => {
     setOpen(true);
   };
@@ -97,7 +102,7 @@ export const CommentList: React.FC<commentListProps> = ({
           onClose={handleModalClose}
         />
       )}
-      {comment.subcommentCount! > 0 && (
+      {(comment.subcommentCount! > 0 || newSub) && (
         <div className="cmb ml">
           <button onClick={handleSubCommentList}>
             <div className="cmll"></div>

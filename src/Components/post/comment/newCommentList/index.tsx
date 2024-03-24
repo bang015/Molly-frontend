@@ -17,11 +17,12 @@ export const NewCommentList: React.FC<newCommentListProps> = ({
 
   useEffect(() => {
     newComment();
-  }, [newCommentList]);
+  }, [newCommentList, id]);
   const newComment = () => {
     newCommentList.forEach((item) => {
       if (item.id === id) {
-        setSubComment([item.comment, ...subComment]);
+        const filteredSubComments  = subComment.filter((c) => c.id !== item.comment.id);
+        setSubComment([item.comment,...filteredSubComments]);
       }
     });
   };
