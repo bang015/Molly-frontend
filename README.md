@@ -24,13 +24,15 @@
   <li>localStorage를 사용하여 유저별 token 발급 및 로그인 상태 유지</li>
 </ul>
 
+![회원가입](./readme_assets/sign.gif)
 <h3>[팔로우 추천]</h3>
 <ul>
   <li>회원가입 후 첫 로그인 시 메인페이지가 아닌 추천 팔로우 페이지로 이동</li>
   <li>랜덤으로 유저들을 팔로우 추천</li>
   <li>본인을 팔로우하고있는 유저들을 추천</li>
 </ul>
-![추천 팔로우](https://github.com/bang015/Molly-frontend/assets/137017329/3e6c2625-3941-41b4-915d-2da930abd4cd)
+
+![추천 팔로우](./readme_assets/segFollw.gif)
 
 <h3>[메인 페이지]</h3>
 <ul>
@@ -38,6 +40,8 @@
   <li>게시물은 좋아요, 북마크 저장, 댓글작성 가능</li>
   <li>댓글 모두 보기 버튼을 통해 게시물 상세보기 가능</li>
 </ul>
+
+![](./readme_assets/segFollw.gif)
 
 <h3>[게시물 생성]</h3>
 <ul>
