@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/badge/MUI-007fff?style=flat&logo=mui&logoColor=white"/>
 </div>
 
-<img width="2242" alt="image" src="https://github.com/bang015/Molly-frontend/assets/137017329/ca561096-41ca-418e-a7f9-87a53a859cd4">
+<img width="2242" alt="image" src="https://github.com/bang015/Molly-frontend/assets/137017329/de2d441a-e431-45ea-bdbb-4ee7e8b9e8e9">
 
 <br>
 <h2>⚙ 핵심 기능</h2>
