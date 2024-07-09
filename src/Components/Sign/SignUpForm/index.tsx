@@ -3,18 +3,24 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import PropTypes from "prop-types";
 import {
   checkEmailValidation,
   checkNickValidation,
   checkNameValidation,
   checkPasswordValidation,
-} from "../../../Utils/validation";
-import { IUserforSignUp } from "../../../Interfaces/user";
+} from "@/utils/validation";
+import { IUserforSignUp } from "@/interfaces/user";
 
 interface SignUpFormProps {
   handleValidation: (user: IUserforSignUp, isValid: boolean) => void;
   handleEnter: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+interface field {
+  email: string;
+  name: string;
+  nickname: string;
+  password: string;
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
@@ -30,7 +36,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     nickname: "",
     password: "",
   });
-
   const [isValid, setIsValid] = useState<ValidationState>({
     email: false,
     name: false,
@@ -67,36 +72,32 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     handleValidation,
   ]);
 
-  const handleEmail = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, email: e.target.value });
-    const result = await checkEmailValidation(e.target.value);
-    setIsValid({ ...isValid, email: result.isValid });
-    setHelperText({ ...helperText, email: result.helperText });
-    setError({ ...error, email: !result.isValid });
+  const handleChange = async (
+    field: string,
+    value: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setUser((prevState) => ({
+      ...prevState,
+      [field]: value.target.value,
+    }));
+    const fieldInfo = inputFields.find((item) => item.field === field);
+    if (fieldInfo) {
+      const { validation, field } = fieldInfo;
+      const result = await validation(value.target.value);
+      setHelperText((prevHelperText) => ({
+        ...prevHelperText,
+        [field]: result.helperText,
+      }));
+      setIsValid((prevIsValid) => ({
+        ...prevIsValid,
+        [field]: result.isValid,
+      }));
+      setError((prevError) => ({
+        ...prevError,
+        [field]: !result.isValid,
+      }));
+    }
   };
-  const handleName = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, name: e.target.value });
-    const result = checkNameValidation(e.target.value);
-    setHelperText({ ...helperText, name: result.helperText });
-    setIsValid({ ...isValid, name: result.isValid });
-    setError({ ...error, name: !result.isValid });
-    console.log(isValid.name);
-  };
-  const handleNick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, nickname: e.target.value });
-    const result = await checkNickValidation(e.target.value);
-    setHelperText({ ...helperText, nickname: result.helperText });
-    setIsValid({ ...isValid, nickname: result.isValid });
-    setError({ ...error, nickname: !result.isValid });
-  };
-  const handlePassword = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, password: e.target.value });
-    const result = checkPasswordValidation(e.target.value);
-    setHelperText({ ...helperText, password: result.helperText });
-    setIsValid({ ...isValid, password: result.isValid });
-    setError({ ...error, password: !result.isValid });
-  };
-
   const handleFocus = (field: string) => {
     setFocusedField(field);
   };
@@ -119,83 +120,55 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     }
     return null;
   };
+  const inputFields = [
+    {
+      type: "email",
+      placeholder: "이메일을 입력해주세요.",
+      field: "email",
+      validation: checkEmailValidation,
+    },
+    {
+      type: "text",
+      placeholder: "성명을 입력해주세요.",
+      field: "name",
+      validation: checkNameValidation,
+    },
+    {
+      type: "text",
+      placeholder: "사용자 이름을 입력해주세요.",
+      field: "nickname",
+      validation: checkNickValidation,
+    },
+    {
+      type: "password",
+      placeholder: "비밀번호를 입력해주세요.",
+      field: "password",
+      validation: checkPasswordValidation,
+    },
+  ];
   return (
     <form>
-      <div className="signup-input-box">
+      {inputFields.map((fieldInfo) => (
+      <div className="signup-input-box" key={fieldInfo.field}>
         <TextField
           className="signup-input"
-          type="email"
-          placeholder="이메일을 입력해주세요."
-          required
-          helperText={focusedField !== "email" && helperText.email}
-          error={focusedField !== "email" &&error.email}
-          onFocus={() => handleFocus("email")}
+          type={fieldInfo.type}
+          placeholder={fieldInfo.placeholder}
+          onFocus={() => handleFocus(fieldInfo.field)}
           onBlur={handleBlur}
-          onChange={handleEmail}
+          required
+          helperText={focusedField !== fieldInfo.field && helperText[fieldInfo.field as keyof field]}
+          error={focusedField !== fieldInfo.field && error[fieldInfo.field as keyof field]}
+          onChange={(e) => handleChange(fieldInfo.field, e)}
           onKeyDown={handleEnter}
           InputProps={{
-            endAdornment: user.email !== "" && renderAdornment("email"),
+            endAdornment: user[fieldInfo.field as keyof typeof user] !== '' && renderAdornment(fieldInfo.field),
           }}
         />
       </div>
-      <div className="signup-input-box">
-        <TextField
-          className="signup-input"
-          type="text"
-          placeholder="성명을 입력해주세요."
-          onFocus={() => handleFocus("name")}
-          onBlur={handleBlur}
-          required
-          helperText={focusedField !== "name"&&helperText.name}
-          error={focusedField !== "name"&&error.name}
-          onChange={handleName}
-          onKeyDown={handleEnter}
-          InputProps={{
-            endAdornment: user.name !== "" && renderAdornment("name"),
-          }}
-        />
-      </div>
-      <div className="signup-input-box">
-        <TextField
-          className="signup-input"
-          type="text"
-          placeholder="사용자 이름을 입력해주세요."
-          onFocus={() => handleFocus("nickname")}
-          onBlur={handleBlur}
-          required
-          helperText={focusedField !== "nickname"&&helperText.nickname}
-          error={focusedField !== "nickname"&&error.nickname}
-          onChange={handleNick}
-          onKeyDown={handleEnter}
-          InputProps={{
-            endAdornment: user.nickname !== "" && renderAdornment("nickname"),
-          }}
-        />
-      </div>
-      <div className="signup-input-box">
-        <TextField
-          className="signup-input"
-          type="password"
-          placeholder="비밀번호를 입력해주세요."
-          onFocus={() => handleFocus("password")}
-          onBlur={handleBlur}
-          required
-          helperText={focusedField !== "password"&&helperText.password}
-          error={focusedField !== "password"&&error.password}
-          onChange={handlePassword}
-          onKeyDown={handleEnter}
-          InputProps={{
-            endAdornment: user.password !== "" && renderAdornment("password"),
-          }}
-        />
-      </div>
+    ))}
     </form>
   );
-};
-
-SignUpForm.propTypes = {
-  handleValidation: PropTypes.func.isRequired,
-  handleEnter: PropTypes.func.isRequired,
 };
 
 export default SignUpForm;

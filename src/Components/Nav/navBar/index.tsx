@@ -7,8 +7,8 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { ReactComponent as Logo } from "../../../icons/Molly.svg";
-import { ReactComponent as SmallLogo } from "../../../icons/smallMolly.svg";
+import Logo from "@/icons/molly-logo.svg?react";
+import SmallLogo from "@/icons/molly-small-logo.svg?react";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,16 +19,16 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
+import { RootState } from "@/redux";
 import "./index.css";
-import PostForm from "../../post/postForm";
-import { signOut } from "../../../Redux/auth";
-import PostLoading from "../../post/postLoading";
-import Search from "../search/search";
+import PostForm from "@/components/post/postForm";
+import { signOut } from "@/redux/auth";
+import PostLoading from "@/components/post/postLoading";
+import Search from "@/components/nav/search/search";
 import { useLocation, useNavigate } from "react-router-dom";
-import { socket } from "../../../Redux/auth";
-import { resetResult } from "../../../Redux/search";
-import { clearPostList } from "../../../Redux/postList";
+import { socket } from "@/redux/auth";
+import { resetResult } from "@/redux/search";
+import { clearPostList } from "@/redux/postList";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -209,7 +209,11 @@ const Nav: React.FC = () => {
                   style={{ width: 30, height: 30 }}
                 />
               </ListItemAvatar>
-              <ListItemText style={{fontFamily:"none"}} className="text" primary="Profile" />
+              <ListItemText
+                style={{ fontFamily: "none" }}
+                className="text"
+                primary="Profile"
+              />
             </ListItemButton>
           </div>
           <div className="nav-bottom">

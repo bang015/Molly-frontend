@@ -1,8 +1,13 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { updatePostType, uploadPostType } from "../Interfaces/post";
-import { INIT, POST_API } from "../Utils/api-url";
-import { getPostByPostId, postDelete, postUpdateList, postUpload } from "./postList";
+import { updatePostType, uploadPostType } from "../interfaces/post";
+import { INIT, POST_API } from "../utils/api-url";
+import {
+  getPostByPostId,
+  postDelete,
+  postUpdateList,
+  postUpload,
+} from "./postList";
 import { deletePostProfile } from "./profile";
 export interface updatedPost {
   postId: number | null;
@@ -36,7 +41,7 @@ const postSlice = createSlice({
     },
     postUpdate: (state) => {
       state.showSnackBar = true;
-      state.message="게시물이 수정되었습니다."
+      state.message = "게시물이 수정되었습니다.";
     },
     showSnackBar: (state, action: PayloadAction<string>) => {
       state.showSnackBar = true;

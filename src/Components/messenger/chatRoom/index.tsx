@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../../../Redux/auth";
+import { socket } from "@/redux/auth";
 import "./index.css";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import { userType } from "../../../Interfaces/user";
+import { RootState } from "@/redux";
+import { userType } from "@/interfaces/user";
 import { Avatar } from "@mui/material";
-import { messageType } from "../../../Interfaces/message";
+import { messageType } from "@/interfaces/message";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 interface chatRoomProps {
   roomId: number | null;
-  previousRoom: number |null;
+  previousRoom: number | null;
   handleCeateOpen: () => void;
 }
-const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRoom }) => {
+const ChatRoom: React.FC<chatRoomProps> = ({
+  roomId,
+  handleCeateOpen,
+  previousRoom,
+}) => {
   const token = useSelector((state: RootState) => state.authReducer.token);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const [message, setMessage] = useState("");
@@ -61,7 +65,6 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
     socket.emit("messageRead", { roomId, token });
     socket.on(`sendMessagesuccess`, (data: messageType): void => {
       if (data.roomId === roomId) {
-        console.log(1);
         const messageByDate1: { date: string; message: messageType[] }[] = [
           ...messageArr,
         ];

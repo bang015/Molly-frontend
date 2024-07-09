@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { followType } from "../../../Interfaces/follow";
-import { followUser, followedCheck } from "../../../Redux/follow";
+import { followType } from "@/interfaces/follow";
+import { followUser, followedCheck } from "@/redux/follow";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
+import { RootState } from "@/redux";
 import "./index.css";
 import {
   Avatar,
@@ -61,7 +61,6 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
         <ListItemAvatar onClick={goToProfilePage}>
           <Avatar
             src={user.ProfileImage?.path}
-            
             sx={type === "sug" ? { width: "50px", height: "50px" } : {}}
           />
         </ListItemAvatar>

@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostDetail, clearPostList, getPostByUserId } from "../../../Redux/postList";
-import { RootState } from "../../../Redux";
+import {
+  clearPostDetail,
+  clearPostList,
+  getPostByUserId,
+} from "@/redux/postList";
+import { RootState } from "@/redux";
 import "./index.css";
-import PostDetail from "../../post/postDetail";
-import { clearComment } from "../../../Redux/comment";
+import PostDetail from "@/components/post/postDetail";
+import { clearComment } from "@/redux/comment";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
-import PostForm from "../../post/postForm";
-import PostLoading from "../../post/postLoading";
+import PostForm from "@/components/post/postForm";
+import PostLoading from "@/components/post/postLoading";
 interface userPostListProps {
   userId: number;
 }

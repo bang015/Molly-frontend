@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { resultType } from "../../../../Interfaces/search";
+import React, { useState } from "react";
+import { resultType } from "@/interfaces/search";
 import { Avatar } from "@mui/material";
-import { ReactComponent as TagIcon } from "../../../../icons/tagIcon.svg";
+import TagIcon from "@/icons/tag-icon.svg?react"
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteSearchHistory,
-  saveSearchHistory,
-} from "../../../../Redux/search";
-import { RootState } from "../../../../Redux";
+import { deleteSearchHistory, saveSearchHistory } from "@/redux/search";
+import { RootState } from "@/redux";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 interface resultProps {
@@ -59,7 +56,7 @@ const Result: React.FC<resultProps> = ({ result, onClose, type }) => {
           </div>
         ) : (
           <div>
-            <TagIcon width={20} />
+            <TagIcon />
           </div>
         )}
       </div>

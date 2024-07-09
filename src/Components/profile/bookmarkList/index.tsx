@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostDetail, clearPostList, getBookmarkPost } from "../../../Redux/postList";
-import { RootState } from "../../../Redux";
-import PostDetail from "../../post/postDetail";
-import { clearComment } from "../../../Redux/comment";
+import {
+  clearPostDetail,
+  clearPostList,
+  getBookmarkPost,
+} from "@/redux/postList";
+import { RootState } from "@/redux";
+import PostDetail from "@/components/post/postDetail";
+import { clearComment } from "@/redux/comment";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 interface bookmarkListProps {
   userId: number;
@@ -27,13 +31,10 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
     setSelectedPostId(null);
     dispatch(clearComment());
     dispatch(clearPostDetail());
-
   };
   return (
     <div>
-      <div className="bookmarkT">
-        저장한 내용은 회원님만 볼 수 있습니다.
-      </div>
+      <div className="bookmarkT">저장한 내용은 회원님만 볼 수 있습니다.</div>
       {post.length ? (
         <div className="user_post">
           {post &&

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { addCommentType, commentType } from "../Interfaces/comment";
+import { addCommentType, commentType } from "../interfaces/comment";
 import axios from "axios";
-import { COMMENT_API, INIT } from "../Utils/api-url";
+import { COMMENT_API, INIT } from "../utils/api-url";
 import { showSnackBar } from "./post";
 interface commentState {
   deletComment: number[];

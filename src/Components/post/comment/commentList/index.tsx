@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { commentType } from "../../../../Interfaces/comment";
+import { commentType } from "@/interfaces/comment";
 import { SubCommentList } from "../subCommentList";
 import { Avatar, IconButton } from "@mui/material";
-import { displayCreateAt } from "../../../../Utils/moment";
+import { displayCreateAt } from "@/utils/moment";
 import { NewCommentList } from "../newCommentList";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "../../../EditDeleteModal/comment";
+import EditDeleteModal from "@/components/modal/comment";
 import { useNavigate } from "react-router-dom";
 
 interface commentListProps {
@@ -27,9 +27,8 @@ export const CommentList: React.FC<commentListProps> = ({
   const [newSub, setNewSub] = useState<boolean>(false);
   const navigate = useNavigate();
   useEffect(() => {
-    const check = newCommentList.some(c => c.id === comment.id);
-    if(check)
-    setNewSub(true);
+    const check = newCommentList.some((c) => c.id === comment.id);
+    if (check) setNewSub(true);
   }, [newCommentList]);
   const handleSubCommentList = () => {
     setIsSubCommentVisible(!isSubCommentVisible);
@@ -53,12 +52,7 @@ export const CommentList: React.FC<commentListProps> = ({
     <div key={comment.id}>
       <div className="cml">
         <div className="c1" onClick={goToProfilePage}>
-          <Avatar
-            alt="profile"
-            src={
-              comment.user.ProfileImage?.path
-            }
-          />
+          <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
         </div>
         <div style={{ flexGrow: 1 }}>
           <div className="c2" onClick={goToProfilePage}>

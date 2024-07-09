@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { INIT, POST_API } from "../Utils/api-url";
-import { postType } from "../Interfaces/post";
+import { INIT, POST_API } from "../utils/api-url";
+import { postType } from "../interfaces/post";
 import { updatedPost } from "./post";
 
 interface postListState {
@@ -76,9 +76,9 @@ const postListSlice = createSlice({
     postUpdateList: (state, action: PayloadAction<updatedPost>) => {
       const postList = [...state.mainPostList];
       let newList: postType[] = [];
-      for(let post of postList){
+      for (let post of postList) {
         if (post.id === action.payload.postId) {
-          post.content = action.payload.updatedPost!
+          post.content = action.payload.updatedPost!;
         }
         newList.push(post);
       }
@@ -99,7 +99,7 @@ const postListSlice = createSlice({
     },
     clearPostDetail: (state) => {
       state.getPostDetail = null;
-    }
+    },
   },
 });
 
@@ -115,7 +115,7 @@ export const {
   postUpdateList,
   postUpload,
   clearPostList,
-  clearPostDetail
+  clearPostDetail,
 } = postListSlice.actions;
 export default postListSlice.reducer;
 

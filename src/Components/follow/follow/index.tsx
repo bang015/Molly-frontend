@@ -1,13 +1,11 @@
 import { Modal } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./index.css";
-import { useDispatch, useSelector } from "react-redux";
-import { clearFollowList, getFollowing } from "../../../Redux/follow";
-import { RootState } from "../../../Redux";
-import FollowListUser from "../followListUser";
+import { useDispatch } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import FollowList from "../followList";
 import FollowerList from "../followerList";
+import { clearFollowList } from "@/redux/follow";
 interface followProps {
   userId: number;
   followOpen: boolean;

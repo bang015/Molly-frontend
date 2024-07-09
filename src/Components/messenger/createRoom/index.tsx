@@ -2,10 +2,10 @@ import { Avatar, Button, Modal } from "@mui/material";
 import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import "./index.css";
-import { getSearchResult } from "../../../Redux/search";
+import { getSearchResult } from "@/redux/search";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import { socket } from "../../../Redux/auth";
+import { RootState } from "@/redux";
+import { socket } from "@/redux/auth";
 interface createRoomProps {
   open: boolean;
   onClose: () => void;
@@ -26,11 +26,11 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
     setChatUser(e.target.value);
   };
   const handleCteartChat = () => {
-    if(socket && chatUser && token){
-      socket.emit("create-room",{chatUser,token})
+    if (socket && chatUser && token) {
+      socket.emit("create-room", { chatUser, token });
     }
     onClose();
-  }
+  };
   return (
     <Modal open={open} onClose={onClose}>
       <div className="post-detail">
@@ -50,10 +50,7 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
           <div className="result_list">
             {result.map((user) => (
               <label key={user.id} htmlFor={user.id.toString()}>
-                <div
-                  className="search_result"
-                  style={{ borderRadius: 0 }}
-                >
+                <div className="search_result" style={{ borderRadius: 0 }}>
                   <div className="se1">
                     <div>
                       <Avatar

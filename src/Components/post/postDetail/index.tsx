@@ -9,28 +9,27 @@ import {
 } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearPostDetail, getPostByPostId } from "../../../Redux/postList";
-import { RootState } from "../../../Redux";
+import { getPostByPostId } from "@/redux/postList";
+import { RootState } from "@/redux";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "./index.css";
-import { createdAt, displayCreateAt } from "../../../Utils/moment";
-import EmojiPicker from "emoji-picker-react";
+import { createdAt, displayCreateAt } from "@/utils/moment";
 import {
   addComment,
   clearComment,
   getComment,
   getMyCommentByPost,
   updateComment,
-} from "../../../Redux/comment";
-import { addCommentType, commentType } from "../../../Interfaces/comment";
+} from "@/redux/comment";
+import { addCommentType, commentType } from "@/interfaces/comment";
 import { CommentList } from "../comment/commentList";
-import { followUser, followedCheck } from "../../../Redux/follow";
-import { getPostLike, likePost } from "../../../Redux/like";
-import PostMoreModal from "../../EditDeleteModal/post";
-import DeleteModal from "../../EditDeleteModal/delete";
+import { followUser, followedCheck } from "@/redux/follow";
+import { getPostLike, likePost } from "@/redux/like";
+import PostMoreModal from "@/components/modal/post";
+import DeleteModal from "@/components/modal/delete";
 import PostUtilIcon from "../postUtilIcon";
 import PostLikeCount from "../postLikeCount";
 import PostForm from "../postForm";
@@ -165,8 +164,8 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
     }
   }, [updatePending, updateCommentId]);
   useEffect(() => {
-    post ? setLoading(false) : setLoading(true)
-  }, [post])
+    post ? setLoading(false) : setLoading(true);
+  }, [post]);
   const goToProfilePage = () => {
     if (post) {
       navigate(`/profile/${post.User.nickname}`);

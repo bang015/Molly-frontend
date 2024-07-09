@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getFollower } from "../../../Redux/follow";
-import { RootState } from "../../../Redux";
+import { getFollower } from "@/redux/follow";
+import { RootState } from "@/redux";
 import FollowListUser from "../followListUser";
 interface followerListProps {
   userId: number;

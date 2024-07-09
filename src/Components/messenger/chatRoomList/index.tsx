@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import { socket } from "../../../Redux/auth";
-import { userType } from "../../../Interfaces/user";
+import { RootState } from "@/redux";
+import { userType } from "@/interfaces/user";
 import { Avatar } from "@mui/material";
-import { messageType } from "../../../Interfaces/message";
-import { displayCreateAt } from "../../../Utils/moment";
+import { messageType } from "@/interfaces/message";
+import { displayCreateAt } from "@/utils/moment";
+import { socket } from "@/redux/auth";
 interface chatRoomListProps {
   roomId: number;
   handleChatRoom: (roomId: number) => void;
@@ -25,10 +25,10 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
       socket.emit("getRoomInfo", { roomId, token });
       socket.on("newMessage", (data) => {
         if (data.user.cUsers.id === user?.id && socket) {
-        console.log(roomId)
+          console.log(roomId);
 
           socket.emit("getRoomInfo", { roomId, token });
-          
+
           socket.emit("getNotReadMessage", token);
         }
       });

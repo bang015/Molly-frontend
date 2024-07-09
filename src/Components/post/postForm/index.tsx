@@ -7,16 +7,16 @@ import TextField from "@mui/material/TextField";
 import "./index.css";
 import { Avatar, Button, Modal } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import getCroppedImg, { getCropSize } from "../../../Utils/image-crop";
+import { RootState } from "@/redux";
+import getCroppedImg, { getCropSize } from "@/utils/image-crop";
 import {
   postType,
   updatePostType,
   uploadPostType,
-} from "../../../Interfaces/post";
-import { updatePost, uploadPost } from "../../../Redux/post";
+} from "@/interfaces/post";
+import { updatePost, uploadPost } from "@/redux/post";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
-import { getSearchResult, resetResult } from "../../../Redux/search";
+import { getSearchResult, resetResult } from "@/redux/search";
 interface PostModalProps {
   postConfig: boolean;
   onClose: () => void;
@@ -224,10 +224,10 @@ const PostForm: React.FC<PostModalProps> = ({
     }
   };
   const handleHasTag = (name: string) => {
-    const lastIndex = postContent.lastIndexOf('#');
-    const extractedString = postContent.substring(0, lastIndex+1);
-    setPostContent(extractedString+name);
-  }
+    const lastIndex = postContent.lastIndexOf("#");
+    const extractedString = postContent.substring(0, lastIndex + 1);
+    setPostContent(extractedString + name);
+  };
   return (
     <div>
       <Modal
@@ -393,7 +393,11 @@ const PostForm: React.FC<PostModalProps> = ({
                 </div>
                 <div className="tag_search">
                   {result.map((r) => (
-                    <div className="tag_result" key={r.id} onClick={()=> handleHasTag(r.name)}>
+                    <div
+                      className="tag_result"
+                      key={r.id}
+                      onClick={() => handleHasTag(r.name)}
+                    >
                       <div>#{r.name}</div>
                       <div>
                         <span>게시물 {r.tagCount}</span>

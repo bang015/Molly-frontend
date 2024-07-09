@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getFollowing } from "../../../Redux/follow";
-import { RootState } from "../../../Redux";
+import { getFollowing } from "@/redux/follow";
+import { RootState } from "@/redux";
 import FollowListUser from "../followListUser";
 interface followListProps {
   userId: number;
@@ -21,7 +21,7 @@ const FollowList: React.FC<followListProps> = ({ userId, keyword }) => {
   return (
     <div className="follow">
       {follow.map((user) => (
-        <FollowListUser key={user.id} user={user} type=""/>
+        <FollowListUser key={user.id} user={user} type="" />
       ))}
     </div>
   );

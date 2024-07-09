@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { INIT, USER_API } from "../Utils/api-url";
-import { userType } from "../Interfaces/user";
+import { INIT, USER_API } from "../utils/api-url";
+import { userType } from "../interfaces/user";
 import { showSnackBar } from "./post";
 
 interface profileState {
@@ -12,7 +12,7 @@ interface profileState {
 const initialState: profileState = {
   profile: null,
   updateProfile: null,
-  editLoading: false
+  editLoading: false,
 };
 const profileSlice = createSlice({
   name: "profile",
@@ -35,7 +35,12 @@ const profileSlice = createSlice({
     },
   },
 });
-export const { getProfileSuccess, deletePostProfile, updatedProfileStart, updatedProfileSucces } = profileSlice.actions;
+export const {
+  getProfileSuccess,
+  deletePostProfile,
+  updatedProfileStart,
+  updatedProfileSucces,
+} = profileSlice.actions;
 export default profileSlice.reducer;
 
 export const getProfile = createAsyncThunk(
@@ -49,5 +54,3 @@ export const getProfile = createAsyncThunk(
     }
   }
 );
-
-

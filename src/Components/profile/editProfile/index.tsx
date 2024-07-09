@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { userType } from "../../../Interfaces/user";
+import { userType } from "@/interfaces/user";
 import { Avatar, CircularProgress, Modal, TextField } from "@mui/material";
 import "./index.css";
 import {
   checkNameValidation,
   checkNickValidation,
-} from "../../../Utils/validation";
+} from "@/utils/validation";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../../Redux/auth";
-import { RootState } from "../../../Redux";
+import { updateUser } from "@/redux/auth";
+import { RootState } from "@/redux";
 import { useNavigate } from "react-router-dom";
 interface editProfileProps {
   open: boolean;

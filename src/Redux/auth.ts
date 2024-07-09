@@ -3,9 +3,9 @@ import {
   createAction,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import { userType, IUserforSignUp, updateProfile } from "../Interfaces/user";
+import { userType, IUserforSignUp, updateProfile } from "../interfaces/user";
 import axios from "axios";
-import { AUTH_API, INIT, USER_API } from "../Utils/api-url";
+import { AUTH_API, INIT, USER_API } from "../utils/api-url";
 import { showSnackBar } from "./post";
 import { updatedProfileSucces, updatedProfileStart } from "./profile";
 import io, { Socket } from "socket.io-client";
@@ -35,7 +35,7 @@ const initialState: AuthState = {
   token: sessionStorage.getItem("token"),
   user: null,
 };
-export let socket:Socket | null = null;
+export let socket: Socket | null = null;
 const authReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(setToken, (state, action) => {
@@ -76,15 +76,16 @@ export default authReducer;
 export const postUser = createAsyncThunk(
   "auth/postUser",
   async (userData: IUserforSignUp) => {
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`,
         userData
       );
       if (response.status === 200) {
-        console.log("성공띠"); // Success case
+        return true;
       } else {
-        console.log("실패!"); // Failure case
+        return false
       }
     } catch (error) {
       console.log("실패!"); // Error case
@@ -155,7 +156,6 @@ export const updateUser = createAsyncThunk(
     { dispatch }
   ) => {
     try {
-      console.log(newInfo);
       const formData = new FormData();
       if (newInfo.name) formData.append("name", newInfo.name);
       if (newInfo.nickname) formData.append("nickname", newInfo.nickname);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BOOKMARK_API, INIT } from "../Utils/api-url";
+import { BOOKMARK_API, INIT } from "../utils/api-url";
 
 export const bookmarkPost = async (token: string, postId: number) => {
   const response = await axios.post(

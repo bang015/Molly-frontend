@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getSubComment } from "../../../../Redux/comment";
+import { getSubComment } from "@/redux/comment";
 import { Avatar, IconButton } from "@mui/material";
-import { commentType } from "../../../../Interfaces/comment";
-import { displayCreateAt } from "../../../../Utils/moment";
+import { commentType } from "@/interfaces/comment";
+import { displayCreateAt } from "@/utils/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "../../../EditDeleteModal/comment";
+import EditDeleteModal from "@/components/modal/comment";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../Redux";
+import { RootState } from "@/redux";
 import { useNavigate } from "react-router-dom";
 
 interface subCommentListProps {
@@ -100,12 +100,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
               goToProfilePage(comment.user.nickname);
             }}
           >
-            <Avatar
-              alt="profile"
-              src={
-                comment.user.ProfileImage?.path
-              }
-            />
+            <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
           </div>
           <div style={{ flexGrow: 1 }}>
             <div

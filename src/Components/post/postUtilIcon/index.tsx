@@ -6,8 +6,8 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import { bookmarkPost, getPostBookmark } from "../../../Redux/bookmark";
+import { RootState } from "@/redux";
+import { bookmarkPost, getPostBookmark } from "@/redux/bookmark";
 
 interface postUtilIconProps {
   checkLiked: boolean;
@@ -35,11 +35,11 @@ const PostUtilIcon: React.FC<postUtilIconProps> = ({
     bookmark();
   }, [postId]);
   const handleBookmark = async () => {
-    if(token){
+    if (token) {
       const bookmark = await bookmarkPost(token, postId);
       setCheckBookmark(bookmark);
     }
-  }
+  };
   return (
     <section className={config ? "mSection1" : "section1"}>
       <div className="icon ficon">

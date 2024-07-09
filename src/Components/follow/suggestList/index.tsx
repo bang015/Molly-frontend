@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
+import { RootState } from "@/redux";
 import React, { useEffect } from "react";
-import { clearFollowList, getSuggestFollow } from "../../../Redux/follow";
+import { clearFollowList, getSuggestFollow } from "@/redux/follow";
 import "./index.css";
 import FollowListUser from "../followListUser";
 interface SuggestListProps {

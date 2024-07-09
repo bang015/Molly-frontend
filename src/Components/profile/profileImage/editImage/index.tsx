@@ -2,11 +2,11 @@ import { Modal } from "@mui/material";
 import React, { useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import "./index.css";
-import getCroppedImg from "../../../../Utils/image-crop";
+import getCroppedImg from "@/utils/image-crop";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../Redux";
-import { updateUser } from "../../../../Redux/auth";
-import { updateProfile } from "../../../../Interfaces/user";
+import { RootState } from "@/redux";
+import { updateUser } from "@/redux/auth";
+import { updateProfile } from "@/interfaces/user";
 interface editImageProps {
   open: boolean;
   onClose: () => void;
@@ -17,16 +17,15 @@ const EditImage: React.FC<editImageProps> = ({ open, onClose, showImage }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [profileImg, setProfileImg] = useState<Blob | null>(null);
-  const token = useSelector((state:RootState) => state.authReducer.token);
+  const token = useSelector((state: RootState) => state.authReducer.token);
   const onCropComplete = async (croppedAreaPixels: Area, croppedArea: Area) => {
     const profileImg = await getCroppedImg(showImage, croppedArea);
     setProfileImg(profileImg);
-    
   };
   const SaveProfileImg = () => {
-    if(token && profileImg){
-      const newInfo = {profileImg} as updateProfile;
-      dispatch(updateUser({token, newInfo}) as any);
+    if (token && profileImg) {
+      const newInfo = { profileImg } as updateProfile;
+      dispatch(updateUser({ token, newInfo }) as any);
     }
     onClose();
   };
@@ -42,7 +41,7 @@ const EditImage: React.FC<editImageProps> = ({ open, onClose, showImage }) => {
                   image={showImage}
                   crop={crop}
                   zoom={zoom}
-                  aspect={1/ 1}
+                  aspect={1 / 1}
                   onCropChange={setCrop}
                   onCropComplete={onCropComplete}
                   onZoomChange={setZoom}

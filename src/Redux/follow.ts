@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { FOLLOW_API, INIT } from "../Utils/api-url";
-import { followType } from "../Interfaces/follow";
+import { FOLLOW_API, INIT } from "../utils/api-url";
+import { followType } from "../interfaces/follow";
 
 interface checkFollowedState {
   check: boolean;
@@ -127,7 +127,14 @@ export const getSuggestFollow = createAsyncThunk(
 
 export const getFollowing = createAsyncThunk(
   "follow/getFollowing",
-  async ({userId, page, keyword}: {userId: number, page: number, keyword: string}, { dispatch }) => {
+  async (
+    {
+      userId,
+      page,
+      keyword,
+    }: { userId: number; page: number; keyword: string },
+    { dispatch }
+  ) => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/${userId}/?page=${page}&query=${keyword}`
@@ -141,7 +148,14 @@ export const getFollowing = createAsyncThunk(
 
 export const getFollower = createAsyncThunk(
   "follow/getFollower",
-  async ({userId, page, keyword}: {userId: number, page: number, keyword: string}, { dispatch }) => {
+  async (
+    {
+      userId,
+      page,
+      keyword,
+    }: { userId: number; page: number; keyword: string },
+    { dispatch }
+  ) => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/r/${userId}/?page=${page}&query=${keyword}`
@@ -151,7 +165,7 @@ export const getFollower = createAsyncThunk(
       }
     } catch {}
   }
-)
+);
 export const followedCheck = async (token: string, userId: number) => {
   try {
     const response = await axios.get(

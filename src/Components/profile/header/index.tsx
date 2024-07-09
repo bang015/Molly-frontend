@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { userType } from "../../../Interfaces/user";
+import { userType } from "@/interfaces/user";
 import { Avatar, CircularProgress } from "@mui/material";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
+import { RootState } from "@/redux";
 import {
   clearFollowList,
   followUser,
   followedCheck,
-} from "../../../Redux/follow";
-import Follow from "../../follow/follow";
+} from "@/redux/follow";
 import EditImage from "../profileImage/editImage";
 import EditProfile from "../editProfile";
+import Follow from "@/components/follow/follow";
 interface headerProps {
   profile: userType;
 }

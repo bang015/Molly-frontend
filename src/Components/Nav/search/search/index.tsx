@@ -6,9 +6,9 @@ import {
   getSearchHistory,
   getSearchResult,
   resetResult,
-} from "../../../../Redux/search";
+} from "@/redux/search";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../../Redux";
+import { RootState } from "@/redux";
 import Result from "../result";
 import { useLocation } from "react-router-dom";
 interface searchProps {

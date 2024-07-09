@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../Redux";
-import { postType } from "../../../Interfaces/post";
+import { RootState } from "@/redux";
+import { postType } from "@/interfaces/post";
 import "./index.css";
 import {
   Avatar,
@@ -13,27 +13,27 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { addCommentType, commentType } from "../../../Interfaces/comment";
+import { addCommentType, commentType } from "@/interfaces/comment";
 import {
   addComment,
   clearComment,
   getMyCommentByPost,
-} from "../../../Redux/comment";
+} from "@/redux/comment";
 import PostUtilIcon from "../postUtilIcon";
-import { getPostLike, likePost } from "../../../Redux/like";
+import { getPostLike, likePost } from "@/redux/like";
 import PostLikeCount from "../postLikeCount";
-import { displayCreateAt } from "../../../Utils/moment";
+import { displayCreateAt } from "@/utils/moment";
 import PostDetail from "../postDetail";
-import PostMoreModal from "../../EditDeleteModal/post";
-import DeleteModal from "../../EditDeleteModal/delete";
+import PostMoreModal from "@/components/modal/post";
+import DeleteModal from "@/components/modal/delete";
 import PostForm from "../postForm";
 import { useNavigate } from "react-router-dom";
-import { clearPostDetail } from "../../../Redux/postList";
+import { clearPostDetail } from "@/redux/postList";
 
 interface postListProps {
   post: postType;
 }
-const PostList: React.FC<postListProps> = ({post}) => {
+const PostList: React.FC<postListProps> = ({ post }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.authReducer.token);
@@ -67,8 +67,7 @@ const PostList: React.FC<postListProps> = ({post}) => {
   const onPrevClick = () => {
     setCurrentImageIndex(
       (prevIndex) =>
-        (prevIndex - 1 + post.PostMedia.length) %
-        post.PostMedia.length
+        (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length
     );
   };
   const onNextClick = () => {
@@ -119,7 +118,6 @@ const PostList: React.FC<postListProps> = ({post}) => {
     setSelectedPostId(null);
     dispatch(clearComment());
     dispatch(clearPostDetail());
-
   };
   // 게시물 수정, 삭제 모달
   const handleModalOpen = () => {
@@ -138,14 +136,14 @@ const PostList: React.FC<postListProps> = ({post}) => {
   // 게시물 수정 모달
   const onEditOpen = () => {
     setPostConfig(true);
-  }
+  };
   const onEditClose = () => {
     setPostConfig(false);
-  }
+  };
   // 게시물 수정 로딩
   const onEditLoadingOpen = () => {
     setLoading(true);
-  }
+  };
   return (
     <div className="container">
       <div className="ph1">
@@ -153,9 +151,7 @@ const PostList: React.FC<postListProps> = ({post}) => {
           <div>
             <Avatar
               alt="Remy Sharp"
-              src={
-                post.User.ProfileImage?.path
-              }
+              src={post.User.ProfileImage?.path}
               sx={{ width: 34, height: 34 }}
             />
           </div>
@@ -182,7 +178,12 @@ const PostList: React.FC<postListProps> = ({post}) => {
         deleteOpen={deleteOpen}
         onDeleteClose={onDeleteClose}
       />
-      <PostForm postConfig={postConfig} onClose={onEditClose} openModal={onEditLoadingOpen} post={post}/>
+      <PostForm
+        postConfig={postConfig}
+        onClose={onEditClose}
+        openModal={onEditLoadingOpen}
+        post={post}
+      />
       <div className="content">
         <div className="media">
           {currentImageIndex > 0 && (

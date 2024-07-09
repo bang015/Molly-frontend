@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
-import { commentType } from "../../../../Interfaces/comment";
-import { displayCreateAt } from "../../../../Utils/moment";
+import { commentType } from "@/interfaces/comment";
+import { displayCreateAt } from "@/utils/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 interface newCommentListProps {
@@ -21,8 +21,10 @@ export const NewCommentList: React.FC<newCommentListProps> = ({
   const newComment = () => {
     newCommentList.forEach((item) => {
       if (item.id === id) {
-        const filteredSubComments  = subComment.filter((c) => c.id !== item.comment.id);
-        setSubComment([item.comment,...filteredSubComments]);
+        const filteredSubComments = subComment.filter(
+          (c) => c.id !== item.comment.id
+        );
+        setSubComment([item.comment, ...filteredSubComments]);
       }
     });
   };
@@ -31,14 +33,9 @@ export const NewCommentList: React.FC<newCommentListProps> = ({
       {subComment.map((comment) => (
         <div key={comment.id} className="cml">
           <div className="c1">
-            <Avatar
-              alt="profile"
-              src={
-                comment.user.ProfileImage?.path
-              }
-            />
+            <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
           </div>
-          <div style={{"flexGrow": 1}}>
+          <div style={{ flexGrow: 1 }}>
             <div className="c2">
               <span>{comment.user.nickname}</span>
             </div>
