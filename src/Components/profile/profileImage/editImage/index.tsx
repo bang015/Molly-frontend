@@ -5,8 +5,8 @@ import "./index.css";
 import getCroppedImg from "@/utils/image-crop";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
-import { updateUser } from "@/redux/auth";
-import { updateProfile } from "@/interfaces/user";
+import { updateUser } from "@/redux/user";
+import { UpdateProfileInput } from "@/interfaces/user";
 interface editImageProps {
   open: boolean;
   onClose: () => void;
@@ -17,15 +17,14 @@ const EditImage: React.FC<editImageProps> = ({ open, onClose, showImage }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [profileImg, setProfileImg] = useState<Blob | null>(null);
-  const token = useSelector((state: RootState) => state.authReducer.token);
   const onCropComplete = async (croppedAreaPixels: Area, croppedArea: Area) => {
     const profileImg = await getCroppedImg(showImage, croppedArea);
     setProfileImg(profileImg);
   };
   const SaveProfileImg = () => {
-    if (token && profileImg) {
-      const newInfo = { profileImg } as updateProfile;
-      dispatch(updateUser({ token, newInfo }) as any);
+    if ( profileImg) {
+      const newInfo = { profileImg } as UpdateProfileInput;
+      dispatch(updateUser({ newInfo }) as any);
     }
     onClose();
   };

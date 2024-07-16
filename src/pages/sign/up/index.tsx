@@ -1,18 +1,18 @@
 import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postSignIn, postUser } from "@/redux/auth";
+import { signIn, createUser } from "@/redux/auth";
 import Paper from "@mui/material/Paper";
 import "./index.css";
 import { Link } from "react-router-dom";
-import { IUserforSignUp } from "@/interfaces/user";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
 import SignUpForm from "@/components/sign/SignUpForm";
 import { Button } from "@mui/material";
 import Logo from "@/icons/molly-logo.svg?react";
+import { SignUpInput } from "@/interfaces/auth";
 const SignUpPage: React.FC = () => {
   const [userState, setUserState] = useState<{
-    user: IUserforSignUp;
+    user: SignUpInput;
     isValid: boolean;
   }>({
     user: {},
@@ -24,7 +24,7 @@ const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleValidation = useCallback(
-    (user: IUserforSignUp, isValid: boolean) => {
+    (user: SignUpInput, isValid: boolean) => {
       if (isValid) setUserState({ user, isValid: true });
       else setUserState({ ...userState, isValid: false });
     },
@@ -32,22 +32,15 @@ const SignUpPage: React.FC = () => {
   );
 
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isValid && e.key == "Enter") handleSignUp(user, dispatch);
+    if (isValid && e.key == "Enter") handleSignUp(user);
   };
 
-  const handleSignUp = async (user: IUserforSignUp, dispatch: Dispatch) => {
+  const handleSignUp = async (user: SignUpInput) => {
     if (isValid) {
-      await dispatch(postUser(user) as any);
-      await dispatch(
-        postSignIn({ email: user.email!, password: user.password! }) as any
-      );
+      await dispatch(createUser(user) as any);
     }
+  };
 
-    navigate("/");
-  };
-  const handleSignUpBtn = () => {
-    handleSignUp(user, dispatch);
-  };
   return (
     <div className="signup">
       <div className="signup-container">
@@ -61,7 +54,13 @@ const SignUpPage: React.FC = () => {
               handleValidation={handleValidation}
               handleEnter={handleEnter}
             />
-            <Button className="signup-btn1" onClick={handleSignUpBtn}>
+            <Button
+              className="signup-btn1"
+              disabled={!isValid}
+              onClick={() => {
+                handleSignUp(user);
+              }}
+            >
               가입
             </Button>
             <div className="goToSignIn">

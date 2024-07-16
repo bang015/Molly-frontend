@@ -4,35 +4,31 @@ import "./index.css";
 import { deletePost } from "@/redux/post";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
-interface deleteModalProps {
-  postId: number;
-  deleteOpen: boolean;
-  onDeleteClose: () => void;
-}
-const DeleteModal: React.FC<deleteModalProps> = ({
-  postId,
-  deleteOpen,
-  onDeleteClose,
-}) => {
+import { closeModal } from "@/redux/modal";
+
+const DeleteModal: React.FC = () => {
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state.authReducer.token);
+  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer);
   const userPostList = useSelector(
     (state: RootState) => state.postListReducer.userPostList
   );
-  useEffect(() => {
-    const result = userPostList.filter((post) => post.id === postId);
-    if (result.length === 0) {
-      onDeleteClose();
-    }
-  }, [userPostList, postId]);
   const postDelete = async () => {
-    if (token) {
-      dispatch(deletePost({ token, postId }) as any);
+    if ( id) {
+      const result = await dispatch(deletePost({ postId: id }) as any);
+      if(result) {
+        dispatch(closeModal());
+      }
     }
   };
+  console.log(isOpen);
   return (
     <div>
-      <Modal open={deleteOpen} onClose={onDeleteClose}>
+      <Modal
+        open={isOpen}
+        onClose={() => {
+          dispatch(closeModal());
+        }}
+      >
         <div className="post-detail">
           <div className="modal-container">
             <div className="dbtnt">게시물을 삭제할까요?</div>
@@ -42,7 +38,12 @@ const DeleteModal: React.FC<deleteModalProps> = ({
               </button>
             </div>
             <div className="editBtn">
-              <button className="mbtn2" onClick={onDeleteClose}>
+              <button
+                className="mbtn2"
+                onClick={() => {
+                  dispatch(closeModal());
+                }}
+              >
                 취소
               </button>
             </div>

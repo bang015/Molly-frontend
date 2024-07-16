@@ -83,7 +83,12 @@
   top: 6;
   padding: 0 !important;
 }
-
+.close-btn{
+  position: absolute !important;
+  right: 0;
+  top: 6;
+  padding: 0 !important;
+}
 .ipicon{
   text-align: center;
   padding: 20px;

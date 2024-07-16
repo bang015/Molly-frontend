@@ -1,81 +1,65 @@
-import React, { useState } from "react";
-import { userType } from "@/interfaces/user";
-import { Avatar, CircularProgress, Modal, TextField } from "@mui/material";
-import "./index.css";
-import {
-  checkNameValidation,
-  checkNickValidation,
-} from "@/utils/validation";
-import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "@/redux/auth";
-import { RootState } from "@/redux";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { UserType } from '@/interfaces/user'
+import { Avatar, CircularProgress, Modal, TextField } from '@mui/material'
+import './index.css'
+import { checkNameValidation, checkNickValidation } from '@/utils/validation'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateUser } from '@/redux/user'
+import { RootState } from '@/redux'
+import { useNavigate } from 'react-router-dom'
 interface editProfileProps {
-  open: boolean;
-  onClose: () => void;
-  profile: userType;
+  open: boolean
+  onClose: () => void
+  profile: UserType
 }
-const EditProfile: React.FC<editProfileProps> = ({
-  open,
-  onClose,
-  profile,
-}) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const loading = useSelector(
-    (state: RootState) => state.profileReducer.editLoading
-  );
+const EditProfile: React.FC<editProfileProps> = ({ open, onClose, profile }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const loading = useSelector((state: RootState) => state.userReducer.editLoading)
   const [newInfo, setNewInfo] = useState({
     name: profile.name,
     nickname: profile.nickname,
     introduce: profile.introduce,
-  });
+  })
   const [error, setError] = useState({
     name: false,
     nickname: false,
-  });
+  })
   const [isValid, setIsValid] = useState({
     name: true,
     nickname: true,
-  });
+  })
   const [helperText, setHelperText] = useState({
-    name: "",
-    nickname: "",
-  });
+    name: '',
+    nickname: '',
+  })
   const handleNickname = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewInfo({ ...newInfo, nickname: e.target.value });
-    const result = await checkNickValidation(e.target.value);
-    if (result.helperText === "이미 사용 중인 이름입니다.") {
-      setIsValid({ ...isValid, nickname: true });
-      setHelperText({ ...helperText, nickname: "" });
-      setError({ ...error, nickname: false });
-    } else {
-      setIsValid({ ...isValid, nickname: result.isValid });
-      setHelperText({ ...helperText, nickname: result.helperText });
-      setError({ ...error, nickname: !result.isValid });
-    }
-  };
+    setNewInfo({ ...newInfo, nickname: e.target.value })
+    const result = await checkNickValidation(e.target.value)
+    setIsValid({ ...isValid, nickname: result.isValid })
+    setHelperText({ ...helperText, nickname: result.helperText })
+    setError({ ...error, nickname: !result.isValid })
+  }
   const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewInfo({ ...newInfo, name: e.target.value });
-    const result = checkNameValidation(e.target.value);
-    setIsValid({ ...isValid, name: result.isValid });
-    setHelperText({ ...helperText, name: result.helperText });
-    setError({ ...error, name: !result.isValid });
-  };
+    setNewInfo({ ...newInfo, name: e.target.value })
+    const result = checkNameValidation(e.target.value)
+    setIsValid({ ...isValid, name: result.isValid })
+    setHelperText({ ...helperText, name: result.helperText })
+    setError({ ...error, name: !result.isValid })
+  }
   const handleIntroduce = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewInfo({ ...newInfo, introduce: e.target.value });
-  };
+    setNewInfo({ ...newInfo, introduce: e.target.value })
+  }
   const editProfile = () => {
-    if (isValid.nickname && isValid.name && token) {
-      console.log(newInfo);
-      dispatch(updateUser({ token, newInfo }) as any).then(() => {
-        const newProfile = `/profile/${newInfo.nickname}`;
-        navigate(newProfile);
-      });
-      onClose();
+    if (isValid.nickname && isValid.name) {
+      console.log(newInfo)
+      dispatch(updateUser({ newInfo }) as any).then(() => {
+        const newProfile = `/profile/${newInfo.nickname}`
+        navigate(newProfile)
+      })
+      onClose()
     }
-  };
+  }
   return (
     <div>
       <Modal open={open} onClose={onClose}>
@@ -90,10 +74,7 @@ const EditProfile: React.FC<editProfileProps> = ({
                       <CircularProgress />
                     </div>
                   )}
-                  <Avatar
-                    src={profile.ProfileImage?.path}
-                    sx={{ width: 150, height: 150 }}
-                  />
+                  <Avatar src={profile.profileImage?.path} sx={{ width: 150, height: 150 }} />
                 </label>
               </div>
               <div className="info">
@@ -132,7 +113,7 @@ const EditProfile: React.FC<editProfileProps> = ({
                 InputProps={{
                   style: {
                     padding: 5,
-                    transition: "none",
+                    transition: 'none',
                   },
                 }}
               />
@@ -145,7 +126,7 @@ const EditProfile: React.FC<editProfileProps> = ({
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default EditProfile;
+export default EditProfile

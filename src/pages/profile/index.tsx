@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
 import Nav from "@/components/nav/navBar";
-import { getProfile } from "@/redux/profile";
+import { getProfile } from "@/redux/user";
 import AppsIcon from "@mui/icons-material/Apps";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import UserPostList from "@/components/profile/userPostList";
@@ -13,30 +13,21 @@ import BookmarkList from "@/components/profile/bookmarkList";
 
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const profile = useSelector(
-    (state: RootState) => state.profileReducer.profile
+  const { profile } = useSelector((state: RootState) => state.userReducer);
+  const {checkFollowed} = useSelector(
+    (state: RootState) => state.followReducer
   );
-  const updateProfile = useSelector(
-    (state: RootState) => state.profileReducer.updateProfile
-  );
-  const chekcFollowed = useSelector(
-    (state: RootState) => state.followReducer.chekcFollowed
-  );
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [value, setValue] = useState<number>(1);
+  const [selection, setSelection] = useState<string>("post");
   const { nickname } = useParams();
   useEffect(() => {
     if (nickname) {
       dispatch(getProfile(nickname) as any);
     }
-  }, [nickname, chekcFollowed, updateProfile]);
+  }, [nickname, checkFollowed]);
   return (
     <div className="mainPage">
-      <div className="nav-container">
-        <Nav></Nav>
-      </div>
+      <Nav />
       <div className="pcontent">
         {profile ? (
           <div className="prfile">
@@ -45,9 +36,9 @@ const ProfilePage: React.FC = () => {
               <div className="menu">
                 <div>
                   <button
-                    className={value === 1 ? "click" : ""}
+                    className={selection === "post" ? "click" : ""}
                     onClick={() => {
-                      setValue(1);
+                      setSelection("post");
                     }}
                   >
                     <AppsIcon />
@@ -57,9 +48,9 @@ const ProfilePage: React.FC = () => {
                 {profile.id === user?.id && (
                   <div style={{ marginLeft: 60 }}>
                     <button
-                      className={value === 2 ? "click" : ""}
+                      className={selection === "bookmark" ? "click" : ""}
                       onClick={() => {
-                        setValue(2);
+                        setSelection("bookmark");
                       }}
                     >
                       <BookmarkBorderIcon />
@@ -69,12 +60,12 @@ const ProfilePage: React.FC = () => {
                 )}
               </div>
               <div>
-                {value === 1 && (
+                {selection === "post" && (
                   <div>
                     <UserPostList userId={profile.id!} />
                   </div>
                 )}
-                {value === 2 && (
+                {selection === "bookmark" && (
                   <div>
                     <BookmarkList userId={profile.id!} />
                   </div>

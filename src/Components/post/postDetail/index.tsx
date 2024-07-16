@@ -6,290 +6,222 @@ import {
   Modal,
   Skeleton,
   TextField,
-} from "@mui/material";
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getPostByPostId } from "@/redux/postList";
-import { RootState } from "@/redux";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import "./index.css";
-import { createdAt, displayCreateAt } from "@/utils/moment";
+} from '@mui/material'
+import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearPostDetail, getPostByPostId } from '@/redux/postList'
+import { RootState } from '@/redux'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import './index.css'
+import { createdAt, displayCreateAt } from '@/utils/format/moment'
 import {
   addComment,
   clearComment,
   getComment,
   getMyCommentByPost,
   updateComment,
-} from "@/redux/comment";
-import { addCommentType, commentType } from "@/interfaces/comment";
-import { CommentList } from "../comment/commentList";
-import { followUser, followedCheck } from "@/redux/follow";
-import { getPostLike, likePost } from "@/redux/like";
-import PostMoreModal from "@/components/modal/post";
-import DeleteModal from "@/components/modal/delete";
-import PostUtilIcon from "../postUtilIcon";
-import PostLikeCount from "../postLikeCount";
-import PostForm from "../postForm";
-import { useNavigate } from "react-router-dom";
+} from '@/redux/comment'
+import { addCommentType, commentType } from '@/interfaces/comment'
+import { CommentList } from '../comment/commentList'
+import { followUser, followedCheck } from '@/redux/follow'
+import { getPostLike, likePost } from '@/redux/like'
+import PostUtilIcon from '../postUtilIcon'
+import PostLikeCount from '../postLikeCount'
+import { useNavigate } from 'react-router-dom'
+import { closeModal, openModal } from '@/redux/modal'
 interface PostDetailModalProps {
-  postId: number;
-  onClose: () => void;
+  postId: number
+  onClose: () => void
 }
-const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
-  const dispatch = useDispatch();
-  const post = useSelector(
-    (state: RootState) => state.postListReducer.getPostDetail
-  );
-  const updatePending = useSelector(
-    (state: RootState) => state.commentReducer.updatePending
-  );
-  const updateCommentId = useSelector(
-    (state: RootState) => state.commentReducer.updateCommentId
-  );
-  const updatedComment = useSelector(
-    (state: RootState) => state.commentReducer.updatedComment
-  );
-  const deleteComment = useSelector(
-    (state: RootState) => state.commentReducer.deletComment
-  );
-  const Followed = useSelector(
-    (state: RootState) => state.followReducer.chekcFollowed
-  );
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const userPostList = useSelector(
-    (state: RootState) => state.postListReducer.userPostList
-  );
-  const navigate = useNavigate();
-  const textFieldRef = useRef<HTMLInputElement | null>(null);
-  const crAt = post?.createdAt as string;
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [comment, setComment] = useState("");
-  const [commentId, setCommentId] = useState<number | null>(null);
-  const [page, setPage] = useState(1);
-  const [commentList, setCommentList] = useState<commentType[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [newCommentList, setNewCommentList] = useState<
-    { id: number; comment: commentType }[]
-  >([]);
-  const [likeCount, setLikeCount] = useState<number>(0);
-  const [checkLiked, setCheckLiked] = useState(false);
-  const [checkFollowed, setCheckFollowed] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [postConfig, setPostConfig] = useState(false);
-  const [loading, setLoading] = useState(true);
+const PostDetail: React.FC = () => {
+  const dispatch = useDispatch()
+  const post = useSelector((state: RootState) => state.postListReducer.getPostDetail)
+  const { updatePending, updateCommentId, updatedComment, deleteComment } = useSelector(
+    (state: RootState) => state.commentReducer,
+  )
+  const Followed = useSelector((state: RootState) => state.followReducer.checkFollowed)
+  const { user } = useSelector((state: RootState) => state.authReducer)
+  const userPostList = useSelector((state: RootState) => state.postListReducer.userPostList)
+  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
+  const navigate = useNavigate()
+  const textFieldRef = useRef<HTMLInputElement | null>(null)
+  const crAt = post?.createdAt as string
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
+  const [comment, setComment] = useState('')
+  const [commentId, setCommentId] = useState<number | null>(null)
+  const [page, setPage] = useState(1)
+  const [commentList, setCommentList] = useState<commentType[]>([])
+  const [totalPages, setTotalPages] = useState<number>(0)
+  const [newCommentList, setNewCommentList] = useState<{ id: number; comment: commentType }[]>([])
+  const [likeCount, setLikeCount] = useState<number>(0)
+  const [checkLiked, setCheckLiked] = useState(false)
+  const [checkFollowed, setCheckFollowed] = useState(false)
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
-    dispatch(getPostByPostId(postId) as any);
+    dispatch(getPostByPostId(id!) as any)
     const fetchData = async () => {
       if (user) {
-        const otherCommentResult = await getComment(user.id!, postId, page);
+        const otherCommentResult = await getComment(user.id!, id!, page)
         if (page === 1) {
-          const myCommentResult = await getMyCommentByPost(user.id!, postId);
-          setCommentList([
-            ...myCommentResult.commentList,
-            ...otherCommentResult.commentList,
-          ]);
+          const myCommentResult = await getMyCommentByPost(user.id!, id!)
+          setCommentList([...myCommentResult.commentList, ...otherCommentResult.commentList])
         } else {
-          setCommentList((prevList) => [
-            ...prevList,
-            ...otherCommentResult.commentList,
-          ]);
+          setCommentList(prevList => [...prevList, ...otherCommentResult.commentList])
         }
-        setTotalPages(otherCommentResult.totalPages);
+        setTotalPages(otherCommentResult.totalPages)
       }
-    };
-    fetchData();
-  }, [user, postId, page]);
+    }
+    fetchData()
+  }, [user, id!, page])
   useEffect(() => {
     if (user?.id === post?.userId && userPostList.length) {
-      const result = userPostList.filter((post) => post.id === postId);
+      const result = userPostList.filter(post => post.id === id!)
       if (result.length === 0) {
-        onClose();
+        ;() => dispatch(closeModal())
       }
     }
-  }, [userPostList, postId, post]);
+  }, [userPostList, id!, post])
 
   useEffect(() => {
-    followCheck();
-  }, [user, post, Followed]);
+    followCheck()
+  }, [user, post, Followed])
   const followCheck = async () => {
-    if (token && post) {
-      const result = await followedCheck(token, post.userId);
-      setCheckFollowed(result);
+    if (post) {
+      const result = await followedCheck(post.userId)
+      setCheckFollowed(result)
     }
-  };
+  }
   useEffect(() => {
     const like = async () => {
-      const result = await getPostLike(token!, postId);
-      setLikeCount(result.count);
-      setCheckLiked(result.checkLiked);
-    };
-    like();
-  }, [postId, checkLiked]);
+      const result = await getPostLike(id!)
+      setLikeCount(result.count)
+      setCheckLiked(result.checkLiked)
+    }
+    like()
+  }, [id!, checkLiked])
   useEffect(() => {
     if (deleteComment.length !== 0) {
-      const CommentList = commentList.filter(
-        (item) => !deleteComment.includes(item.id)
-      );
-      setCommentList(CommentList);
+      const CommentList = commentList.filter(item => !deleteComment.includes(item.id))
+      setCommentList(CommentList)
     }
-  }, [deleteComment]);
+  }, [deleteComment])
 
   useEffect(() => {
     if (updatedComment) {
-      const updatedCommentIndex = commentList.findIndex(
-        (map) => map.id === updatedComment?.id
-      );
+      const updatedCommentIndex = commentList.findIndex(map => map.id === updatedComment?.id)
       if (updatedCommentIndex !== -1) {
-        const updatedCommentList = [...commentList];
-        updatedCommentList[updatedCommentIndex] = updatedComment;
-        setCommentList(updatedCommentList);
+        const updatedCommentList = [...commentList]
+        updatedCommentList[updatedCommentIndex] = updatedComment
+        setCommentList(updatedCommentList)
       }
     }
-  }, [updatedComment]);
+  }, [updatedComment])
 
   useEffect(() => {
     if (updatePending) {
       if (updateCommentId) {
-        const originalText = updateCommentId.content.replace(/<[^>]+>/g, "");
-        setComment(originalText);
+        const originalText = updateCommentId.content.replace(/<[^>]+>/g, '')
+        setComment(originalText)
         if (textFieldRef.current) {
-          textFieldRef.current.focus();
+          textFieldRef.current.focus()
         }
       }
     }
-  }, [updatePending, updateCommentId]);
+  }, [updatePending, updateCommentId])
   useEffect(() => {
-    post ? setLoading(false) : setLoading(true);
-  }, [post]);
+    post ? setLoading(false) : setLoading(true)
+  }, [post])
   const goToProfilePage = () => {
     if (post) {
-      navigate(`/profile/${post.User.nickname}`);
+      navigate(`/profile/${post.User.nickname}`)
     }
-  };
+  }
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const commentContent = e.target.value;
-    if (!commentContent.includes("@")) {
-      setCommentId(null);
+    const commentContent = e.target.value
+    if (!commentContent.includes('@')) {
+      setCommentId(null)
     }
-    setComment(commentContent);
-  };
+    setComment(commentContent)
+  }
   const onPrevClick = () => {
     if (post) {
       setCurrentImageIndex(
-        (prevIndex) =>
-          (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length
-      );
+        prevIndex => (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length,
+      )
     }
-  };
+  }
   const onNextClick = (): void => {
     if (post) {
-      setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % post.PostMedia.length
-      );
+      setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.PostMedia.length)
     }
-  };
+  }
   const handleChatClick = () => {
     if (textFieldRef.current) {
-      textFieldRef.current.focus();
+      textFieldRef.current.focus()
     }
-  };
+  }
   const handlePostComment = async () => {
     const commentContent = comment
-      .replace(/\n/g, "<br>")
-      .replace(
-        /@([^\s]+)/g,
-        '<span style="color: rgb(0, 55, 107);">@$1</span>'
-      );
+      .replace(/\n/g, '<br>')
+      .replace(/@([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">@$1</span>')
     const commentInfo: addCommentType = {
-      postId: postId,
+      postId: id!,
       content: commentContent,
       commentId: commentId,
-    };
-    if (token) {
-      const comment = await addComment(token, commentInfo);
-      if (comment.commentId === null) {
-        setCommentList([comment, ...commentList]);
-      } else {
-        const id = comment.commentId;
-        const commentlist = { id, comment };
-        setNewCommentList([...newCommentList, commentlist]);
-      }
     }
-    setComment("");
-    setCommentId(null);
-  };
+    const newComment = await addComment(commentInfo)
+    if (newComment.commentId === null) {
+      setCommentList([newComment, ...commentList])
+    } else {
+      const id: number = newComment.commentId
+      const commentlist = { id, comment: newComment }
+      setNewCommentList([...newCommentList, commentlist])
+    }
+    setComment('')
+    setCommentId(null)
+  }
   const handleUpdateComment = async () => {
     const commentContent = comment
-      .replace(/\n/g, "<br>")
-      .replace(
-        /@([^\s]+)/g,
-        '<span style="color: rgb(0, 55, 107);">@$1</span>'
-      );
-    const id = updateCommentId?.id;
-    const content = commentContent;
-    if (token && id) {
-      dispatch(updateComment({ token, id, content }) as any);
+      .replace(/\n/g, '<br>')
+      .replace(/@([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">@$1</span>')
+    const id = updateCommentId?.id
+    const content = commentContent
+    if (id) {
+      dispatch(updateComment({ id, content }) as any)
     }
-    setComment("");
-    dispatch(clearComment());
-  };
+    setComment('')
+    dispatch(clearComment())
+  }
   const handleSubComment = (nickname: string, commentId: number) => {
     if (textFieldRef.current) {
-      textFieldRef.current.focus();
+      textFieldRef.current.focus()
     }
-    setCommentId(commentId);
-    setComment(`@${nickname} `);
-  };
+    setCommentId(commentId)
+    setComment(`@${nickname} `)
+  }
   const handleNextPage = () => {
-    if (totalPages > page) setPage(page + 1);
-  };
+    if (totalPages > page) setPage(page + 1)
+  }
   const handleFollow = () => {
-    if (token) {
-      const followUserId = post?.userId!;
-      dispatch(followUser({ token, followUserId }) as any);
-    }
-  };
+    const followUserId = post?.userId!
+    dispatch(followUser({ followUserId }) as any)
+  }
   const handleLike = async () => {
-    if (token) {
-      const check = await likePost(token, postId);
-      setCheckLiked(check);
-    }
-  };
-  // 게시물 수정, 삭제 모달
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-  const handleModalClose = () => {
-    setOpen(false);
-  };
-  // 게시물 삭제 확인 모달
-  const onDeleteOpen = () => {
-    setDeleteOpen(true);
-  };
-  const onDeleteClose = () => {
-    setDeleteOpen(false);
-  };
-  // 게시물 수정 모달
-  const onEditOpen = () => {
-    setPostConfig(true);
-  };
-  const onEditClose = () => {
-    setPostConfig(false);
-  };
-  // 게시물 수정 로딩 모달
-  const onEditLoadingOpen = () => {
-    setLoading(true);
-  };
-
+    const check = await likePost(id!)
+    setCheckLiked(check)
+  }
+  const close = () => {
+    dispatch(closeModal())
+    dispatch(clearComment())
+    dispatch(clearPostDetail())
+  }
   return (
     <div>
       {post && (
-        <Modal open={postId !== null} onClose={onClose}>
+        <Modal open={isOpen} onClose={close}>
           <div className="post-detail">
             <div className="post-container">
               {loading ? (
@@ -303,10 +235,10 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       <IconButton
                         aria-label="fingerprint"
                         color="secondary"
-                        style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
+                        style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}
                         onClick={onPrevClick}
                       >
-                        <ChevronLeftIcon style={{ color: "black" }} />
+                        <ChevronLeftIcon style={{ color: 'black' }} />
                       </IconButton>
                     </div>
                   )}
@@ -319,11 +251,11 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
                           }}
                           onClick={onNextClick}
                         >
-                          <NavigateNextIcon style={{ color: "black" }} />
+                          <NavigateNextIcon style={{ color: 'black' }} />
                         </IconButton>
                       </div>
                     )}
@@ -341,18 +273,12 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                   </div>
                 </div>
               )}
-
               <div className="post-comment">
                 <div className="comment-header">
                   <div className="ch1">
                     <div className="cht1">
                       <div className="pi" onClick={goToProfilePage}>
-                        {post && (
-                          <Avatar
-                            alt="Remy Sharp"
-                            src={post?.User?.ProfileImage?.path}
-                          />
-                        )}
+                        {post && <Avatar alt="Remy Sharp" src={post?.User?.ProfileImage?.path} />}
                       </div>
                       <div className="uf">
                         <div className="un" onClick={goToProfilePage}>
@@ -369,29 +295,22 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       </div>
                     </div>
                     <div className="mb">
-                      <IconButton aria-label="delete" onClick={handleModalOpen}>
+                      <IconButton
+                        aria-label="more"
+                        onClick={() => {
+                          dispatch(
+                            openModal({
+                              modalType: 'PostActionModal',
+                              post: post,
+                              id: post.id,
+                            }),
+                          )
+                        }}
+                      >
                         <MoreHorizIcon />
                       </IconButton>
                     </div>
                   </div>
-                  <PostMoreModal // 게시물 수정, 삭제 모달
-                    open={open}
-                    onClose={handleModalClose}
-                    onDeleteOpen={onDeleteOpen}
-                    onEditOpen={onEditOpen}
-                    post={post}
-                  />
-                  <DeleteModal // 게시물 삭제 확인 모달
-                    postId={postId}
-                    deleteOpen={deleteOpen}
-                    onDeleteClose={onDeleteClose}
-                  />
-                  <PostForm // 게시물 수정 모달
-                    postConfig={postConfig}
-                    onClose={onEditClose}
-                    openModal={onEditLoadingOpen}
-                    post={post}
-                  />
                 </div>
                 <div className="comment-main">
                   <div className="comment">
@@ -399,9 +318,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                       <li>
                         <div className="p-content">
                           <div className="c1" onClick={goToProfilePage}>
-                            {post && (
-                              <Avatar src={post?.User?.ProfileImage?.path} />
-                            )}
+                            {post && <Avatar src={post?.User?.ProfileImage?.path} />}
                           </div>
                           <div>
                             <div className="c2" onClick={goToProfilePage}>
@@ -418,7 +335,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         </div>
                       </li>
                       <div>
-                        {commentList.map((comment) => (
+                        {commentList.map(comment => (
                           <CommentList
                             key={comment.id}
                             comment={comment}
@@ -440,13 +357,9 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                     handleChatClick={handleChatClick}
                     checkLiked={checkLiked}
                     handleLike={handleLike}
-                    postId={postId}
+                    postId={id!}
                   />
-                  <PostLikeCount
-                    config={false}
-                    likeCount={likeCount}
-                    handleLike={handleLike}
-                  />
+                  <PostLikeCount config={false} likeCount={likeCount} handleLike={handleLike} />
                   <div className="section3">{createdAt(crAt)}</div>
                   <div className="section4">
                     <TextField
@@ -463,24 +376,18 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
                         disableUnderline: true,
                         style: {
                           padding: 16,
-                          paddingRight: "8px",
-                          transition: "none",
+                          paddingRight: '8px',
+                          transition: 'none',
                         },
                         endAdornment: updatePending ? (
                           <InputAdornment position="end">
-                            <Button
-                              disabled={comment === ""}
-                              onClick={handleUpdateComment}
-                            >
+                            <Button disabled={comment === ''} onClick={handleUpdateComment}>
                               수정
                             </Button>
                           </InputAdornment>
                         ) : (
                           <InputAdornment position="end">
-                            <Button
-                              disabled={comment === ""}
-                              onClick={handlePostComment}
-                            >
+                            <Button disabled={comment === ''} onClick={handlePostComment}>
                               게시
                             </Button>
                           </InputAdornment>
@@ -496,7 +403,7 @@ const PostDetail: React.FC<PostDetailModalProps> = ({ postId, onClose }) => {
         </Modal>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PostDetail;
+export default PostDetail

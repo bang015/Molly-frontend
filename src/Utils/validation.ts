@@ -1,4 +1,4 @@
-import { INIT, USER_API, QUERY_EMAIL, QUERY_NAME } from "./api-url";
+import { INIT, USER_API, QUERY_EMAIL, QUERY_NICKNAME } from "./api-url";
 import axios from "axios";
 
 export const checkEmailExists = async (email: string) => {
@@ -37,7 +37,7 @@ export const checkEmailValidation = async (email: string) => {
 
 export const checkNickExists = async (nickname: string) => {
   const response = await fetch(
-    `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}${QUERY_NAME}${nickname}`,
+    `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
     { method: "GET" }
   );
   if (response.status === 204) {

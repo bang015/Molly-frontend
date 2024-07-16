@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
 import { commentType } from "@/interfaces/comment";
-import { displayCreateAt } from "@/utils/moment";
+import { displayCreateAt } from "@/utils/format/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 interface newCommentListProps {

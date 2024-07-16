@@ -26,22 +26,30 @@ const Main: React.FC = () => {
       dispatch(getMainPost({ page, token }) as any);
     }
   }, [token, page]);
-  window.addEventListener("scroll", function () {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      if (page < totalPages) {
-        setPage(page + 1);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight * 0.9
+      ) {
+        if (page < totalPages) {
+          setPage((prevPage) => prevPage + 1);
+        }
       }
-    }
-  });
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [page, totalPages]);
   return (
     <div className="mainPage">
-      <Nav></Nav>
+      <Nav />
       <div className="main-center">
         {postList.map((post) => (
           <PostList key={post.id} post={post} />
         ))}
       </div>
-
       <div className="follow-container">
         <div className="content">
           <div className="more">

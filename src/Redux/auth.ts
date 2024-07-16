@@ -1,191 +1,151 @@
-import {
-  createReducer,
-  createAction,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
-import { userType, IUserforSignUp, updateProfile } from "../interfaces/user";
-import axios from "axios";
-import { AUTH_API, INIT, USER_API } from "../utils/api-url";
-import { showSnackBar } from "./post";
-import { updatedProfileSucces, updatedProfileStart } from "./profile";
-import io, { Socket } from "socket.io-client";
+import { configureStore, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { UserType } from '../interfaces/user'
+import axios from 'axios'
+import { AUTH_API, INIT, REFRESH_TOKEN, SIGN_IN, SIGN_UP } from '../utils/api-url'
+import io, { Socket } from 'socket.io-client'
+import { SignUpInput, Token } from '@/interfaces/auth'
+import { request } from './baseRequest'
 
-// 액션 타입들 정의
-const SET_TOKEN = "auth/SET_TOKEN";
-const REMOVE_TOKEN = "auth/REMOVE_TOKEN";
-const POST_USER_SUCCESS = "auth/POST_USER_SUCCESS";
-const POST_USER_FAIL = "auth/POST_USER_FAIL";
-const GET_USER_SUCCESS = "auth/GET_USER_SUCCESS";
-const GET_USER_FAIL = "auth/GET_USER_FAIL";
-
-const setToken = createAction<string>(SET_TOKEN); // result.data.token
-const removeToken = createAction(REMOVE_TOKEN);
-const postUserSuccess = createAction(POST_USER_SUCCESS);
-const postUserFail = createAction(POST_USER_FAIL);
-const getUserSuccess = createAction<userType>(GET_USER_SUCCESS);
-const getUserFail = createAction(GET_USER_FAIL);
-type AuthState = {
-  isLogin: boolean;
-  token: string | null;
-  user: userType | null;
-};
+interface AuthState {
+  isLogin: boolean
+  accessToken: string | null
+  user: UserType | null
+}
 
 const initialState: AuthState = {
-  isLogin: !!sessionStorage.getItem("token"),
-  token: sessionStorage.getItem("token"),
+  isLogin: !!localStorage.getItem('accessToken'),
+  accessToken: localStorage.getItem('accessToken'),
   user: null,
-};
-export let socket: Socket | null = null;
-const authReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(setToken, (state, action) => {
-      if (action.payload) {
-        socket = io(`${process.env.REACT_APP_SERVER_URL}`);
-        sessionStorage.setItem("token", action.payload);
-        state.isLogin = true;
-        state.token = action.payload;
-      }
-    })
-    .addCase(removeToken, (state) => {
-      sessionStorage.removeItem("token");
-      state.isLogin = false;
-      state.token = null;
-    })
-    .addCase(getUserSuccess, (state, action) => {
-      if (action.payload) {
-        socket = io(`${process.env.REACT_APP_SERVER_URL}`);
-        state.user = action.payload;
-      }
-    })
-    .addCase(getUserFail, (state) => {
-      state.isLogin = false;
-      state.token = null;
-      state.user = null;
-    })
-    .addCase(postUserSuccess, (state) => {
-      return state;
-    })
-    .addCase(postUserFail, (state) => {
-      return state;
-    })
-    .addDefaultCase((state) => state);
-});
+}
+export let socket: Socket | null = null
 
-export default authReducer;
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setTokens: (state, action: PayloadAction<Token>) => {
+      socket = io(`${process.env.REACT_APP_SERVER_URL}`)
+      localStorage.setItem('accessToken', action.payload.accessToken)
+      localStorage.setItem('refreshToken', action.payload.refreshToken)
+      state.isLogin = true
+      state.accessToken = action.payload.accessToken
+    },
+    removeTokens: state => {
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+      state.isLogin = false
+      state.accessToken = null
+      state.user = null
+    },
+    refreshTokens: (state, action: PayloadAction<Token>) => {
+      localStorage.setItem('accessToken', action.payload.accessToken)
+      localStorage.setItem('refreshToken', action.payload.refreshToken)
+      state.accessToken = action.payload.accessToken
+    },
+    getUserSuccess: (state, action) => {
+      socket = io(`${process.env.REACT_APP_SERVER_URL}`)
+      state.user = action.payload
+    },
+    getUserFail: state => {
+      state.isLogin = false
+      state.accessToken = null
+      state.user = null
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+    },
+  },
+})
+export const { setTokens, removeTokens, refreshTokens, getUserSuccess, getUserFail } = authSlice.actions
+export const authStore = configureStore({ reducer: authSlice.reducer })
+export default authSlice.reducer
 
-export const postUser = createAsyncThunk(
-  "auth/postUser",
-  async (userData: IUserforSignUp) => {
-
+// 회원가입
+export const createUser = createAsyncThunk(
+  'auth/createUser',
+  async (data: SignUpInput, { dispatch }) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`,
-        userData
-      );
-      if (response.status === 200) {
-        return true;
-      } else {
-        return false
-      }
-    } catch (error) {
-      console.log("실패!"); // Error case
-    }
-  }
-);
-
-export const postSignIn = createAsyncThunk(
-  "auth/postSignIn",
-  async (userData: { email: string; password: string }, { dispatch }) => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`,
-        userData
-      );
-      if (response.status === 200) {
-        const result = response.data;
-        dispatch(setToken(result.token));
-        return result.token;
-      }
-      dispatch(removeToken());
-      return null;
-    } catch (error) {
-      dispatch(removeToken());
-      return null;
-    }
-  }
-);
-
-export const signOut = createAsyncThunk(
-  "auth/signOut",
-  async (_, { dispatch }) => {
-    dispatch(removeToken());
-  }
-);
-
-export const getUser = createAsyncThunk(
-  "auth/getUser",
-  async (token: string, { dispatch }) => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`,
+      const response = await request(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${SIGN_UP}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+          method: 'POST',
+          data,
+        },
+      )
       if (response.status === 200) {
-        const result = response.data;
-        dispatch(getUserSuccess(result));
-        return result;
-      } else {
-        dispatch(getUserFail());
-        return null;
+        dispatch(setTokens(response.data))
       }
-    } catch (error) {
-      dispatch(getUserFail());
-      return null;
+    } catch (e: any) {
+      return false
     }
-  }
-);
+  },
+)
 
-export const updateUser = createAsyncThunk(
-  "auth/updateUser",
-  async (
-    { token, newInfo }: { token: string; newInfo: updateProfile },
-    { dispatch }
-  ) => {
+// 로그인
+export const signIn = createAsyncThunk(
+  'auth/signIn',
+  async (data: { email: string; password: string }, { dispatch }) => {
     try {
-      const formData = new FormData();
-      if (newInfo.name) formData.append("name", newInfo.name);
-      if (newInfo.nickname) formData.append("nickname", newInfo.nickname);
-      if (newInfo.introduce) formData.append("introduce", newInfo.introduce);
-      if (newInfo.profileImg) {
-        dispatch(updatedProfileStart());
-        const profileImageFile = new File(
-          [newInfo.profileImg],
-          "profile_image.jpg"
-        );
-        formData.append("profile_image", profileImageFile);
-      }
-      const response = await axios.patch(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`,
-        formData,
+      const response = await request(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${SIGN_IN}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+          method: 'POST',
+          data,
+        },
+      )
       if (response.status === 200) {
-        dispatch(showSnackBar(response.data.message));
-        dispatch(updatedProfileSucces(response.data.user));
-      } else {
-        return null;
+        const result = response.data
+        dispatch(setTokens(result))
+        return result.token
       }
-    } catch (e) {
-      return null;
+    } catch (error: any) {
+      console.log(error.response.data)
+      dispatch(removeTokens())
+      return null
     }
+  },
+)
+
+// 로그아웃
+export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
+  dispatch(removeTokens())
+})
+
+// 유저 정보
+export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
+  try {
+    const response = await request(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`,
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+      },
+    )
+    if (response.status === 200) {
+      const result = response.data
+      dispatch(getUserSuccess(result))
+      return result
+    } else {
+      dispatch(getUserFail())
+      return null
+    }
+  } catch (error: any) {
+    console.log(error);
+    dispatch(getUserFail())
+    return null
   }
-);
+})
+// refreshToken
+export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { dispatch }) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
+      { refreshToken: localStorage.getItem('refreshToken') },
+    )
+    if (response.status === 200) {
+      dispatch(refreshTokens(response.data))
+      return response.data.accessToken;
+    }
+  } catch (e) {
+    console.log(e)
+    dispatch(removeTokens())
+  }
+})

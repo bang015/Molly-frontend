@@ -1,149 +1,85 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { postType } from "@/interfaces/post";
-import "./index.css";
-import {
-  Avatar,
-  Button,
-  IconButton,
-  InputAdornment,
-  TextField,
-} from "@mui/material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { addCommentType, commentType } from "@/interfaces/comment";
-import {
-  addComment,
-  clearComment,
-  getMyCommentByPost,
-} from "@/redux/comment";
-import PostUtilIcon from "../postUtilIcon";
-import { getPostLike, likePost } from "@/redux/like";
-import PostLikeCount from "../postLikeCount";
-import { displayCreateAt } from "@/utils/moment";
-import PostDetail from "../postDetail";
-import PostMoreModal from "@/components/modal/post";
-import DeleteModal from "@/components/modal/delete";
-import PostForm from "../postForm";
-import { useNavigate } from "react-router-dom";
-import { clearPostDetail } from "@/redux/postList";
+import React, { useState, useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { postType } from '@/interfaces/post'
+import './index.css'
+import { Avatar, Button, IconButton, InputAdornment, TextField } from '@mui/material'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import { addCommentType, commentType } from '@/interfaces/comment'
+import { addComment, getMyCommentByPost } from '@/redux/comment'
+import PostUtilIcon from '../postUtilIcon'
+import { getPostLike, likePost } from '@/redux/like'
+import PostLikeCount from '../postLikeCount'
+import { displayCreateAt } from '@/utils/format/moment'
+import { useNavigate } from 'react-router-dom'
+import { openModal } from '@/redux/modal'
+import { formatTextToHTML } from '@/utils/format/formatter'
 
 interface postListProps {
-  post: postType;
+  post: postType
 }
 const PostList: React.FC<postListProps> = ({ post }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [comment, setComment] = useState("");
-  const textFieldRef = useRef<HTMLInputElement | null>(null);
-  const [commentList, setCommentList] = useState<commentType[]>([]);
-  const [likeCount, setLikeCount] = useState<number>(0);
-  const [checkLiked, setCheckLiked] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [postConfig, setPostConfig] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const user = useSelector((state: RootState) => state.authReducer.user)
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
+  const [comment, setComment] = useState<string>('')
+  const textFieldRef = useRef<HTMLInputElement | null>(null)
+  const [commentList, setCommentList] = useState<commentType[]>([])
+  const [likeCount, setLikeCount] = useState<number>(0)
+  const [checkLiked, setCheckLiked] = useState(false)
+
   useEffect(() => {
     const myComment = async () => {
-      const result = await getMyCommentByPost(user?.id!, post.id);
-      setCommentList(result.commentList);
-    };
-    myComment();
-  }, [user, post]);
+      const result = await getMyCommentByPost(user?.id!, post.id)
+      setCommentList(result.commentList)
+    }
+    myComment()
+  }, [user, post])
   useEffect(() => {
     const like = async () => {
-      const result = await getPostLike(token!, post.id);
-      setLikeCount(result.count);
-      setCheckLiked(result.checkLiked);
-    };
-    like();
-  }, [post, checkLiked]);
+      const result = await getPostLike(post.id)
+      setLikeCount(result.count)
+      setCheckLiked(result.checkLiked)
+    }
+    like()
+  }, [post, checkLiked])
   const onPrevClick = () => {
     setCurrentImageIndex(
-      (prevIndex) =>
-        (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length
-    );
-  };
+      prevIndex => (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length,
+    )
+  }
   const onNextClick = () => {
-    setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % post.PostMedia.length
-    );
-  };
+    setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.PostMedia.length)
+  }
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const commentContent = e.target.value;
-    setComment(commentContent);
-  };
+    const commentContent = e.target.value
+    setComment(commentContent)
+  }
   const handlePostComment = async () => {
-    const commentContent = comment
-      .replace(/\n/g, "<br>")
-      .replace(
-        /@([^\s]+)/g,
-        '<span style="color: rgb(0, 55, 107);">@$1</span>'
-      );
+    const commentContent = formatTextToHTML(comment)
     const commentInfo: addCommentType = {
       postId: post.id,
       content: commentContent,
-    };
-    if (token) {
-      const comment = await addComment(token, commentInfo);
-      setCommentList([comment, ...commentList]);
     }
-    setComment("");
-  };
+    const newComment= await addComment(commentInfo)
+    setCommentList([newComment, ...commentList])
+    setComment('')
+  }
   const handleLike = async () => {
-    if (token) {
-      const check = await likePost(token, post.id);
-      setCheckLiked(check);
-    }
-  };
+    const check = await likePost(post.id)
+    setCheckLiked(check)
+  }
   const handleChatClick = () => {
     if (textFieldRef.current) {
-      textFieldRef.current.focus();
+      textFieldRef.current.focus()
     }
-  };
+  }
   const goToProfilePage = () => {
-    navigate(`/profile/${post.User.nickname}`);
-  };
-  // 게시물 상세보기 모달
-  const handlePostModal = (id: number) => {
-    setSelectedPostId(id);
-  };
-  const closeModal = () => {
-    setSelectedPostId(null);
-    dispatch(clearComment());
-    dispatch(clearPostDetail());
-  };
-  // 게시물 수정, 삭제 모달
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-  const handleModalClose = () => {
-    setOpen(false);
-  };
-  // 게시물 삭제 확인 모달
-  const onDeleteOpen = () => {
-    setDeleteOpen(true);
-  };
-  const onDeleteClose = () => {
-    setDeleteOpen(false);
-  };
-  // 게시물 수정 모달
-  const onEditOpen = () => {
-    setPostConfig(true);
-  };
-  const onEditClose = () => {
-    setPostConfig(false);
-  };
-  // 게시물 수정 로딩
-  const onEditLoadingOpen = () => {
-    setLoading(true);
-  };
+    navigate(`/profile/${post.User.nickname}`)
+  }
   return (
     <div className="container">
       <div className="ph1">
@@ -156,34 +92,27 @@ const PostList: React.FC<postListProps> = ({ post }) => {
             />
           </div>
           <div className="fs14 ml10">
-            <div>{post.User.nickname}</div> <div className="ms5 cAt">•</div>{" "}
+            <div>{post.User.nickname}</div> <div className="ms5 cAt">•</div>{' '}
             <div className="cAt">{displayCreateAt(post.createdAt)}</div>
           </div>
         </div>
         <div>
-          <IconButton aria-label="delete" onClick={handleModalOpen}>
+          <IconButton
+            aria-label="more"
+            onClick={() => {
+              dispatch(
+                openModal({
+                  modalType: 'PostActionModal',
+                  post: post,
+                  id: post.id,
+                }),
+              )
+            }}
+          >
             <MoreHorizIcon />
           </IconButton>
         </div>
       </div>
-      <PostMoreModal // 게시물 수정, 삭제 모달
-        open={open}
-        onClose={handleModalClose}
-        onDeleteOpen={onDeleteOpen}
-        onEditOpen={onEditOpen}
-        post={post}
-      />
-      <DeleteModal // 게시물 삭제 확인 모달
-        postId={post.id}
-        deleteOpen={deleteOpen}
-        onDeleteClose={onDeleteClose}
-      />
-      <PostForm
-        postConfig={postConfig}
-        onClose={onEditClose}
-        openModal={onEditLoadingOpen}
-        post={post}
-      />
       <div className="content">
         <div className="media">
           {currentImageIndex > 0 && (
@@ -192,12 +121,12 @@ const PostList: React.FC<postListProps> = ({ post }) => {
                 aria-label="fingerprint"
                 color="secondary"
                 style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.5)",
+                  backgroundColor: 'rgba(255, 255, 255, 0.5)',
                   padding: 0,
                 }}
                 onClick={onPrevClick}
               >
-                <ChevronLeftIcon style={{ color: "black" }} />
+                <ChevronLeftIcon style={{ color: 'black' }} />
               </IconButton>
             </div>
           )}
@@ -209,12 +138,12 @@ const PostList: React.FC<postListProps> = ({ post }) => {
                   aria-label="fingerprint"
                   color="secondary"
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.5)",
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
                     padding: 0,
                   }}
                   onClick={onNextClick}
                 >
-                  <NavigateNextIcon style={{ color: "black" }} />
+                  <NavigateNextIcon style={{ color: 'black' }} />
                 </IconButton>
               </div>
             )}
@@ -234,43 +163,30 @@ const PostList: React.FC<postListProps> = ({ post }) => {
           config={true}
           postId={post.id}
         />
-        <PostLikeCount
-          config={true}
-          likeCount={likeCount}
-          handleLike={handleLike}
-        />
+        <PostLikeCount config={true} likeCount={likeCount} handleLike={handleLike} />
         <div className="pct">
           <div className="c2">
             <span>{post.User.nickname}</span>
           </div>
-          <div
-            className="c3"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          <div className="c3" dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
         <div className="cabtn">
           <button
             onClick={() => {
-              handlePostModal(post.id);
+              dispatch(openModal({ modalType: 'PostDetailModal', id: post.id }))
             }}
           >
             댓글 모두 보기
           </button>
         </div>
-        {selectedPostId && (
-          <PostDetail postId={selectedPostId} onClose={closeModal} />
-        )}
         {commentList && (
           <div>
-            {commentList.map((comment) => (
+            {commentList.map(comment => (
               <div key={comment.id}>
                 <div className="c2">
                   <span>{comment.user.nickname}</span>
                 </div>
-                <div
-                  className="c3"
-                  dangerouslySetInnerHTML={{ __html: comment.content }}
-                />
+                <div className="c3" dangerouslySetInnerHTML={{ __html: comment.content }} />
               </div>
             ))}
           </div>
@@ -289,18 +205,18 @@ const PostList: React.FC<postListProps> = ({ post }) => {
             InputProps={{
               disableUnderline: true,
               style: {
-                transition: "none",
-                fontSize: "small",
+                transition: 'none',
+                fontSize: 'small',
               },
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
-                    disabled={comment === ""}
+                    disabled={comment === ''}
                     onClick={handlePostComment}
                     style={{
                       padding: 0,
-                      justifyContent: "flex-end",
-                      background: "none",
+                      justifyContent: 'flex-end',
+                      background: 'none',
                     }}
                   >
                     게시
@@ -313,7 +229,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PostList;
+export default PostList

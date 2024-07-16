@@ -1,35 +1,20 @@
 import { Modal } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { postType } from "@/interfaces/post";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
 import { followUser, followedCheck } from "@/redux/follow";
-import DeleteModal from "../delete";
-interface postMoreModalProps {
-  open: boolean;
-  post: postType;
-  onClose: () => void;
-  onDeleteOpen: () => void;
-  onEditOpen: () => void;
-}
-const PostMoreModal: React.FC<postMoreModalProps> = ({
-  open,
-  post,
-  onClose,
-  onDeleteOpen,
-  onEditOpen,
-}) => {
+import { closeModal, openModal } from "@/redux/modal";
+
+const PostActionModal: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
   const token = useSelector((state: RootState) => state.authReducer.token);
   const Followed = useSelector(
     (state: RootState) => state.followReducer.chekcFollowed
   );
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const {isOpen,post} = useSelector((state:RootState) => state.modalReducer);
   const [checkFollowed, setCheckFollowed] = useState(false);
 
-  const userId = post.userId;
-  const postId = post.id;
   useEffect(() => {
     followCheck();
   }, [post, Followed]);
@@ -38,7 +23,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
       const followUserId = post?.userId!;
       dispatch(followUser({ token, followUserId }) as any);
     }
-    onClose();
+    dispatch(closeModal());
   };
   const followCheck = async () => {
     if (token && post) {
@@ -46,41 +31,23 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
       setCheckFollowed(result);
     }
   };
-  const postDelete = () => {
-    onDeleteOpen();
-    onClose();
-  };
-  const onDeleteClose = () => {
-    setDeleteOpen(false);
-  };
-  const postEdit = () => {
-    onEditOpen();
-    onClose();
-  };
   return (
     <div>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={isOpen} onClose={()=> {dispatch(closeModal())}}>
         <div className="post-detail">
           <div className="modal-container">
-            {userId === user!.id ? (
+            {post?.userId === user!.id ? (
               <div className="editBtn">
                 <div>
-                  <button className="mbtn1 mbtnc" onClick={postEdit}>
+                  <button className="mbtn1 mbtnc" onClick={() => {dispatch(openModal({modalType: "PostFormModal", id: post?.id, post: post}))}}>
                     수정
                   </button>
                 </div>
                 <div>
-                  <button className="mbtnc" onClick={postDelete}>
+                  <button className="mbtnc" onClick={() => {dispatch(openModal({modalType: "DeleteModal", id: post?.id, post: post}))}}>
                     삭제
                   </button>
                 </div>
-                {deleteOpen && (
-                  <DeleteModal
-                    postId={postId}
-                    deleteOpen={deleteOpen}
-                    onDeleteClose={onDeleteClose}
-                  />
-                )}
               </div>
             ) : (
               <div className="editBtn">
@@ -97,7 +64,7 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
               </div>
             )}
             <div className="editBtn">
-              <button className="mbtn2" onClick={onClose}>
+              <button className="mbtn2" onClick={()=> {dispatch(closeModal())}}>
                 취소
               </button>
             </div>
@@ -107,4 +74,4 @@ const PostMoreModal: React.FC<postMoreModalProps> = ({
     </div>
   );
 };
-export default PostMoreModal;
+export default PostActionModal;

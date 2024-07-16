@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  clearPostDetail,
-  clearPostList,
-  getBookmarkPost,
-} from "@/redux/postList";
+import { clearPostList, getBookmarkPost } from "@/redux/postList";
 import { RootState } from "@/redux";
-import PostDetail from "@/components/post/postDetail";
-import { clearComment } from "@/redux/comment";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import { openModal } from "@/redux/modal";
 interface bookmarkListProps {
   userId: number;
 }
 const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-
   const post = useSelector(
     (state: RootState) => state.postListReducer.bookmarkList
   );
@@ -24,25 +17,20 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
     dispatch(clearPostList());
     dispatch(getBookmarkPost({ userId, page }) as any);
   }, [userId, page]);
-  const handlePostModal = (id: number) => {
-    setSelectedPostId(id);
-  };
-  const closeModal = () => {
-    setSelectedPostId(null);
-    dispatch(clearComment());
-    dispatch(clearPostDetail());
-  };
+
   return (
     <div>
       <div className="bookmarkT">저장한 내용은 회원님만 볼 수 있습니다.</div>
       {post.length ? (
         <div className="user_post">
           {post &&
-            post.map((post) => (
+            post.map((post: any) => (
               <div
                 key={post.id}
                 onClick={() => {
-                  handlePostModal(post.id);
+                  dispatch(
+                    openModal({ modalType: "PostDetailModal", id: post.id })
+                  );
                 }}
               >
                 <img className="image_item" src={post.PostMedia[0].path} />
@@ -62,10 +50,6 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
             <div>저장된 콘텐츠는 회원님만 볼 수 있습니다.</div>
           </div>
         </div>
-      )}
-
-      {selectedPostId && (
-        <PostDetail postId={selectedPostId} onClose={closeModal} />
       )}
     </div>
   );

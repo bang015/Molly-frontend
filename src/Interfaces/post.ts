@@ -1,6 +1,6 @@
 export interface uploadPostType {
   content: string;
-  post_images: Blob[];
+  postMedias: Blob[];
   hashtags?: string[];
 }
 export interface updatePostType {

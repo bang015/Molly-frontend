@@ -17,11 +17,10 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
   const id = comment.id;
   const userId = comment.userId;
   const removeComment = () => {
-    if (token) dispatch(deleteComment({ id, token }) as any);
+    dispatch(deleteComment({ id }) as any);
     onClose();
   };
 

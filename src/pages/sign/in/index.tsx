@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
-import { getUser, postSignIn } from "@/redux/auth";
+import { signIn } from "@/redux/auth";
 import "./index.css";
 import { useDispatch } from "react-redux";
 import Logo from "@/icons/molly-logo.svg?react";
@@ -39,23 +39,28 @@ const SignInPage: React.FC = () => {
     if (e.key == "Enter") handleSignIn();
   };
   const handleSignIn = async () => {
-    if (userData.email === "" || userData.password === "") {
-      if (userData.email === "") {
-        setHelperText({ ...helperText, email: "이메일을 입력해주세요." });
-      } else if (userData.password === "") {
-        setHelperText({ ...helperText, password: "비밀번호를 입력해주세요." });
-      }
-    } else {
-      const token = await dispatch(postSignIn(userData) as any);
-      if (token.payload !== null) {
-        await dispatch(getUser(token.payload) as any);
-        navigate("/");
-      } else {
-        setHelperText({
-          ...helperText,
-          falseLogin: "아이디 또는 비밀번호를 확인해주세요.",
-        });
-      }
+    if (userData.email === "") {
+      return setHelperText({ ...helperText, email: "이메일을 입력해주세요." });
+    } else if (userData.password === "") {
+      return setHelperText({
+        ...helperText,
+        password: "비밀번호를 입력해주세요.",
+      });
+    }
+    const regExp =
+      /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    if (!regExp.test(userData.email)) {
+      return setHelperText({
+        ...helperText,
+        email: "유효한 이메일 주소를 입력해주세요.",
+      });
+    }
+    const token = await dispatch(signIn(userData) as any);
+    if (token.payload === null) {
+      setHelperText({
+        ...helperText,
+        falseLogin: "아이디 또는 비밀번호를 확인해주세요.",
+      });
     }
   };
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -81,6 +86,7 @@ const SignInPage: React.FC = () => {
                 type="email"
                 label="이메일"
                 required
+                error={helperText.email != ""}
                 helperText={helperText.email}
                 onChange={handleEmail}
                 onKeyDown={handleEnter}

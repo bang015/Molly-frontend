@@ -1,0 +1,14 @@
+module.exports = {
+  extends: [
+    '@antfu/eslint-config-react',
+    'plugin:tailwindcss/recommended',
+    'plugin:prettier/recommended',
+  ],
+  plugins: ['react-refresh', 'tailwindcss', 'prettier'],
+  rules: {
+    'react-refresh/only-export-components': 'off',
+    'react/jsx-indent': ['error', 2], // 2 spaces indentation
+    'react/jsx-tag-spacing': ['error', { beforeSelfClosing: 'always' }],
+    'no-multi-spaces': 'warn',
+  },
+}

@@ -9,10 +9,10 @@ import {
   checkNameValidation,
   checkPasswordValidation,
 } from "@/utils/validation";
-import { IUserforSignUp } from "@/interfaces/user";
+import { SignUpInput } from "@/interfaces/auth";
 
 interface SignUpFormProps {
-  handleValidation: (user: IUserforSignUp, isValid: boolean) => void;
+  handleValidation: (user: SignUpInput, isValid: boolean) => void;
   handleEnter: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
@@ -123,25 +123,25 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   const inputFields = [
     {
       type: "email",
-      placeholder: "이메일을 입력해주세요.",
+      label: "이메일을 입력해주세요.",
       field: "email",
       validation: checkEmailValidation,
     },
     {
       type: "text",
-      placeholder: "성명을 입력해주세요.",
+      label: "성명을 입력해주세요.",
       field: "name",
       validation: checkNameValidation,
     },
     {
       type: "text",
-      placeholder: "사용자 이름을 입력해주세요.",
+      label: "사용자 이름을 입력해주세요.",
       field: "nickname",
       validation: checkNickValidation,
     },
     {
       type: "password",
-      placeholder: "비밀번호를 입력해주세요.",
+      label: "비밀번호를 입력해주세요.",
       field: "password",
       validation: checkPasswordValidation,
     },
@@ -153,7 +153,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <TextField
           className="signup-input"
           type={fieldInfo.type}
-          placeholder={fieldInfo.placeholder}
+          label={fieldInfo.label}
           onFocus={() => handleFocus(fieldInfo.field)}
           onBlur={handleBlur}
           required

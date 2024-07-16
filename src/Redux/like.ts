@@ -1,7 +1,7 @@
 import axios from "axios";
 import { INIT, LIKE_API } from "../utils/api-url";
-
-export const likePost = async (token: string, postId: number) => {
+const token = localStorage.getItem('accessToken');
+export const likePost = async ( postId: number) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${LIKE_API}/`,
@@ -18,7 +18,7 @@ export const likePost = async (token: string, postId: number) => {
   } catch {}
 };
 
-export const getPostLike = async (token: string, postId: number) => {
+export const getPostLike = async ( postId: number) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${LIKE_API}/${postId}`,

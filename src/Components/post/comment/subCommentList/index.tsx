@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getSubComment } from "@/redux/comment";
 import { Avatar, IconButton } from "@mui/material";
 import { commentType } from "@/interfaces/comment";
-import { displayCreateAt } from "@/utils/moment";
+import { displayCreateAt } from "@/utils/format/moment";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditDeleteModal from "@/components/modal/comment";
 import { useSelector } from "react-redux";
@@ -25,7 +25,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
     (state: RootState) => state.commentReducer.updatedComment
   );
   const deleteComment = useSelector(
-    (state: RootState) => state.commentReducer.deletComment
+    (state: RootState) => state.commentReducer.deleteComment
   );
   const [page, setPage] = useState(1);
   const [subComment, setSubComment] = useState<commentType[]>([]);

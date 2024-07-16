@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { commentType } from "@/interfaces/comment";
 import { SubCommentList } from "../subCommentList";
 import { Avatar, IconButton } from "@mui/material";
-import { displayCreateAt } from "@/utils/moment";
+import { displayCreateAt } from "@/utils/format/moment";
 import { NewCommentList } from "../newCommentList";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditDeleteModal from "@/components/modal/comment";

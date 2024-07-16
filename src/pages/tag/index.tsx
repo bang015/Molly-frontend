@@ -62,9 +62,9 @@ const Tag: React.FC = () => {
                   <img className="image_item" src={post.PostMedia[0].path} />
                 </div>
               ))}
-              {selectedPostId && (
+              {/* {selectedPostId && (
                 <PostDetail postId={selectedPostId} onClose={closeModal} />
-              )}
+              )} */}
             </div>
           </div>
         </div>

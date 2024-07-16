@@ -1,123 +1,106 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { updatePostType, uploadPostType } from "../interfaces/post";
-import { INIT, POST_API } from "../utils/api-url";
-import {
-  getPostByPostId,
-  postDelete,
-  postUpdateList,
-  postUpload,
-} from "./postList";
-import { deletePostProfile } from "./profile";
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios'
+import { updatePostType, uploadPostType } from '../interfaces/post'
+import { INIT, POST_API } from '../utils/api-url'
+import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postList'
+import { deletePostProfile } from './user'
+import { request } from './baseRequest'
 export interface updatedPost {
-  postId: number | null;
-  updatedPost: string | null;
+  postId: number | null
+  updatedPost: string | null
 }
 interface postState {
-  posting: boolean;
-  message: string;
-  showSnackBar: boolean;
+  posting: boolean
+  message: string
+  showSnackBar: boolean
 }
 
 const initialState: postState = {
   posting: false,
-  message: "",
+  message: '',
   showSnackBar: false,
-};
+}
 const postSlice = createSlice({
-  name: "post",
+  name: 'post',
   initialState,
   reducers: {
-    postStart: (state) => {
-      state.posting = true;
+    postStart: state => {
+      state.posting = true
     },
     postSuccess: (state, action: PayloadAction<string>) => {
-      state.posting = false;
-      state.message = action.payload;
+      state.posting = false
+      state.message = action.payload
     },
     postFailure: (state, action: PayloadAction<string>) => {
-      state.posting = false;
-      state.message = action.payload;
+      state.posting = false
+      state.message = action.payload
     },
-    postUpdate: (state) => {
-      state.showSnackBar = true;
-      state.message = "게시물이 수정되었습니다.";
+    postUpdate: state => {
+      state.showSnackBar = true
+      state.message = '게시물이 수정되었습니다.'
     },
     showSnackBar: (state, action: PayloadAction<string>) => {
-      state.showSnackBar = true;
-      state.message = action.payload;
+      state.showSnackBar = true
+      state.message = action.payload
     },
-    resetSnackBar: (state) => {
-      state.showSnackBar = false;
+    resetSnackBar: state => {
+      state.showSnackBar = false
     },
   },
-});
-export const {
-  postStart,
-  postSuccess,
-  postFailure,
-  postUpdate,
-  showSnackBar,
-  resetSnackBar,
-} = postSlice.actions;
-export default postSlice.reducer;
-
+})
+export const { postStart, postSuccess, postFailure, postUpdate, showSnackBar, resetSnackBar } =
+  postSlice.actions
+export default postSlice.reducer
+const token = localStorage.getItem('accessToken')
 export const uploadPost = createAsyncThunk(
-  "post/uploadPost",
-  async (
-    { post, token }: { post: uploadPostType; token: string },
-    { dispatch }
-  ) => {
+  'post/uploadPost',
+  async ({ post }: { post: uploadPostType }, { dispatch }) => {
     try {
-      dispatch(postStart());
-      const formData = new FormData();
-      formData.append("content", post.content);
-      post.post_images.forEach((image, index) => {
-        const fileName = `image_${index}.png`;
-        const file = new File([image], fileName, { type: image.type });
-        formData.append(`post_images`, file);
-      });
+      dispatch(postStart())
+      console.log(post)
+      const formData = new FormData()
+      formData.append('content', post.content)
+      post.postMedias.forEach((image, index) => {
+        const fileName = `image_${index}.png`
+        const file = new File([image], fileName, { type: image.type })
+        formData.append(`post_images`, file)
+      })
       if (post.hashtags) {
         post.hashtags.forEach((tag, index) => {
-          formData.append(`hashtags[${index}]`, tag);
-        });
+          formData.append(`hashtags[${index}]`, tag)
+        })
       }
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`, {
+        data: formData,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       if (response.status === 200) {
-        dispatch(postSuccess(response.data.message));
-        dispatch(postUpload(response.data.post));
+        dispatch(postSuccess(response.data.message))
+        dispatch(postUpload(response.data.post))
       } else {
-        dispatch(postFailure(response.data));
+        dispatch(postFailure(response.data))
       }
     } catch {
-      dispatch(postFailure("게시글 업로드를 실패했습니다."));
+      dispatch(postFailure('게시글 업로드를 실패했습니다.'))
     }
-  }
-);
+  },
+)
 
 export const updatePost = createAsyncThunk(
-  "post/updatePost",
-  async (
-    { postInfo, token }: { postInfo: updatePostType; token: string },
-    { dispatch }
-  ) => {
+  'post/updatePost',
+  async ({ postInfo }: { postInfo: updatePostType }, { dispatch }) => {
     try {
-      const formData = new FormData();
-      formData.append("content", postInfo.content);
-      formData.append("postId", postInfo.postId);
+      const formData = new FormData()
+      formData.append('content', postInfo.content)
+      formData.append('postId', postInfo.postId)
       if (postInfo.hashtags) {
         postInfo.hashtags.forEach((tag, index) => {
-          formData.append(`hashtags[${index}]`, tag);
-        });
+          formData.append(`hashtags[${index}]`, tag)
+        })
       }
       const response = await axios.patch(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`,
@@ -125,26 +108,23 @@ export const updatePost = createAsyncThunk(
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        }
-      );
+        },
+      )
       if (response.status === 200) {
-        const postId = parseInt(postInfo.postId);
-        dispatch(getPostByPostId(postId));
-        dispatch(postUpdate(response.data));
-        dispatch(postUpdateList(response.data));
+        const postId = parseInt(postInfo.postId)
+        dispatch(getPostByPostId(postId))
+        dispatch(postUpdate(response.data))
+        dispatch(postUpdateList(response.data))
       }
     } catch {}
-  }
-);
+  },
+)
 
 export const deletePost = createAsyncThunk(
-  "post/deletePost",
-  async (
-    { token, postId }: { token: string; postId: number },
-    { dispatch }
-  ) => {
+  'post/deletePost',
+  async ({ postId }: { postId: number }, { dispatch }) => {
     try {
       const response = await axios.delete(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
@@ -152,13 +132,14 @@ export const deletePost = createAsyncThunk(
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        },
+      )
       if (response.status === 200) {
-        dispatch(postDelete(response.data.postId));
-        dispatch(deletePostProfile());
-        dispatch(showSnackBar(response.data.message));
+        dispatch(postDelete(response.data.postId))
+        dispatch(deletePostProfile())
+        dispatch(showSnackBar(response.data.message))
+        return true
       }
     } catch {}
-  }
-);
+  },
+)

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux";
-import { userType } from "@/interfaces/user";
+import { UserType } from "@/interfaces/user";
 import { Avatar } from "@mui/material";
 import { messageType } from "@/interfaces/message";
-import { displayCreateAt } from "@/utils/moment";
+import { displayCreateAt } from "@/utils/format/moment";
 import { socket } from "@/redux/auth";
 interface chatRoomListProps {
   roomId: number;
@@ -15,21 +15,20 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
   roomId,
   handleChatRoom,
 }) => {
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const user = useSelector((state: RootState) => state.authReducer.user);
+  const {user, accessToken} = useSelector((state: RootState) => state.authReducer);
   const [_message, set_message] = useState<number | null>(null);
-  const [chatUser, setChatUser] = useState<userType | null>(null);
+  const [chatUser, setChatUser] = useState<UserType | null>(null);
   const [latestMessage, setLatestMessage] = useState<messageType | null>(null);
   useEffect(() => {
-    if (socket && roomId && token) {
-      socket.emit("getRoomInfo", { roomId, token });
+    if (socket && roomId ) {
+      socket.emit("getRoomInfo", { roomId, accessToken });
       socket.on("newMessage", (data) => {
         if (data.user.cUsers.id === user?.id && socket) {
           console.log(roomId);
 
-          socket.emit("getRoomInfo", { roomId, token });
+          socket.emit("getRoomInfo", { roomId, accessToken });
 
-          socket.emit("getNotReadMessage", token);
+          socket.emit("getNotReadMessage", accessToken);
         }
       });
       socket.on(`getRoomInfo${roomId}`, (data): void => {
@@ -49,7 +48,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
         <div className="se1">
           <div>
             <Avatar
-              src={chatUser?.ProfileImage?.path}
+              src={chatUser?.profileImage?.path}
               sx={{ width: 44, height: 44 }}
             />
           </div>

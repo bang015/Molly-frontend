@@ -1,253 +1,187 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
-import Cropper, { Area, Point } from "react-easy-crop";
-import IconButton from "@mui/material/IconButton";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import TextField from "@mui/material/TextField";
-import "./index.css";
-import { Avatar, Button, Modal } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import getCroppedImg, { getCropSize } from "@/utils/image-crop";
-import {
-  postType,
-  updatePostType,
-  uploadPostType,
-} from "@/interfaces/post";
-import { updatePost, uploadPost } from "@/redux/post";
-import ImageSearchIcon from "@mui/icons-material/ImageSearch";
-import { getSearchResult, resetResult } from "@/redux/search";
-interface PostModalProps {
-  postConfig: boolean;
-  onClose: () => void;
-  openModal: () => void;
-  post: postType | null;
-}
-const PostForm: React.FC<PostModalProps> = ({
-  postConfig,
-  onClose,
-  openModal,
-  post,
-}) => {
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const result = useSelector((state: RootState) => state.searchReducer.result);
-  const [showImages, setShowImages] = useState<string[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([]);
-  const [postContent, setPostContent] = useState<string>("");
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [search, setSearch] = useState(false);
+import React, { useState, ChangeEvent, useEffect } from 'react'
+import Cropper, { Area, Point } from 'react-easy-crop'
+import IconButton from '@mui/material/IconButton'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import TextField from '@mui/material/TextField'
+import './index.css'
+import { Avatar, Button, Modal } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import getCroppedImg, { initializeImage } from '@/utils/image-crop'
+import { postType, updatePostType, uploadPostType } from '@/interfaces/post'
+import { updatePost, uploadPost } from '@/redux/post'
+import ImageSearchIcon from '@mui/icons-material/ImageSearch'
+import { getSearchResult, resetResult } from '@/redux/search'
+import { closeModal, openModal } from '@/redux/modal'
+import { formatHTMLToText, formatTextToHTML } from '@/utils/format/formatter'
+
+const PostForm: React.FC = () => {
+  const dispatch = useDispatch()
+  const { user } = useSelector((state: RootState) => state.authReducer)
+  const result = useSelector((state: RootState) => state.searchReducer.result)
+  const { post, isOpen } = useSelector((state: RootState) => state.modalReducer)
+  const [showImages, setShowImages] = useState<string[]>([])
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
+  const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([])
+  const [postContent, setPostContent] = useState<string>('')
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [search, setSearch] = useState(false)
+  const [cropStates, setCropStates] = useState<{ crop: Point; zoom: number }[]>([])
   useEffect(() => {
     if (post) {
-      const content = post.content
-        .replace(/<br>/g, "\n")
-        .replace(
-          /<span style="color: rgb\(0, 55, 107\);">#([^<]+)<\/span>/g,
-          "#$1"
-        );
-      setPostContent(content);
+      const content = formatHTMLToText(post.content)
+      setPostContent(content)
     }
-  }, [post, postConfig]);
-  const handleCloseModal = () => {
-    setShowImages([]);
-    setCurrentImageIndex(0);
-    setPostContent("");
-    setCroppedAreaList([]);
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    onClose();
-  };
+  }, [post, isOpen])
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
-    const fileList = e.target.files;
-
-    if (fileList) {
-      let newMediaList: string[] = [...showImages];
-      let newCroppedAreas: Area[] = [...croppedAreaList];
-      for (let i = 0; i < fileList.length; i++) {
-        const currentFile = fileList[i];
-
-        if (currentFile.type.startsWith("image/")) {
-          const imageUrl = URL.createObjectURL(currentFile);
-          newMediaList.push(imageUrl);
-
-          const image = new Image();
-          image.src = imageUrl;
-
-          await new Promise((resolve) => {
-            image.onload = () => {
-              resolve(null);
-              const originalImageWidth = image.width;
-              const originalImageHeight = image.height;
-              const imageRatio = 7 / 7;
-              const cropSize = getCropSize(
-                originalImageWidth,
-                originalImageHeight,
-                originalImageWidth,
-                originalImageHeight,
-                imageRatio
-              );
-              const areaCropSize = {
-                width: cropSize.width,
-                height: cropSize.height,
-                x: 0,
-                y: 0,
-              };
-              newCroppedAreas.push(areaCropSize);
-            };
-          });
-        } else if (currentFile.type.startsWith("video/")) {
-          const videoUrl = URL.createObjectURL(currentFile);
-          newMediaList.push(videoUrl);
-        }
-      }
-
-      if (newMediaList.length > 5) {
-        newMediaList = newMediaList.slice(0, 5);
-      }
-
-      setShowImages(newMediaList);
-      setCroppedAreaList(newCroppedAreas);
+    const fileList = e.target.files
+    const init = await initializeImage(fileList, showImages, croppedAreaList, cropStates)
+    if (init) {
+      setShowImages(init.newMediaList)
+      setCroppedAreaList(init.newCroppedAreas)
+      setCropStates(init.newCropStates)
     }
-  };
+  }
   const onCropComplete = (croppedAreaPixels: Area, croppedArea: Area) => {
-    const updatedCroppedAreas = [...croppedAreaList];
-    updatedCroppedAreas[currentImageIndex] = croppedArea;
-    setCroppedAreaList(updatedCroppedAreas);
-  };
+    const updatedCroppedAreas = [...croppedAreaList]
+    updatedCroppedAreas[currentImageIndex] = croppedArea
+    setCroppedAreaList(updatedCroppedAreas)
+    setCropStates(cropStates => {
+      const updatedCropStates = [...cropStates]
+      updatedCropStates[currentImageIndex] = { crop, zoom }
+      return updatedCropStates
+    })
+  }
   const onNextClick = (): void => {
     if (post) {
       if (currentImageIndex < post.PostMedia.length - 1) {
-        setCurrentImageIndex(currentImageIndex + 1);
+        setCurrentImageIndex(currentImageIndex + 1)
       }
     } else {
       if (currentImageIndex < showImages.length - 1) {
-        setCurrentImageIndex(currentImageIndex + 1);
-        setCrop({ x: 0, y: 0 });
-        setZoom(1);
+        setCurrentImageIndex(currentImageIndex + 1)
+        setCrop(cropStates[currentImageIndex + 1].crop)
+        setZoom(cropStates[currentImageIndex + 1].zoom)
       }
     }
-  };
+  }
   const onPrevClick = () => {
     if (post) {
       if (currentImageIndex > 0) {
-        setCurrentImageIndex(currentImageIndex - 1);
+        setCurrentImageIndex(currentImageIndex - 1)
       }
     } else {
       if (currentImageIndex > 0) {
-        setCurrentImageIndex(currentImageIndex - 1);
-        setZoom(1);
+        setCurrentImageIndex(currentImageIndex - 1)
+        setCrop(cropStates[currentImageIndex - 1].crop)
+        setZoom(cropStates[currentImageIndex - 1].zoom)
       }
     }
-  };
+  }
   const handlePostContent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const Content = e.target.value;
-    setPostContent(Content);
-    const hashtagRegex = /#(\S+)/g;
-    let keyword = null;
-    let match;
-    const lastChar = Content[Content.length - 1];
-    if (lastChar === " ") {
-      setSearch(false);
-      keyword = null;
-    } else if (lastChar === "#") {
-      setSearch(true);
+    const Content = e.target.value
+    setPostContent(Content)
+    const hashtagRegex = /#(\S+)/g
+    let keyword = null
+    let match
+    const lastChar = Content[Content.length - 1]
+    if (lastChar === ' ') {
+      setSearch(false)
+      keyword = null
+    } else if (lastChar === '#') {
+      setSearch(true)
     }
     while ((match = hashtagRegex.exec(Content)) !== null && search) {
-      let hashtag = match[1];
-      keyword = hashtag;
+      let hashtag = match[1]
+      keyword = hashtag
     }
     if (keyword !== null) {
-      dispatch(getSearchResult({ keyword, type: "tag" }) as any);
+      dispatch(getSearchResult({ keyword, type: 'tag' }) as any)
     } else {
-      dispatch(resetResult());
+      dispatch(resetResult())
     }
-  };
+  }
   const handleuploadPost = async () => {
-    let croppedImgList: Blob[] = [];
+    let croppedImgList: Blob[] = []
 
     for (let i = 0; i < showImages.length; i++) {
       try {
-        const croppedImage = await getCroppedImg(
-          showImages[i],
-          croppedAreaList[i]
-        );
+        const croppedImage = await getCroppedImg(showImages[i], croppedAreaList[i])
         if (croppedImage) {
-          croppedImgList.push(croppedImage);
+          croppedImgList.push(croppedImage)
         }
       } catch (e) {
-        console.log(e);
+        console.log(e)
       }
     }
-    const regex = /#([a-zA-Z0-9가-힣_]+)/g;
-    const matches = postContent.match(regex);
-    const content = postContent
-      .replace(/\n/g, "<br>")
-      .replace(
-        /#([^\s]+)/g,
-        '<span style="color: rgb(0, 55, 107);">#$1</span>'
-      );
+    const regex = /#([a-zA-Z0-9가-힣_]+)/g
+    const matches = postContent.match(regex)
+    const content = formatTextToHTML(postContent)
     let post: uploadPostType = {
       content: content,
-      post_images: croppedImgList,
-    };
-    if (matches) {
-      const tags = matches.map((match) => match.replace(/^#/, ""));
-      post.hashtags = tags;
+      postMedias: croppedImgList,
     }
-    if (token) dispatch(uploadPost({ post, token }) as any);
-    openModal();
-    handleCloseModal();
-  };
+    if (matches) {
+      const tags = matches.map(match => match.replace(/^#/, ''))
+      post.hashtags = tags
+    }
+    dispatch(uploadPost({ post }) as any)
+    dispatch(openModal({ modalType: 'PostingModal', id: null, post: null }))
+  }
   const handleUpdatePost = async () => {
-    const regex = /#([a-zA-Z0-9가-힣_]+)/g;
-    const matches = postContent.match(regex);
+    const regex = /#([a-zA-Z0-9가-힣_]+)/g
+    const matches = postContent.match(regex)
     const content = postContent
-      .replace(/\n/g, "<br>")
-      .replace(
-        /#([^\s]+)/g,
-        '<span style="color: rgb(0, 55, 107);">#$1</span>'
-      );
+      .replace(/\n/g, '<br>')
+      .replace(/#([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">#$1</span>')
     if (post) {
       let postInfo: updatePostType = {
         content: content,
         postId: post.id.toString(),
-      };
-      if (matches) {
-        const tags = matches.map((match) => match.replace(/^#/, ""));
-        postInfo.hashtags = tags;
       }
-      if (token) dispatch(updatePost({ postInfo, token }) as any);
-      onClose();
+      if (matches) {
+        const tags = matches.map(match => match.replace(/^#/, ''))
+        postInfo.hashtags = tags
+      }
+      dispatch(updatePost({ postInfo }) as any)
+      dispatch(closeModal())
     }
-  };
+  }
   const handleHasTag = (name: string) => {
-    const lastIndex = postContent.lastIndexOf("#");
-    const extractedString = postContent.substring(0, lastIndex + 1);
-    setPostContent(extractedString + name);
-  };
+    const lastIndex = postContent.lastIndexOf('#')
+    const extractedString = postContent.substring(0, lastIndex + 1)
+    setPostContent(extractedString + name)
+  }
   return (
     <div>
       <Modal
-        open={postConfig}
-        onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        open={isOpen}
+        onClose={() => {
+          dispatch(closeModal())
+        }}
       >
         <div className="create-post">
           <div className="create-post-title">
-            {post ? "게시물 수정" : "새 게시물 만들기"}
-            <Button
-              disabled={
-                post ? false : postContent === "" || showImages.length === 0
-              }
-              className="post-btn"
-              onClick={post ? handleUpdatePost : handleuploadPost}
-            >
-              완료
-            </Button>
+            {post ? '게시물 수정' : '새 게시물 만들기'}
+            <div className="post-btn">
+              <Button
+                className=""
+                onClick={() => {
+                  dispatch(closeModal())
+                }}
+              >
+                취소
+              </Button>
+              <Button
+                disabled={post ? false : postContent === '' || showImages.length === 0}
+                className=""
+                onClick={post ? handleUpdatePost : handleuploadPost}
+              >
+                완료
+              </Button>
+            </div>
           </div>
           <div className="create-post-container">
             <div className="create-post-content">
@@ -259,11 +193,11 @@ const PostForm: React.FC<PostModalProps> = ({
                         aria-label="fingerprint"
                         color="secondary"
                         style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.5)",
+                          backgroundColor: 'rgba(255, 255, 255, 0.5)',
                         }}
                         onClick={onPrevClick}
                       >
-                        <ChevronLeftIcon style={{ color: "black" }} />
+                        <ChevronLeftIcon style={{ color: 'black' }} />
                       </IconButton>
                     </div>
                   )}
@@ -276,11 +210,11 @@ const PostForm: React.FC<PostModalProps> = ({
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
                           }}
                           onClick={onNextClick}
                         >
-                          <NavigateNextIcon style={{ color: "black" }} />
+                          <NavigateNextIcon style={{ color: 'black' }} />
                         </IconButton>
                       </div>
                     )}
@@ -333,27 +267,26 @@ const PostForm: React.FC<PostModalProps> = ({
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
                           }}
                           onClick={onPrevClick}
                         >
-                          <ChevronLeftIcon style={{ color: "black" }} />
+                          <ChevronLeftIcon style={{ color: 'black' }} />
                         </IconButton>
                       )}
-                      {showImages.length > 1 &&
-                        currentImageIndex < showImages.length - 1 && (
-                          <IconButton
-                            className="next-btn"
-                            aria-label="fingerprint"
-                            color="secondary"
-                            style={{
-                              backgroundColor: "rgba(255, 255, 255, 0.5)",
-                            }}
-                            onClick={onNextClick}
-                          >
-                            <NavigateNextIcon style={{ color: "black" }} />
-                          </IconButton>
-                        )}
+                      {showImages.length > 1 && currentImageIndex < showImages.length - 1 && (
+                        <IconButton
+                          className="next-btn"
+                          aria-label="fingerprint"
+                          color="secondary"
+                          style={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                          }}
+                          onClick={onNextClick}
+                        >
+                          <NavigateNextIcon style={{ color: 'black' }} />
+                        </IconButton>
+                      )}
                     </div>
                   )}
                 </>
@@ -364,14 +297,7 @@ const PostForm: React.FC<PostModalProps> = ({
                 {user && (
                   <div className="cpuf">
                     <div className="pi">
-                      <Avatar
-                        alt="profile"
-                        src={
-                          user.ProfileImage
-                            ? user.ProfileImage.path ?? undefined
-                            : undefined
-                        }
-                      />
+                      <Avatar alt="profile" src={user.profileImage?.path} />
                     </div>
                     <div className="uf unts">{user.nickname}</div>
                   </div>
@@ -392,12 +318,8 @@ const PostForm: React.FC<PostModalProps> = ({
                   />
                 </div>
                 <div className="tag_search">
-                  {result.map((r) => (
-                    <div
-                      className="tag_result"
-                      key={r.id}
-                      onClick={() => handleHasTag(r.name)}
-                    >
+                  {result.map(r => (
+                    <div className="tag_result" key={r.id} onClick={() => handleHasTag(r.name)}>
                       <div>#{r.name}</div>
                       <div>
                         <span>게시물 {r.tagCount}</span>
@@ -411,7 +333,7 @@ const PostForm: React.FC<PostModalProps> = ({
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default PostForm;
+export default PostForm

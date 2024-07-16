@@ -1,14 +1,16 @@
+import { postType } from "@/interfaces/post";
 import { createSlice } from "@reduxjs/toolkit"
-import { number } from "prop-types";
 interface modalState {
   modalType: string,
   isOpen: boolean,
-  id: number | null
+  id: number | null,
+  post: postType | null
 }
 const initialState: modalState = {
   modalType: "",
   isOpen: false,
-  id: null
+  id: null,
+  post: null
 }
 
 export const modalSlice = createSlice({
@@ -16,14 +18,18 @@ export const modalSlice = createSlice({
   initialState,
   reducers: {
     openModal: (state, actions) => {
-      const {modalType, id} = actions.payload;
+      const {modalType, id, post} = actions.payload;
+      console.log('Opening modal:', modalType, id, post);
       state.modalType = modalType;
       state.id = id;
+      state.post = post
       state.isOpen = true;
     },
     closeModal: (state) => {
+      console.log('Closing modal');
       state.isOpen = false;
       state.id = null;
+      state.post = null;
     }
   }
 });

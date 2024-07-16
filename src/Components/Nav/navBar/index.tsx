@@ -21,23 +21,18 @@ import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
 import "./index.css";
-import PostForm from "@/components/post/postForm";
 import { signOut } from "@/redux/auth";
-import PostLoading from "@/components/post/postLoading";
 import Search from "@/components/nav/search/search";
 import { useLocation, useNavigate } from "react-router-dom";
 import { socket } from "@/redux/auth";
-import { resetResult } from "@/redux/search";
 import { clearPostList } from "@/redux/postList";
+import { openModal } from "@/redux/modal";
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const [postConfig, setPostConfig] = useState(false);
-  const [open, setOpen] = useState(false);
+  const {user, accessToken} = useSelector((state: RootState) => state.authReducer);
   const [searchOpen, setSearchOpen] = useState(false);
   const [_message, set_message] = useState(0);
   useEffect(() => {
@@ -69,27 +64,21 @@ const Nav: React.FC = () => {
     }
   }, [location.pathname]);
   useEffect(() => {
-    if (socket && token) {
-      socket.emit("getNotReadMessage", token);
+    if (socket) {
+      socket.emit("getNotReadMessage", accessToken);
       socket.on("allNotReadMessage", (data) => {
         set_message(data);
       });
       socket.on("newMessage", (data) => {
         if (data.user.cUsers.id === user?.id && socket) {
-          socket.emit("getNotReadMessage", token);
+          socket.emit("getNotReadMessage", accessToken);
         }
       });
     }
-  }, [socket, token]);
+  }, [socket, accessToken]);
   const handleSignOut = () => {
     dispatch(clearPostList());
     dispatch(signOut() as any);
-  };
-  const handleOpenModal = () => {
-    setOpen(true);
-  };
-  const handleCloseModal = () => {
-    setOpen(false);
   };
   const handleOpenSearch = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -100,13 +89,7 @@ const Nav: React.FC = () => {
   const handleCloseSearch = () => {
     setSearchOpen(false);
   };
-  const onPostOpen = () => {
-    setPostConfig(true);
-  };
-  const onPostClose = () => {
-    dispatch(resetResult());
-    setPostConfig(false);
-  };
+
   return (
     <div className="nav-container">
       <div className="n">
@@ -187,7 +170,13 @@ const Nav: React.FC = () => {
               style={{ borderRadius: "12px" }}
               component="a"
               onClick={() => {
-                onPostOpen();
+                dispatch(
+                  openModal({
+                    modalType: "PostFormModal",
+                    id: null,
+                    post: null,
+                  })
+                );
               }}
             >
               <ListItemIcon>
@@ -205,7 +194,7 @@ const Nav: React.FC = () => {
               <ListItemAvatar>
                 <Avatar
                   alt="profile"
-                  src={user?.ProfileImage?.path}
+                  src={user?.profileImage?.path}
                   style={{ width: 30, height: 30 }}
                 />
               </ListItemAvatar>
@@ -228,16 +217,6 @@ const Nav: React.FC = () => {
               <ListItemText className="text" primary="Logout" />
             </ListItemButton>
           </div>
-          {postConfig && (
-            <PostForm
-              postConfig={postConfig}
-              post={null}
-              onClose={onPostClose}
-              openModal={handleOpenModal}
-            />
-          )}
-
-          <PostLoading open={open} onClose={handleCloseModal} />
         </div>
       </div>
       <div ref={searchRef}>

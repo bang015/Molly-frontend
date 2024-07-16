@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { userType } from "@/interfaces/user";
+import { UserType } from "@/interfaces/user";
 import { Avatar, CircularProgress } from "@mui/material";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
-import {
-  clearFollowList,
-  followUser,
-  followedCheck,
-} from "@/redux/follow";
+import { clearFollowList, followUser, followedCheck } from "@/redux/follow";
 import EditImage from "../profileImage/editImage";
 import EditProfile from "../editProfile";
 import Follow from "@/components/follow/follow";
 interface headerProps {
-  profile: userType;
+  profile: UserType;
 }
 const Header: React.FC<headerProps> = ({ profile }) => {
   const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
   const loading = useSelector(
-    (state: RootState) => state.profileReducer.editLoading
+    (state: RootState) => state.userReducer.editLoading
   );
   const [showImage, setShowImage] = useState("");
   const [followOpen, setFollowOpen] = useState(false);
@@ -31,10 +26,8 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   useEffect(() => {
     if (profile.id !== user?.id) {
       const check = async () => {
-        if (token) {
-          const result = await followedCheck(token, profile.id!);
-          setCheckFollowed(result);
-        }
+        const result = await followedCheck(profile.id!);
+        setCheckFollowed(result);
       };
       check();
     }
@@ -59,10 +52,8 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     setEditImage(false);
   };
   const handleFollow = () => {
-    if (token) {
       const followUserId = profile?.id!;
-      dispatch(followUser({ token, followUserId }) as any);
-    }
+      dispatch(followUser({ followUserId }) as any);
   };
   const EditProfileOpen = () => {
     setEditProfile(true);
@@ -94,7 +85,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
               </div>
             )}
             <Avatar
-              src={profile?.ProfileImage?.path}
+              src={profile.profileImage?.path}
               sx={{ width: 150, height: 150 }}
             />
           </div>

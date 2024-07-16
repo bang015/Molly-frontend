@@ -13,7 +13,7 @@ interface FollowState {
   followerUser: followType[];
   followLoading: boolean;
   followed: boolean;
-  chekcFollowed: checkFollowedState;
+  checkFollowed: checkFollowedState;
 }
 
 const initialState: FollowState = {
@@ -22,7 +22,7 @@ const initialState: FollowState = {
   followerUser: [],
   followLoading: false,
   followed: false,
-  chekcFollowed: { check: false, followUserId: null },
+  checkFollowed: { check: false, followUserId: null },
 };
 
 const followSlice = createSlice({
@@ -34,7 +34,7 @@ const followSlice = createSlice({
     },
     followUserSuccess: (state, action: PayloadAction<checkFollowedState>) => {
       state.followLoading = false;
-      state.chekcFollowed = action.payload;
+      state.checkFollowed = action.payload;
     },
     followUserFailure: (state) => {
       state.followLoading = false;
@@ -75,12 +75,10 @@ export const {
 } = followSlice.actions;
 export default followSlice.reducer;
 
+const token = localStorage.getItem("accessToken");
 export const followUser = createAsyncThunk(
   "follow/followUser",
-  async (
-    { token, followUserId }: { token: string; followUserId: number },
-    { dispatch }
-  ) => {
+  async ({ followUserId }: { followUserId: number }, { dispatch }) => {
     try {
       dispatch(followUserStart());
       const response = await axios.post(
@@ -166,7 +164,7 @@ export const getFollower = createAsyncThunk(
     } catch {}
   }
 );
-export const followedCheck = async (token: string, userId: number) => {
+export const followedCheck = async (userId: number) => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/check/${userId}`,

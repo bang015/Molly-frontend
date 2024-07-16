@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  clearPostDetail,
-  clearPostList,
-  getPostByUserId,
-} from "@/redux/postList";
+import { clearPostList, getPostByUserId } from "@/redux/postList";
 import { RootState } from "@/redux";
 import "./index.css";
-import PostDetail from "@/components/post/postDetail";
-import { clearComment } from "@/redux/comment";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
-import PostForm from "@/components/post/postForm";
-import PostLoading from "@/components/post/postLoading";
+import { openModal } from "@/redux/modal";
 interface userPostListProps {
   userId: number;
 }
 const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-  const [postConfig, setPostConfig] = useState(false);
-  const [open, setOpen] = useState(false);
-
   const user = useSelector((state: RootState) => state.authReducer.user);
   const post = useSelector(
     (state: RootState) => state.postListReducer.userPostList
@@ -32,26 +21,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   useEffect(() => {
     dispatch(clearPostList());
   }, [userId]);
-  const handlePostModal = (id: number) => {
-    setSelectedPostId(id);
-  };
-  const closeModal = () => {
-    setSelectedPostId(null);
-    dispatch(clearComment());
-    dispatch(clearPostDetail());
-  };
-  const onPostOpen = () => {
-    setPostConfig(true);
-  };
-  const onPostClose = () => {
-    setPostConfig(false);
-  };
-  const handleOpenModal = () => {
-    setOpen(true);
-  };
-  const handleCloseModal = () => {
-    setOpen(false);
-  };
+
   return (
     <div>
       {post.length ? (
@@ -60,15 +30,14 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
             <div
               key={post.id}
               onClick={() => {
-                handlePostModal(post.id);
+                dispatch(
+                  openModal({ modalType: "PostDetailModal", id: post.id })
+                );
               }}
             >
               <img className="image_item" src={post.PostMedia[0].path} />
             </div>
           ))}
-          {selectedPostId && (
-            <PostDetail postId={selectedPostId} onClose={closeModal} />
-          )}
         </div>
       ) : (
         <div className="empty">
@@ -83,23 +52,24 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
               <div className="emptyT">
                 <div>회원님의 추억을 공유해주세요.</div>
               </div>
-              <div className="postbtn" onClick={onPostOpen}>
+              <div
+                className="postbtn"
+                onClick={() => {
+                  dispatch(
+                    openModal({
+                      modalType: "PostFormModal",
+                      id: null,
+                      post: null,
+                    })
+                  );
+                }}
+              >
                 <button>첫 사진 공유하기</button>
               </div>
             </div>
           )}
         </div>
       )}
-
-      {postConfig && (
-        <PostForm
-          postConfig={postConfig}
-          onClose={onPostClose}
-          openModal={handleOpenModal}
-          post={null}
-        />
-      )}
-      <PostLoading open={open} onClose={handleCloseModal} />
     </div>
   );
 };

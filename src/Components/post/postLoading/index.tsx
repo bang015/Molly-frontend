@@ -1,25 +1,24 @@
 import React from "react";
 import { CircularProgress, Modal } from "@mui/material";
 import "./index.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-interface postLoadingProps {
-  open: boolean;
-  onClose: () => void;
-}
-const PostLoading: React.FC<postLoadingProps> = ({ open, onClose }) => {
-  const loading = useSelector((state: RootState) => state.postReducer.posting);
-  const message = useSelector((state: RootState) => state.postReducer.message);
+import { closeModal } from "@/redux/modal";
+
+const PostLoading: React.FC = () => {
+  const dispatch = useDispatch();
+  const {posting, message} = useSelector((state: RootState) => state.postReducer);
+  const {isOpen} = useSelector((state:RootState) => state.modalReducer);
   return (
     <div>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={isOpen} onClose={()=>{dispatch(closeModal())}}>
         <div className="plmc">
           <div className="create-post-title">
-            {loading ? "게시물을 공유중입니다." : message}
+            {posting ? "게시물을 공유중입니다." : message}
           </div>
           <div className="plod">
-            {loading ? (
+            {posting ? (
               <CircularProgress size={100} />
             ) : (
               <div>
