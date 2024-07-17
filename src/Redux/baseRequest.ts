@@ -21,9 +21,11 @@ export const request = async (url: string, options: AxiosRequestConfig) => {
           return retryResponse
         }
       } catch (refreshError) {
+        console.log(refreshError)
         throw refreshError
       }
     }
+    console.log(e)
     throw Error
   }
 };

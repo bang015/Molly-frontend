@@ -13,7 +13,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   const [page, setPage] = useState(1);
   const user = useSelector((state: RootState) => state.authReducer.user);
   const post = useSelector(
-    (state: RootState) => state.postListReducer.userPostList
+    (state: RootState) => state.postListReducer.posts.user
   );
   useEffect(() => {
     dispatch(getPostByUserId({ userId, page }) as any);
@@ -35,7 +35,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
                 );
               }}
             >
-              <img className="image_item" src={post.PostMedia[0].path} />
+              <img className="image_item" src={post.postMedias[0].path} />
             </div>
           ))}
         </div>

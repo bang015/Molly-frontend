@@ -8,18 +8,17 @@ export interface updatePostType {
   postId: string;
   hashtags?: string[];
 }
-export interface postType {
+export interface PostType {
   id: number;
   userId: number;
   content: string;
   createdAt: string;
   updatedAt: string;
-
-  PostMedia: mediaListType[];
-  User: { nickname: string, ProfileImage?: { path: string} | null };
+  postMedias: MediaListType[];
+  user: { nickname: string, profileImage?: { path: string} | null };
 }
 
-export interface mediaListType {
+export interface MediaListType {
   id: number;
   path: string;
 }

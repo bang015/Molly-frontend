@@ -1,10 +1,10 @@
-import { postType } from "@/interfaces/post";
+import { PostType } from "@/interfaces/post";
 import { createSlice } from "@reduxjs/toolkit"
 interface modalState {
   modalType: string,
   isOpen: boolean,
   id: number | null,
-  post: postType | null
+  post: PostType | null
 }
 const initialState: modalState = {
   modalType: "",

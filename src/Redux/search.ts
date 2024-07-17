@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { INIT, SEARCH_API } from "../utils/api-url";
 import { resultType } from "../interfaces/search";
+import { request } from "./baseRequest";
 
 interface searchState {
   result: resultType[];
@@ -39,6 +40,7 @@ export const {
   resetResult,
 } = searchSlice.actions;
 export default searchSlice.reducer;
+
 export const getSearchResult = createAsyncThunk(
   "search/getSearchResult",
   async (
@@ -46,9 +48,12 @@ export const getSearchResult = createAsyncThunk(
     { dispatch }
   ) => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/q/${type}/?query=${keyword}`
+      const response = await request(
+        `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/q/${type}/?query=${keyword}`,
+        {method: "GET"}
       );
+      console.log(response.data)
+
       if (response.status === 200) {
         dispatch(getResultSuccess(response.data));
       }

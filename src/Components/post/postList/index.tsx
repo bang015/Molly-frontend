@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import { postType } from '@/interfaces/post'
+import { PostType } from '@/interfaces/post'
 import './index.css'
 import { Avatar, Button, IconButton, InputAdornment, TextField } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
@@ -18,7 +18,7 @@ import { openModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
 
 interface postListProps {
-  post: postType
+  post: PostType
 }
 const PostList: React.FC<postListProps> = ({ post }) => {
   const dispatch = useDispatch()
@@ -48,11 +48,11 @@ const PostList: React.FC<postListProps> = ({ post }) => {
   }, [post, checkLiked])
   const onPrevClick = () => {
     setCurrentImageIndex(
-      prevIndex => (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length,
+      prevIndex => (prevIndex - 1 + post.postMedias.length) % post.postMedias.length,
     )
   }
   const onNextClick = () => {
-    setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.PostMedia.length)
+    setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.postMedias.length)
   }
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
     const commentContent = e.target.value
@@ -78,7 +78,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
     }
   }
   const goToProfilePage = () => {
-    navigate(`/profile/${post.User.nickname}`)
+    navigate(`/profile/${post.user.nickname}`)
   }
   return (
     <div className="container">
@@ -87,12 +87,12 @@ const PostList: React.FC<postListProps> = ({ post }) => {
           <div>
             <Avatar
               alt="Remy Sharp"
-              src={post.User.ProfileImage?.path}
+              src={post.user.profileImage?.path}
               sx={{ width: 34, height: 34 }}
             />
           </div>
           <div className="fs14 ml10">
-            <div>{post.User.nickname}</div> <div className="ms5 cAt">•</div>{' '}
+            <div>{post.user.nickname}</div> <div className="ms5 cAt">•</div>{' '}
             <div className="cAt">{displayCreateAt(post.createdAt)}</div>
           </div>
         </div>
@@ -130,9 +130,9 @@ const PostList: React.FC<postListProps> = ({ post }) => {
               </IconButton>
             </div>
           )}
-          {post.PostMedia &&
-            post.PostMedia.length > 1 &&
-            currentImageIndex < post.PostMedia.length - 1 && (
+          {post.postMedias &&
+            post.postMedias.length > 1 &&
+            currentImageIndex < post.postMedias.length - 1 && (
               <div className="c-next-btn">
                 <IconButton
                   aria-label="fingerprint"
@@ -151,7 +151,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
             className="medias-wrapper"
             style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
           >
-            {post.PostMedia.map((media, index) => (
+            {post.postMedias.map((media, index) => (
               <img key={index} src={media.path} alt="img" />
             ))}
           </div>
@@ -166,7 +166,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
         <PostLikeCount config={true} likeCount={likeCount} handleLike={handleLike} />
         <div className="pct">
           <div className="c2">
-            <span>{post.User.nickname}</span>
+            <span>{post.user.nickname}</span>
           </div>
           <div className="c3" dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>

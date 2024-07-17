@@ -12,20 +12,17 @@ const Main: React.FC = () => {
   const dispatch = useDispatch();
   const limit = 5;
   const navigate = useNavigate();
-  const token = useSelector((state: RootState) => state.authReducer.token);
   const postList = useSelector(
-    (state: RootState) => state.postListReducer.mainPostList
+    (state: RootState) => state.postListReducer.posts.main
   );
   const totalPages = useSelector(
-    (state: RootState) => state.postListReducer.totalPages
+    (state: RootState) => state.postListReducer.totalPages.main
   );
 
   const [page, setPage] = useState(1);
   useEffect(() => {
-    if (token) {
-      dispatch(getMainPost({ page, token }) as any);
-    }
-  }, [token, page]);
+      dispatch(getMainPost({ page}) as any);
+  }, [ page]);
   useEffect(() => {
     const handleScroll = () => {
       if (

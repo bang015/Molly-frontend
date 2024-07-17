@@ -57,13 +57,12 @@ export const uploadPost = createAsyncThunk(
   async ({ post }: { post: uploadPostType }, { dispatch }) => {
     try {
       dispatch(postStart())
-      console.log(post)
       const formData = new FormData()
       formData.append('content', post.content)
       post.postMedias.forEach((image, index) => {
         const fileName = `image_${index}.png`
         const file = new File([image], fileName, { type: image.type })
-        formData.append(`post_images`, file)
+        formData.append(`postMedias`, file)
       })
       if (post.hashtags) {
         post.hashtags.forEach((tag, index) => {

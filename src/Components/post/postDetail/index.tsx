@@ -32,10 +32,7 @@ import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
 import { closeModal, openModal } from '@/redux/modal'
-interface PostDetailModalProps {
-  postId: number
-  onClose: () => void
-}
+
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
   const post = useSelector((state: RootState) => state.postListReducer.getPostDetail)
@@ -44,7 +41,7 @@ const PostDetail: React.FC = () => {
   )
   const Followed = useSelector((state: RootState) => state.followReducer.checkFollowed)
   const { user } = useSelector((state: RootState) => state.authReducer)
-  const userPostList = useSelector((state: RootState) => state.postListReducer.userPostList)
+  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user);
   const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const navigate = useNavigate()
   const textFieldRef = useRef<HTMLInputElement | null>(null)
@@ -136,7 +133,7 @@ const PostDetail: React.FC = () => {
   }, [post])
   const goToProfilePage = () => {
     if (post) {
-      navigate(`/profile/${post.User.nickname}`)
+      navigate(`/profile/${post.user.nickname}`)
     }
   }
   const handleComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,13 +146,13 @@ const PostDetail: React.FC = () => {
   const onPrevClick = () => {
     if (post) {
       setCurrentImageIndex(
-        prevIndex => (prevIndex - 1 + post.PostMedia.length) % post.PostMedia.length,
+        prevIndex => (prevIndex - 1 + post.postMedias.length) % post.postMedias.length,
       )
     }
   }
   const onNextClick = (): void => {
     if (post) {
-      setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.PostMedia.length)
+      setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.postMedias.length)
     }
   }
   const handleChatClick = () => {
@@ -243,9 +240,9 @@ const PostDetail: React.FC = () => {
                     </div>
                   )}
                   {post &&
-                    post.PostMedia &&
-                    post.PostMedia.length > 1 &&
-                    currentImageIndex < post.PostMedia.length - 1 && (
+                    post.postMedias &&
+                    post.postMedias.length > 1 &&
+                    currentImageIndex < post.postMedias.length - 1 && (
                       <div className="c-next-btn">
                         <IconButton
                           aria-label="fingerprint"
@@ -266,7 +263,7 @@ const PostDetail: React.FC = () => {
                         transform: `translateX(-${currentImageIndex * 100}%)`,
                       }}
                     >
-                      {post.PostMedia.map((media, index) => (
+                      {post.postMedias.map((media, index) => (
                         <img key={index} src={media.path} alt="img" />
                       ))}
                     </div>
@@ -278,11 +275,11 @@ const PostDetail: React.FC = () => {
                   <div className="ch1">
                     <div className="cht1">
                       <div className="pi" onClick={goToProfilePage}>
-                        {post && <Avatar alt="Remy Sharp" src={post?.User?.ProfileImage?.path} />}
+                        {post && <Avatar alt="Remy Sharp" src={post?.user?.profileImage?.path} />}
                       </div>
                       <div className="uf">
                         <div className="un" onClick={goToProfilePage}>
-                          {post.User.nickname}
+                          {post.user.nickname}
                         </div>
                         {!checkFollowed && post.userId !== user?.id && (
                           <div>
@@ -318,11 +315,11 @@ const PostDetail: React.FC = () => {
                       <li>
                         <div className="p-content">
                           <div className="c1" onClick={goToProfilePage}>
-                            {post && <Avatar src={post?.User?.ProfileImage?.path} />}
+                            {post && <Avatar src={post?.user?.profileImage?.path} />}
                           </div>
                           <div>
                             <div className="c2" onClick={goToProfilePage}>
-                              <span>{post.User.nickname}</span>
+                              <span>{post.user.nickname}</span>
                             </div>
                             <div
                               className="c3"

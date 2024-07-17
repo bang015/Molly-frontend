@@ -11,7 +11,7 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const post = useSelector(
-    (state: RootState) => state.postListReducer.bookmarkList
+    (state: RootState) => state.postListReducer.posts.bookmark
   );
   useEffect(() => {
     dispatch(clearPostList());

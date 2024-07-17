@@ -9,7 +9,7 @@ import { Avatar, Button, Modal } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import getCroppedImg, { initializeImage } from '@/utils/image-crop'
-import { postType, updatePostType, uploadPostType } from '@/interfaces/post'
+import { PostType, updatePostType, uploadPostType } from '@/interfaces/post'
 import { updatePost, uploadPost } from '@/redux/post'
 import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import { getSearchResult, resetResult } from '@/redux/search'
@@ -56,7 +56,7 @@ const PostForm: React.FC = () => {
   }
   const onNextClick = (): void => {
     if (post) {
-      if (currentImageIndex < post.PostMedia.length - 1) {
+      if (currentImageIndex < post.postMedias.length - 1) {
         setCurrentImageIndex(currentImageIndex + 1)
       }
     } else {
@@ -133,9 +133,7 @@ const PostForm: React.FC = () => {
   const handleUpdatePost = async () => {
     const regex = /#([a-zA-Z0-9가-힣_]+)/g
     const matches = postContent.match(regex)
-    const content = postContent
-      .replace(/\n/g, '<br>')
-      .replace(/#([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">#$1</span>')
+    const content = formatTextToHTML(postContent)
     if (post) {
       let postInfo: updatePostType = {
         content: content,
@@ -202,9 +200,9 @@ const PostForm: React.FC = () => {
                     </div>
                   )}
                   {post &&
-                    post.PostMedia &&
-                    post.PostMedia.length > 1 &&
-                    currentImageIndex < post.PostMedia.length - 1 && (
+                    post.postMedias &&
+                    post.postMedias.length > 1 &&
+                    currentImageIndex < post.postMedias.length - 1 && (
                       <div className="c-next-btn">
                         <IconButton
                           aria-label="fingerprint"
@@ -225,7 +223,7 @@ const PostForm: React.FC = () => {
                         transform: `translateX(-${currentImageIndex * 100}%)`,
                       }}
                     >
-                      {post.PostMedia.map((media, index) => (
+                      {post.postMedias.map((media, index) => (
                         <img key={index} src={media.path} alt="img" />
                       ))}
                     </div>
