@@ -86,15 +86,11 @@ const postListSlice = createSlice({
       state.posts.main = [action.payload, ...state.posts.main]
     },
     postUpdateList: (state, action: PayloadAction<updatedPost>) => {
-      const postList = [...state.posts.main]
-      let newList: PostType[] = []
-      for (let post of postList) {
-        if (post.id === action.payload.postId) {
-          post.content = action.payload.updatedPost!
-        }
-        newList.push(post)
-      }
-      state.posts.main = newList
+      console.log(action.payload);
+      const updatedPosts = state.posts.main.map(post =>
+        post.id === action.payload.updatedPost.id ? { ...post, content: action.payload.updatedPost.content! } : post
+      );
+      state.posts.main = updatedPosts
     },
     postDelete: (state, action: PayloadAction<number>) => {
       state.posts.main = state.posts.main.filter(post => post.id !== action.payload)

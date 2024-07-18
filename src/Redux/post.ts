@@ -6,8 +6,7 @@ import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postL
 import { deletePostProfile } from './user'
 import { request } from './baseRequest'
 export interface updatedPost {
-  postId: number | null
-  updatedPost: string | null
+  updatedPost: { id: number | null; content: string | null }
 }
 interface postState {
   posting: boolean
@@ -71,7 +70,7 @@ export const uploadPost = createAsyncThunk(
       }
       const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`, {
         data: formData,
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -101,20 +100,17 @@ export const updatePost = createAsyncThunk(
           formData.append(`hashtags[${index}]`, tag)
         })
       }
-      const response = await axios.patch(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
+      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`, {
+        method: 'PATCH',
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
-      )
+      })
       if (response.status === 200) {
-        const postId = parseInt(postInfo.postId)
-        dispatch(getPostByPostId(postId))
-        dispatch(postUpdate(response.data))
+        dispatch(getPostByPostId(response.data.updatedPost.id))
+        dispatch(postUpdate())
         dispatch(postUpdateList(response.data))
       }
     } catch {}

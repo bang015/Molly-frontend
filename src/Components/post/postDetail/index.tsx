@@ -58,6 +58,7 @@ const PostDetail: React.FC = () => {
   const [checkFollowed, setCheckFollowed] = useState(false)
   const [loading, setLoading] = useState(true)
   useEffect(() => {
+    console.log(11)
     dispatch(getPostByPostId(id!) as any)
     const fetchData = async () => {
       if (user) {

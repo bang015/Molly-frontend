@@ -5,6 +5,7 @@ import { COMMENT_API, INIT } from '../utils/api-url'
 import { showSnackBar } from './post'
 import { useSelector } from 'react-redux'
 import { RootState } from '.'
+import { request } from './baseRequest'
 interface commentState {
   deleteComment: number[]
   updatePending: boolean
@@ -61,8 +62,14 @@ export const addComment = async (commentInfo: addCommentType) => {
 
 export const getComment = async (userId: number, postId: number, page: number) => {
   try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${userId}/${postId}?page=${page}`,
+    const response = await request(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     )
 
     if (response.status === 200) {
@@ -72,8 +79,14 @@ export const getComment = async (userId: number, postId: number, page: number) =
 }
 export const getMyCommentByPost = async (userId: number, postId: number) => {
   try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${userId}/${postId}`,
+    const response = await request(
+      `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${postId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     )
     if (response.status === 200) {
       return response.data
