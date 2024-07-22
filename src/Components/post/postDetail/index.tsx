@@ -32,6 +32,7 @@ import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
 import { closeModal, openModal } from '@/redux/modal'
+import { formatTextToHTML } from '@/utils/format/formatter'
 
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
@@ -41,7 +42,7 @@ const PostDetail: React.FC = () => {
   )
   const Followed = useSelector((state: RootState) => state.followReducer.checkFollowed)
   const { user } = useSelector((state: RootState) => state.authReducer)
-  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user);
+  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
   const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const navigate = useNavigate()
   const textFieldRef = useRef<HTMLInputElement | null>(null)
@@ -58,22 +59,22 @@ const PostDetail: React.FC = () => {
   const [checkFollowed, setCheckFollowed] = useState(false)
   const [loading, setLoading] = useState(true)
   useEffect(() => {
-    console.log(11)
     dispatch(getPostByPostId(id!) as any)
+
     const fetchData = async () => {
-      if (user) {
-        const otherCommentResult = await getComment(user.id!, id!, page)
-        if (page === 1) {
-          const myCommentResult = await getMyCommentByPost(user.id!, id!)
-          setCommentList([...myCommentResult.commentList, ...otherCommentResult.commentList])
-        } else {
-          setCommentList(prevList => [...prevList, ...otherCommentResult.commentList])
-        }
-        setTotalPages(otherCommentResult.totalPages)
+      const comment = await getComment(id!, page)
+      if (page === 1) {
+        const myComment = await getMyCommentByPost(id!)
+        console.log(myComment)
+        
+        setCommentList([...myComment, ...comment.commentList])
+      } else {
+        setCommentList(prevList => [...prevList, ...comment.commentList])
       }
+      setTotalPages(comment.totalPages)
     }
     fetchData()
-  }, [user, id!, page])
+  }, [id!, page])
   useEffect(() => {
     if (user?.id === post?.userId && userPostList.length) {
       const result = userPostList.filter(post => post.id === id!)
@@ -162,9 +163,7 @@ const PostDetail: React.FC = () => {
     }
   }
   const handlePostComment = async () => {
-    const commentContent = comment
-      .replace(/\n/g, '<br>')
-      .replace(/@([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">@$1</span>')
+    const commentContent = formatTextToHTML(comment)
     const commentInfo: addCommentType = {
       postId: id!,
       content: commentContent,
@@ -182,9 +181,7 @@ const PostDetail: React.FC = () => {
     setCommentId(null)
   }
   const handleUpdateComment = async () => {
-    const commentContent = comment
-      .replace(/\n/g, '<br>')
-      .replace(/@([^\s]+)/g, '<span style="color: rgb(0, 55, 107);">@$1</span>')
+    const commentContent = formatTextToHTML(comment)
     const id = updateCommentId?.id
     const content = commentContent
     if (id) {
@@ -210,6 +207,18 @@ const PostDetail: React.FC = () => {
   const handleLike = async () => {
     const check = await likePost(id!)
     setCheckLiked(check)
+  }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      if (comment.trim() !== '') {
+        if (updatePending) {
+          handleUpdateComment()
+        } else {
+          handlePostComment()
+        }
+      }
+    }
   }
   const close = () => {
     dispatch(closeModal())
@@ -370,6 +379,7 @@ const PostDetail: React.FC = () => {
                       value={comment}
                       inputRef={textFieldRef}
                       onChange={handleComment}
+                      onKeyDown={handleKeyDown}
                       InputProps={{
                         disableUnderline: true,
                         style: {

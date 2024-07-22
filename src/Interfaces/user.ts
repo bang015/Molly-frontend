@@ -1,12 +1,12 @@
 export interface UserType {
-  id?: number;
-  email?: string;
-  nickname?: string;
-  name?: string;
+  id: number;
+  email: string;
+  nickname: string;
+  name: string;
   introduce?: string;
   profileImageId?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
   profileImage? : {
     id?:number,
     path:string

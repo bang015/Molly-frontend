@@ -5,6 +5,7 @@ import { INIT, POST_API } from '../utils/api-url'
 import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postList'
 import { deletePostProfile } from './user'
 import { request } from './baseRequest'
+import { authStore } from './auth'
 export interface updatedPost {
   updatedPost: { id: number | null; content: string | null }
 }
@@ -50,7 +51,7 @@ const postSlice = createSlice({
 export const { postStart, postSuccess, postFailure, postUpdate, showSnackBar, resetSnackBar } =
   postSlice.actions
 export default postSlice.reducer
-const token = localStorage.getItem('accessToken')
+
 export const uploadPost = createAsyncThunk(
   'post/uploadPost',
   async ({ post }: { post: uploadPostType }, { dispatch }) => {
@@ -72,7 +73,6 @@ export const uploadPost = createAsyncThunk(
         data: formData,
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       })
@@ -82,8 +82,8 @@ export const uploadPost = createAsyncThunk(
       } else {
         dispatch(postFailure(response.data))
       }
-    } catch {
-      dispatch(postFailure('게시글 업로드를 실패했습니다.'))
+    } catch (e: any) {
+      dispatch(postFailure(e.response.data))
     }
   },
 )
@@ -104,7 +104,6 @@ export const updatePost = createAsyncThunk(
         method: 'PATCH',
         data: formData,
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       })
@@ -121,12 +120,11 @@ export const deletePost = createAsyncThunk(
   'post/deletePost',
   async ({ postId }: { postId: number }, { dispatch }) => {
     try {
-      const response = await axios.delete(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: 'DELETE',
+          headers: {},
         },
       )
       if (response.status === 200) {
@@ -135,6 +133,9 @@ export const deletePost = createAsyncThunk(
         dispatch(showSnackBar(response.data.message))
         return true
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(showSnackBar(e.response.data.message))
+      return false
+    }
   },
 )

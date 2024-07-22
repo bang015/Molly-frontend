@@ -1,30 +1,26 @@
-import axios from "axios";
-import { BOOKMARK_API, INIT } from "../utils/api-url";
+import axios from 'axios'
+import { BOOKMARK_API, INIT } from '../utils/api-url'
+import { request } from './baseRequest'
 
-export const bookmarkPost = async (token: string, postId: number) => {
-  const response = await axios.post(
-    `${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/`,
-    { postId },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const bookmarkPost = async (postId: number) => {
+  const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
+    method: 'POST',
+    data: postId,
+    headers: {},
+  })
   if (response.status === 200) {
-    return response.data;
+    return response.data
   }
-};
-export const getPostBookmark = async (postId: number, token: string) => {
-  const response = await axios.get(
+}
+export const getPostBookmark = async (postId: number) => {
+  const response = await request(
     `${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+      method: "GET",
+      headers: {},
+    },
+  )
   if (response.status === 200) {
-    return response.data;
+    return response.data
   }
-};
+}

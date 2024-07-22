@@ -33,7 +33,7 @@ export const NewCommentList: React.FC<newCommentListProps> = ({
       {subComment.map((comment) => (
         <div key={comment.id} className="cml">
           <div className="c1">
-            <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
+            <Avatar alt="profile" src={comment.user.profileImage?.path} />
           </div>
           <div style={{ flexGrow: 1 }}>
             <div className="c2">

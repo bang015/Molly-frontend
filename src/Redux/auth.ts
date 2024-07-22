@@ -55,7 +55,8 @@ const authSlice = createSlice({
     },
   },
 })
-export const { setTokens, removeTokens, refreshTokens, getUserSuccess, getUserFail } = authSlice.actions
+export const { setTokens, removeTokens, refreshTokens, getUserSuccess, getUserFail } =
+  authSlice.actions
 export const authStore = configureStore({ reducer: authSlice.reducer })
 export default authSlice.reducer
 
@@ -94,13 +95,13 @@ export const signIn = createAsyncThunk(
       )
       if (response.status === 200) {
         const result = response.data
+        console.log(result)
         dispatch(setTokens(result))
-        return result.token
+        return ''
       }
-    } catch (error: any) {
-      console.log(error.response.data)
+    } catch (e: any) {
       dispatch(removeTokens())
-      return null
+      return e.response.data.message
     }
   },
 )
@@ -113,24 +114,15 @@ export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) 
 // 유저 정보
 export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
   try {
-    const response = await request(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`,
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
-      },
-    )
+    const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+    })
     if (response.status === 200) {
       const result = response.data
       dispatch(getUserSuccess(result))
-      return result
-    } else {
-      dispatch(getUserFail())
-      return null
     }
-  } catch (error: any) {
-    console.log(error);
+  } catch (e: any) {
     dispatch(getUserFail())
-    return null
   }
 })
 // refreshToken
@@ -142,7 +134,7 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
     )
     if (response.status === 200) {
       dispatch(refreshTokens(response.data))
-      return response.data.accessToken;
+      return response.data.accessToken
     }
   } catch (e) {
     console.log(e)

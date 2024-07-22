@@ -33,8 +33,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
 
   useEffect(() => {
     const myComment = async () => {
-      const result = await getMyCommentByPost(user?.id!, post.id)
-      setCommentList(result.commentList)
+      const result = await getMyCommentByPost(post.id)
+      setCommentList(result)
     }
     myComment()
   }, [user, post])
@@ -64,7 +64,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
       postId: post.id,
       content: commentContent,
     }
-    const newComment= await addComment(commentInfo)
+    const newComment = await addComment(commentInfo)
     setCommentList([newComment, ...commentList])
     setComment('')
   }

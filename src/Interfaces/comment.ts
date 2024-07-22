@@ -6,8 +6,8 @@ export interface commentType {
   commentId: number | null;
   createdAt: string;
   updatedAt: string;
-  user: { nickname: string; ProfileImage: { path: string } | null };
-  subcommentCount?: number;
+  user: { nickname: string; profileImage: { path: string } | null };
+  subCommentsCount?: number;
 }
 export interface addCommentType {
   postId: number;

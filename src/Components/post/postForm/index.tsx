@@ -107,13 +107,9 @@ const PostForm: React.FC = () => {
     let croppedImgList: Blob[] = []
 
     for (let i = 0; i < showImages.length; i++) {
-      try {
-        const croppedImage = await getCroppedImg(showImages[i], croppedAreaList[i])
-        if (croppedImage) {
-          croppedImgList.push(croppedImage)
-        }
-      } catch (e) {
-        console.log(e)
+      const croppedImage = await getCroppedImg(showImages[i], croppedAreaList[i])
+      if (croppedImage) {
+        croppedImgList.push(croppedImage)
       }
     }
     const regex = /#([a-zA-Z0-9가-힣_]+)/g

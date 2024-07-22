@@ -4,6 +4,7 @@ import { INIT, POST_API } from '../utils/api-url'
 import { PostType } from '../interfaces/post'
 import { updatedPost } from './post'
 import { request } from './baseRequest'
+import { authStore } from './auth'
 
 interface PostListState {
   posts: {
@@ -86,10 +87,12 @@ const postListSlice = createSlice({
       state.posts.main = [action.payload, ...state.posts.main]
     },
     postUpdateList: (state, action: PayloadAction<updatedPost>) => {
-      console.log(action.payload);
+      console.log(action.payload)
       const updatedPosts = state.posts.main.map(post =>
-        post.id === action.payload.updatedPost.id ? { ...post, content: action.payload.updatedPost.content! } : post
-      );
+        post.id === action.payload.updatedPost.id
+          ? { ...post, content: action.payload.updatedPost.content! }
+          : post,
+      )
       state.posts.main = updatedPosts
     },
     postDelete: (state, action: PayloadAction<number>) => {
@@ -125,7 +128,7 @@ export const {
   clearPostDetail,
 } = postListSlice.actions
 export default postListSlice.reducer
-const token = localStorage.getItem('accessToken')
+
 export const getMainPost = createAsyncThunk(
   'postList/getMainPost',
   async ({ page }: { page: number }, { dispatch }) => {
@@ -134,9 +137,7 @@ export const getMainPost = createAsyncThunk(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
         {
           method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: {},
         },
       )
       if (response.status === 200) {
@@ -154,9 +155,7 @@ export const getAllPost = createAsyncThunk(
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}?page=${page}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: {},
         },
       )
       if (response.status === 200) {

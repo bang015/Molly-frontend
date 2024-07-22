@@ -6,6 +6,7 @@ import { showSnackBar } from './post'
 import { useSelector } from 'react-redux'
 import { RootState } from '.'
 import { request } from './baseRequest'
+import { authStore } from './auth'
 interface commentState {
   deleteComment: number[]
   updatePending: boolean
@@ -44,31 +45,25 @@ const commentSlice = createSlice({
 export const { deleteCommentSuccess, updatePending, clearComment, updateCommentSuccess } =
   commentSlice.actions
 export default commentSlice.reducer
-const token = localStorage.getItem('accessToken')
+
 export const addComment = async (commentInfo: addCommentType) => {
-  const response = await axios.post(
-    `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`,
-    commentInfo,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  )
+  const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`, {
+    data: commentInfo,
+    method: 'POST',
+    headers: {},
+  })
   if (response.status === 200) {
     return response.data
   }
 }
 
-export const getComment = async (userId: number, postId: number, page: number) => {
+export const getComment = async (postId: number, page: number) => {
   try {
     const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`,
       {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
       },
     )
 
@@ -77,15 +72,13 @@ export const getComment = async (userId: number, postId: number, page: number) =
     }
   } catch (err) {}
 }
-export const getMyCommentByPost = async (userId: number, postId: number) => {
+export const getMyCommentByPost = async (postId: number) => {
   try {
     const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${postId}`,
       {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
       },
     )
     if (response.status === 200) {
@@ -97,8 +90,9 @@ export const getMyCommentByPost = async (userId: number, postId: number) => {
 }
 export const getSubComment = async (postId: number, id: number, page: number) => {
   try {
-    const response = await axios.get(
+    const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/sub/${postId}/${id}?page=${page}`,
+      { method: 'GET' },
     )
 
     if (response.status === 200) {
@@ -112,12 +106,11 @@ export const deleteComment = createAsyncThunk(
   'comment/deleteComment',
   async ({ id }: { id: number }, { dispatch }) => {
     try {
-      const response = await axios.delete(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: 'DELETE',
+          headers: {},
         },
       )
       if (response.status === 200) {
@@ -133,13 +126,12 @@ export const updateComment = createAsyncThunk(
   'comment/updateComment',
   async ({ id, content }: { id: number; content: string }, { dispatch }) => {
     try {
-      const response = await axios.patch(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
-        { content },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          data: {content},
+          method: 'PATCH',
+          headers: {},
         },
       )
       if (response.status === 200) {

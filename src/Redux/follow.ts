@@ -3,6 +3,7 @@ import axios from 'axios'
 import { FOLLOW_API, INIT } from '../utils/api-url'
 import { followType } from '../interfaces/follow'
 import { request } from './baseRequest'
+import { authStore } from './auth'
 
 interface checkFollowedState {
   check: boolean
@@ -75,7 +76,6 @@ export const {
 } = followSlice.actions
 export default followSlice.reducer
 
-const token = localStorage.getItem('accessToken')
 export const followUser = createAsyncThunk(
   'follow/followUser',
   async ({ followUserId }: { followUserId: number }, { dispatch }) => {
@@ -84,9 +84,7 @@ export const followUser = createAsyncThunk(
       const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`, {
         data: followUserId,
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
       })
       if (response.status === 200) {
         const result = response.data
@@ -158,9 +156,7 @@ export const followedCheck = async (userId: number) => {
       `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/check/${userId}`,
       {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
       },
     )
     if (response.status === 200) {

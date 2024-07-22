@@ -100,7 +100,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
               goToProfilePage(comment.user.nickname);
             }}
           >
-            <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
+            <Avatar alt="profile" src={comment.user.profileImage?.path} />
           </div>
           <div style={{ flexGrow: 1 }}>
             <div

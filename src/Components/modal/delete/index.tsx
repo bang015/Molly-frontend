@@ -1,32 +1,30 @@
-import { Modal } from "@mui/material";
-import React, { useEffect } from "react";
-import "./index.css";
-import { deletePost } from "@/redux/post";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { closeModal } from "@/redux/modal";
+import { Modal } from '@mui/material'
+import React, { useEffect } from 'react'
+import './index.css'
+import { deletePost } from '@/redux/post'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { closeModal } from '@/redux/modal'
 
 const DeleteModal: React.FC = () => {
-  const dispatch = useDispatch();
-  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer);
-  const userPostList = useSelector(
-    (state: RootState) => state.postListReducer.userPostList
-  );
+  const dispatch = useDispatch()
+  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
+  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
   const postDelete = async () => {
-    if ( id) {
-      const result = await dispatch(deletePost({ postId: id }) as any);
-      if(result) {
-        dispatch(closeModal());
+    if (id) {
+      const result = await dispatch(deletePost({ postId: id }) as any)
+      if (result) {
+        dispatch(closeModal())
       }
     }
-  };
-  console.log(isOpen);
+  }
+  console.log(isOpen)
   return (
     <div>
       <Modal
         open={isOpen}
         onClose={() => {
-          dispatch(closeModal());
+          dispatch(closeModal())
         }}
       >
         <div className="post-detail">
@@ -41,7 +39,7 @@ const DeleteModal: React.FC = () => {
               <button
                 className="mbtn2"
                 onClick={() => {
-                  dispatch(closeModal());
+                  dispatch(closeModal())
                 }}
               >
                 취소
@@ -51,7 +49,7 @@ const DeleteModal: React.FC = () => {
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default DeleteModal;
+export default DeleteModal

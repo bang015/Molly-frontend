@@ -52,7 +52,7 @@ export const CommentList: React.FC<commentListProps> = ({
     <div key={comment.id}>
       <div className="cml">
         <div className="c1" onClick={goToProfilePage}>
-          <Avatar alt="profile" src={comment.user.ProfileImage?.path} />
+          <Avatar alt="profile" src={comment.user.profileImage?.path} />
         </div>
         <div style={{ flexGrow: 1 }}>
           <div className="c2" onClick={goToProfilePage}>
@@ -96,14 +96,14 @@ export const CommentList: React.FC<commentListProps> = ({
           onClose={handleModalClose}
         />
       )}
-      {(comment.subcommentCount! > 0 || newSub) && (
+      {(comment.subCommentsCount! > 0 || newSub) && (
         <div className="cmb ml">
           <button onClick={handleSubCommentList}>
             <div className="cmll"></div>
             <span>
               {isSubCommentVisible
                 ? "답글 숨기기"
-                : `답글 보기(${comment.subcommentCount}개)`}
+                : `답글 보기(${comment.subCommentsCount}개)`}
             </span>
           </button>
           {isSubCommentVisible ? (
@@ -112,7 +112,7 @@ export const CommentList: React.FC<commentListProps> = ({
                 postId={comment.postId}
                 id={comment.id}
                 newCommentList={newCommentList}
-                subcommentCount={comment.subcommentCount!}
+                subcommentCount={comment.subCommentsCount!}
               />
             </div>
           ) : (

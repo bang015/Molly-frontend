@@ -1,9 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { refreshToken } from './auth'
-import { authStore } from './auth';
+import { authStore } from './auth'
 
 export const request = async (url: string, options: AxiosRequestConfig) => {
   try {
+    if( options. headers){
+      options.headers['authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
+    }
     const response = await axios(url, options)
     return response
   } catch (e: any) {
@@ -21,12 +24,9 @@ export const request = async (url: string, options: AxiosRequestConfig) => {
           return retryResponse
         }
       } catch (refreshError) {
-        console.log(refreshError)
         throw refreshError
       }
     }
-    console.log(e)
-    throw Error
+    throw e
   }
-};
-
+}

@@ -3,7 +3,7 @@ import axios from 'axios'
 import { INIT, QUERY_NICKNAME, USER_API } from '../utils/api-url'
 import { UpdateProfileInput, UserType } from '../interfaces/user'
 import { showSnackBar } from './post'
-import { getUser } from './auth'
+import { authStore, getUser } from './auth'
 import { request } from './baseRequest'
 
 interface UserState {
@@ -39,15 +39,13 @@ export const { getProfileSuccess, deletePostProfile, updatedProfileStart, update
   userSlice.actions
 export default userSlice.reducer
 
-const token = localStorage.getItem('accessToken')
-
 // 유저 프로필
 export const getProfile = createAsyncThunk(
   'profile/getProfile',
   async (nickname: string, { dispatch }) => {
     const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
-      {method: "GET"}
+      { method: 'GET' },
     )
     if (response.status === 200) {
       dispatch(getProfileSuccess(response.data))
@@ -72,10 +70,9 @@ export const updateUser = createAsyncThunk(
       const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`, {
         data: formData,
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
-        method: "PATCH"
+        method: 'PATCH',
       })
       if (response.status === 200) {
         dispatch(showSnackBar(response.data.message))
@@ -83,7 +80,7 @@ export const updateUser = createAsyncThunk(
         dispatch(getUser())
       }
     } catch (e) {
-      dispatch(showSnackBar("프로필 수정 실패, 다시 시도해주세요."))
+      dispatch(showSnackBar('프로필 수정 실패, 다시 시도해주세요.'))
     }
   },
 )
