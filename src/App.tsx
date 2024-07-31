@@ -10,21 +10,27 @@ import ExplorePage from './pages/explore'
 import TagsPage from './pages/tag'
 import MessengerPage from './pages/messenger'
 import { useDispatch, useSelector } from 'react-redux'
-import { getUser } from './redux/auth'
+import { authStore, getUser, initializeSocket, refreshToken } from './redux/auth'
 import { Snackbar } from '@mui/material'
 import { resetSnackBar } from './redux/post'
 
 const App: React.FC = () => {
-  const { isLogin } = useSelector((state: RootState) => state.authReducer)
-  const followed = useSelector((state: RootState) => state.followReducer.followed)
-
+  const { isLogin, user } = useSelector((state: RootState) => state.authReducer)
   const showSnackBar = useSelector((state: RootState) => state.postReducer.showSnackBar)
   const message = useSelector((state: RootState) => state.postReducer.message)
   const dispatch = useDispatch()
   useEffect(() => {
     if (isLogin) {
       dispatch(getUser() as any)
+      initializeSocket(`${localStorage.getItem('accessToken')}`)
     }
+    const interval = setInterval(
+      () => {
+        authStore.dispatch(refreshToken())
+      },
+      9 * 60 * 1000,
+    )
+    return () => clearInterval(interval)
   }, [isLogin])
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -39,10 +45,14 @@ const App: React.FC = () => {
           path="/"
           element={
             isLogin ? (
-              followed ? (
-                <Navigate to="/explore/people" />
+              user ? (
+                user?.followingCount! > 0 ? (
+                  <MainPage />
+                ) : (
+                  <Navigate to="/explore/people" />
+                )
               ) : (
-                <MainPage />
+                <div />
               )
             ) : (
               <Navigate to="/signin" />

@@ -14,7 +14,7 @@ import BookmarkList from "@/components/profile/bookmarkList";
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user);
   const { profile } = useSelector((state: RootState) => state.userReducer);
-  const {checkFollowed} = useSelector(
+  const {followed} = useSelector(
     (state: RootState) => state.followReducer
   );
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const ProfilePage: React.FC = () => {
     if (nickname) {
       dispatch(getProfile(nickname) as any);
     }
-  }, [nickname, checkFollowed]);
+  }, [nickname, followed]);
   return (
     <div className="mainPage">
       <Nav />

@@ -149,7 +149,7 @@ export const getMainPost = createAsyncThunk(
 
 export const getAllPost = createAsyncThunk(
   'postList/getAllPost',
-  async ({ page, token }: { page: number; token: string }, { dispatch }) => {
+  async ({ page }: { page: number }, { dispatch }) => {
     dispatch(getListStart())
     try {
       const response = await axios.get(

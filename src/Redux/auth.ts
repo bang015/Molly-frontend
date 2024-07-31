@@ -10,12 +10,14 @@ interface AuthState {
   isLogin: boolean
   accessToken: string | null
   user: UserType | null
+  userLoading: boolean
 }
 
 const initialState: AuthState = {
   isLogin: !!localStorage.getItem('accessToken'),
   accessToken: localStorage.getItem('accessToken'),
   user: null,
+  userLoading: false,
 }
 export let socket: Socket | null = null
 
@@ -24,7 +26,6 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setTokens: (state, action: PayloadAction<Token>) => {
-      socket = io(`${process.env.REACT_APP_SERVER_URL}`)
       localStorage.setItem('accessToken', action.payload.accessToken)
       localStorage.setItem('refreshToken', action.payload.refreshToken)
       state.isLogin = true
@@ -36,6 +37,7 @@ const authSlice = createSlice({
       state.isLogin = false
       state.accessToken = null
       state.user = null
+      socket?.disconnect()
     },
     refreshTokens: (state, action: PayloadAction<Token>) => {
       localStorage.setItem('accessToken', action.payload.accessToken)
@@ -43,8 +45,8 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken
     },
     getUserSuccess: (state, action) => {
-      socket = io(`${process.env.REACT_APP_SERVER_URL}`)
       state.user = action.payload
+      state.userLoading = false
     },
     getUserFail: state => {
       state.isLogin = false
@@ -52,6 +54,7 @@ const authSlice = createSlice({
       state.user = null
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
+      socket?.disconnect()
     },
   },
 })
@@ -125,8 +128,15 @@ export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) 
     dispatch(getUserFail())
   }
 })
+// 소켓 연결
+export const initializeSocket = (token: string) => {
+  socket = io(`${process.env.REACT_APP_SERVER_URL}`, {
+    auth: { token },
+  })
+}
 // refreshToken
 export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { dispatch }) => {
+  console.log('refresh')
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
@@ -134,10 +144,13 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
     )
     if (response.status === 200) {
       dispatch(refreshTokens(response.data))
+      if (socket) {
+        socket.disconnect()
+        initializeSocket(response.data)
+      }
       return response.data.accessToken
     }
   } catch (e) {
-    console.log(e)
     dispatch(removeTokens())
   }
 })

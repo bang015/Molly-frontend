@@ -1,21 +1,16 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { FOLLOW_API, INIT } from '../utils/api-url'
-import { followType } from '../interfaces/follow'
+import { FollowType } from '../interfaces/follow'
 import { request } from './baseRequest'
-import { authStore } from './auth'
+import { getUser } from './auth'
 
-interface checkFollowedState {
-  check: boolean
-  followUserId: number | null
-}
 interface FollowState {
-  suggestList: followType[]
-  followingUser: followType[]
-  followerUser: followType[]
+  suggestList: FollowType[]
+  followingUser: FollowType[]
+  followerUser: FollowType[]
   followLoading: boolean
   followed: boolean
-  checkFollowed: checkFollowedState
 }
 
 const initialState: FollowState = {
@@ -24,7 +19,6 @@ const initialState: FollowState = {
   followerUser: [],
   followLoading: false,
   followed: false,
-  checkFollowed: { check: false, followUserId: null },
 }
 
 const followSlice = createSlice({
@@ -34,9 +28,9 @@ const followSlice = createSlice({
     followUserStart: state => {
       state.followLoading = true
     },
-    followUserSuccess: (state, action: PayloadAction<checkFollowedState>) => {
+    followUserSuccess: (state, action: PayloadAction<boolean>) => {
       state.followLoading = false
-      state.checkFollowed = action.payload
+      state.followed = action.payload
     },
     followUserFailure: state => {
       state.followLoading = false
@@ -44,17 +38,17 @@ const followSlice = createSlice({
     getSuggestFollowSuccess: (
       state,
       action: PayloadAction<{
-        suggestFollowerList: followType[]
+        suggestFollowerList: FollowType[]
         followed: boolean
       }>,
     ) => {
       state.suggestList = action.payload.suggestFollowerList
       state.followed = action.payload.followed
     },
-    getFollowingSuccess: (state, action: PayloadAction<followType[]>) => {
+    getFollowingSuccess: (state, action: PayloadAction<FollowType[]>) => {
       state.followingUser = [...state.followingUser, ...action.payload]
     },
-    getFollowerSuccess: (state, action: PayloadAction<followType[]>) => {
+    getFollowerSuccess: (state, action: PayloadAction<FollowType[]>) => {
       state.followerUser = [...state.followerUser, ...action.payload]
     },
     clearFollowList: state => {
@@ -82,13 +76,14 @@ export const followUser = createAsyncThunk(
     try {
       dispatch(followUserStart())
       const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`, {
-        data: followUserId,
+        data: {followUserId},
         method: 'POST',
         headers: {},
       })
       if (response.status === 200) {
         const result = response.data
         dispatch(followUserSuccess(result))
+        dispatch(getUser())
       }
     } catch (err) {
       dispatch(followUserFailure())
@@ -98,13 +93,11 @@ export const followUser = createAsyncThunk(
 
 export const getSuggestFollow = createAsyncThunk(
   'follow/getFollow',
-  async ({ token, limit }: { token: string; limit: number }, { dispatch }) => {
+  async ({ limit }: { limit: number }, { dispatch }) => {
     try {
       const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`, {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
         params: {
           limit: limit,
         },

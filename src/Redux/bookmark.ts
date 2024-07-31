@@ -5,7 +5,7 @@ import { request } from './baseRequest'
 export const bookmarkPost = async (postId: number) => {
   const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
     method: 'POST',
-    data: postId,
+    data: { postId },
     headers: {},
   })
   if (response.status === 200) {
@@ -16,7 +16,7 @@ export const getPostBookmark = async (postId: number) => {
   const response = await request(
     `${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {},
     },
   )

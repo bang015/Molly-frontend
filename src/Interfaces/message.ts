@@ -1,11 +1,11 @@
-import { userType } from "./user";
+import { UserType } from "./user";
 
-export interface messageType {
+export interface MessageType {
   createdAt: string,
   id: number,
   isRead: boolean,
   message: string,
   roomId: number,
   userId: number,
-  userMessage: userType
+  user: UserType
 }

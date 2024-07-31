@@ -1,7 +1,7 @@
-export interface followType {
+export interface FollowType {
   id: number;
   name: string;
   nickname: string;
-  ProfileImage: {path: string} | null;
+  profileImage: {path: string} | null;
   message? :string;
 }

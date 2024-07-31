@@ -6,7 +6,7 @@ import { authStore } from './auth'
 export const likePost = async (postId: number) => {
   try {
     const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${LIKE_API}/`, {
-      data: postId,
+      data: {postId},
       method: 'POST',
       headers: {},
     })

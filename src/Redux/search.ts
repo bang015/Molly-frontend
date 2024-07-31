@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { INIT, SEARCH_API } from '../utils/api-url'
-import { resultType } from '../interfaces/search'
+import { ResultType } from '../interfaces/search'
 import { request } from './baseRequest'
-import { authStore } from './auth'
 
 interface searchState {
-  result: resultType[]
-  history: resultType[]
+  result: ResultType[]
+  history: ResultType[]
   loading: boolean
 }
 const initialState: searchState = {
@@ -22,11 +21,11 @@ const searchSlice = createSlice({
     getResultStart: state => {
       state.loading = true
     },
-    getResultSuccess: (state, action: PayloadAction<resultType[]>) => {
+    getResultSuccess: (state, action: PayloadAction<ResultType[]>) => {
       state.loading = false
       state.result = action.payload
     },
-    getHistorySuccess: (state, action: PayloadAction<resultType[]>) => {
+    getHistorySuccess: (state, action: PayloadAction<ResultType[]>) => {
       state.history = action.payload
     },
     resetResult: state => {
@@ -38,7 +37,6 @@ export const { getResultStart, getResultSuccess, getHistorySuccess, resetResult 
   searchSlice.actions
 export default searchSlice.reducer
 
-
 export const getSearchResult = createAsyncThunk(
   'search/getSearchResult',
   async ({ keyword, type }: { keyword: string; type: string }, { dispatch }) => {
@@ -47,8 +45,6 @@ export const getSearchResult = createAsyncThunk(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/q/${type}/?query=${keyword}`,
         { method: 'GET' },
       )
-      console.log(response.data)
-
       if (response.status === 200) {
         dispatch(getResultSuccess(response.data))
       }
@@ -58,7 +54,7 @@ export const getSearchResult = createAsyncThunk(
 
 export const saveSearchHistory = createAsyncThunk(
   'search/saveSearchHistory',
-  async ({ token, result }: { token: string; result: resultType }, { dispatch }) => {
+  async ({ token, result }: { token: string; result: ResultType }, { dispatch }) => {
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history`,
       { result },

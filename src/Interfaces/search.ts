@@ -1,8 +1,8 @@
-export interface resultType {
+export interface ResultType {
   id: number,
   name: string,
   nickname?: string,
-  ProfileImage?: {path:string} | null,
+  profileImage?: {path:string} | null,
   tagCount? :number,
   type: string
 }

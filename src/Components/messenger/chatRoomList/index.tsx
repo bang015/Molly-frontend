@@ -1,56 +1,48 @@
-import React, { useEffect, useState } from "react";
-import "./index.css";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { UserType } from "@/interfaces/user";
-import { Avatar } from "@mui/material";
-import { messageType } from "@/interfaces/message";
-import { displayCreateAt } from "@/utils/format/moment";
-import { socket } from "@/redux/auth";
+import React, { useEffect, useState } from 'react'
+import './index.css'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { UserType } from '@/interfaces/user'
+import { Avatar } from '@mui/material'
+import { MessageType } from '@/interfaces/message'
+import { displayCreateAt } from '@/utils/format/moment'
+import { socket } from '@/redux/auth'
 interface chatRoomListProps {
-  roomId: number;
-  handleChatRoom: (roomId: number) => void;
+  roomId: number
+  handleChatRoom: (roomId: number) => void
 }
-const ChatRoomList: React.FC<chatRoomListProps> = ({
-  roomId,
-  handleChatRoom,
-}) => {
-  const {user, accessToken} = useSelector((state: RootState) => state.authReducer);
-  const [_message, set_message] = useState<number | null>(null);
-  const [chatUser, setChatUser] = useState<UserType | null>(null);
-  const [latestMessage, setLatestMessage] = useState<messageType | null>(null);
+const ChatRoomList: React.FC<chatRoomListProps> = ({ roomId, handleChatRoom }) => {
+  const { user } = useSelector((state: RootState) => state.authReducer)
+  const [_message, set_message] = useState<number | null>(null)
+  const [chatUser, setChatUser] = useState<UserType | null>(null)
+  const [latestMessage, setLatestMessage] = useState<MessageType | null>(null)
   useEffect(() => {
-    if (socket && roomId ) {
-      socket.emit("getRoomInfo", { roomId, accessToken });
-      socket.on("newMessage", (data) => {
-        if (data.user.cUsers.id === user?.id && socket) {
-          console.log(roomId);
-
-          socket.emit("getRoomInfo", { roomId, accessToken });
-
-          socket.emit("getNotReadMessage", accessToken);
+    if (socket && roomId) {
+      socket.emit('getRoomInfo', { roomId })
+      socket.on('newMessage', data => {
+        if (data.sendUser === user?.id && socket) {
+          socket.emit('getRoomInfo', { roomId })
+          socket.emit('getNotReadMessage')
         }
-      });
+      })
       socket.on(`getRoomInfo${roomId}`, (data): void => {
-        set_message(data._message);
-        setChatUser(data.user.cUsers);
-        setLatestMessage(data.latestMessage);
-      });
+        set_message(data._message)
+        setChatUser(data.user)
+        setLatestMessage(data.latestMessage)
+      })
     }
-  }, [roomId]);
+  }, [roomId])
+
   return (
     <div
       onClick={() => {
-        handleChatRoom(roomId);
+        handleChatRoom(roomId)
       }}
     >
       <div className="search_result" style={{ borderRadius: 0 }}>
         <div className="se1">
           <div>
-            <Avatar
-              src={chatUser?.profileImage?.path}
-              sx={{ width: 44, height: 44 }}
-            />
+            <Avatar src={chatUser?.profileImage?.path} sx={{ width: 44, height: 44 }} />
           </div>
         </div>
         <div className="se2">
@@ -59,9 +51,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
           </div>
           <div className="ch">
             <div>{latestMessage?.message}</div>
-            <div className="cAt">
-              • {latestMessage && displayCreateAt(latestMessage.createdAt)}
-            </div>
+            <div className="cAt">• {latestMessage && displayCreateAt(latestMessage.createdAt)}</div>
           </div>
         </div>
         <div className="se3">
@@ -69,7 +59,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ChatRoomList;
+export default ChatRoomList

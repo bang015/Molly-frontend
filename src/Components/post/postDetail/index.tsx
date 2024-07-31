@@ -40,7 +40,7 @@ const PostDetail: React.FC = () => {
   const { updatePending, updateCommentId, updatedComment, deleteComment } = useSelector(
     (state: RootState) => state.commentReducer,
   )
-  const Followed = useSelector((state: RootState) => state.followReducer.checkFollowed)
+  const {followed} = useSelector((state: RootState) => state.followReducer)
   const { user } = useSelector((state: RootState) => state.authReducer)
   const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
   const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
@@ -86,7 +86,7 @@ const PostDetail: React.FC = () => {
 
   useEffect(() => {
     followCheck()
-  }, [user, post, Followed])
+  }, [user, post, followed])
   const followCheck = async () => {
     if (post) {
       const result = await followedCheck(post.userId)
