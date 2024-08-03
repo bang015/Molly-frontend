@@ -1,3 +1,5 @@
+/** @type {import('prettier').RequiredOptions} */
+
 export default {
   trailingComma: 'all',
   tabWidth: 2,
@@ -18,4 +20,6 @@ export default {
       },
     },
   ],
+  tailwindConfig: './tailwind.config.js',
+  plugins: ['prettier-plugin-tailwindcss'],
 }

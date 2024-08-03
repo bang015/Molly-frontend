@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { RootState } from './redux'
 import MainPage from './pages/main'
-import SignUpPage from './pages/sign/up'
-import SignInPage from './pages/sign/in'
+import SignUpPage from './pages/auth/sign/up'
+import SignInPage from './pages/auth/sign/in'
 import ProfilePage from './pages/profile'
 import PeoplePage from './pages/people'
 import ExplorePage from './pages/explore'
@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authStore, getUser, initializeSocket, refreshToken } from './redux/auth'
 import { Snackbar } from '@mui/material'
 import { resetSnackBar } from './redux/post'
+import PasswordReset from './pages/auth/passwordReset'
 
 const App: React.FC = () => {
   const { isLogin, user } = useSelector((state: RootState) => state.authReducer)
@@ -23,14 +24,14 @@ const App: React.FC = () => {
     if (isLogin) {
       dispatch(getUser() as any)
       initializeSocket(`${localStorage.getItem('accessToken')}`)
+      const interval = setInterval(
+        () => {
+          authStore.dispatch(refreshToken())
+        },
+        9 * 60 * 1000,
+      )
+      return () => clearInterval(interval)
     }
-    const interval = setInterval(
-      () => {
-        authStore.dispatch(refreshToken())
-      },
-      9 * 60 * 1000,
-    )
-    return () => clearInterval(interval)
   }, [isLogin])
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -55,12 +56,13 @@ const App: React.FC = () => {
                 <div />
               )
             ) : (
-              <Navigate to="/signin" />
+              <Navigate to="/sign/in" />
             )
           }
         />
-        <Route path="/signup" element={!isLogin ? <SignUpPage /> : <Navigate to="/" />} />
-        <Route path="/signin" element={!isLogin ? <SignInPage /> : <Navigate to="/" />} />
+        <Route path="/sign/up" element={!isLogin ? <SignUpPage /> : <Navigate to="/" />} />
+        <Route path="/sign/in" element={!isLogin ? <SignInPage /> : <Navigate to="/" />} />
+        <Route path="/auth/password/reset" element={<PasswordReset />} />
         <Route
           path="/profile/:nickname"
           element={isLogin ? <ProfilePage /> : <Navigate to="/signin" />}

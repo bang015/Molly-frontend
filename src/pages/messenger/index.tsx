@@ -31,7 +31,6 @@ const Messenger: React.FC = () => {
         setChatRoom(data)
       })
       socket.on(`getChatRoomList${user?.id}`, (data): void => {
-        console.log(data)
         setChatRoomList(data)
       })
     }

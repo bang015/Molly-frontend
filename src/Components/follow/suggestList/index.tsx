@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import React, { useEffect } from 'react'
 import { clearFollowList, getSuggestFollow } from '@/redux/follow'
-import './index.css'
 import FollowListUser from '../followListUser'
 interface SuggestListProps {
   limit: number
@@ -17,7 +16,7 @@ export const SuggestList: React.FC<SuggestListProps> = ({ limit }) => {
   const suggestList = useSelector((state: RootState) => state.followReducer.suggestList)
 
   return (
-    <div className="list">
+    <div>
       {suggestList.map(user => (
         <FollowListUser key={user.id} user={user} type="sug" />
       ))}

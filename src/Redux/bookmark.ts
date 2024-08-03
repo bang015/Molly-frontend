@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { BOOKMARK_API, INIT } from '../utils/api-url'
 import { request } from './baseRequest'
 

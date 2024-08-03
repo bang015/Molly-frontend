@@ -32,34 +32,23 @@ const Nav: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef<HTMLDivElement>(null)
-  const { user, accessToken } = useSelector((state: RootState) => state.authReducer)
-  const [searchOpen, setSearchOpen] = useState(false)
+  const { user } = useSelector((state: RootState) => state.authReducer)
   const [_message, set_message] = useState(0)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setSearchOpen(false)
+        setIsCollapsed(false)
       }
     }
-    document.addEventListener('click', handleClickOutside)
 
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
-  useEffect(() => {
-    if (location.pathname === '/messenger') {
-      document.querySelectorAll('.text').forEach(element => {
-        element.classList.add('hidden')
-      })
-      document.querySelector('.nav')?.classList.add('sNav')
-    } else {
-      document.querySelectorAll('.text').forEach(element => {
-        element.classList.remove('hidden')
-      })
-      document.querySelector('.nav')?.classList.remove('sNav')
-    }
-  }, [location.pathname])
+  }, [searchRef])
+
   useEffect(() => {
     if (socket) {
       socket.emit('getNotReadMessage')
@@ -77,137 +66,169 @@ const Nav: React.FC = () => {
     dispatch(clearPostList())
     dispatch(signOut() as any)
   }
-  const handleOpenSearch = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.stopPropagation()
-    setSearchOpen(prevState => !prevState)
-  }
-  const handleCloseSearch = () => {
-    setSearchOpen(false)
+
+  const toggleSearch = () => {
+    setIsCollapsed(!isCollapsed)
   }
 
   return (
-    <div className="nav-container">
-      <div className="n">
-        <div className="nav">
-          <div className="nav-logo">
-            {searchOpen || location.pathname === '/messenger' ? (
-              <SmallLogo width={40} />
-            ) : (
-              <Logo width={110} />
-            )}
-          </div>
-          <div className="nav-menu">
-            <ListItemButton
-              className={location.pathname === '/' ? 'activeTab' : ''}
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={() => {
-                navigate('/')
-              }}
-            >
-              <ListItemIcon>
-                {location.pathname === '/' ? (
-                  <HomeIcon sx={{ fontSize: 30, color: 'black' }} />
+    <div
+      ref={searchRef}
+      className={`fixed left-0 top-0 z-10 flex h-full min-w-16 ${location.pathname === '/messenger' ? 'w-16' : 'w-1/6'}`}
+    >
+      <div
+        className={`flex flex-shrink-0 flex-col border-r py-3 transition-all duration-300 ${isCollapsed || location.pathname === '/messenger' ? 'w-16' : 'w-full'}`}
+      >
+        <div
+          className="nav-logo"
+          onClick={() => {
+            navigate('/')
+          }}
+        >
+          {isCollapsed || location.pathname === '/messenger' ? (
+            <SmallLogo width={40} />
+          ) : (
+            <Logo width={110} />
+          )}
+        </div>
+        <div className="nav-menu">
+          <ListItemButton
+            className={location.pathname === '/' ? 'font-semibold' : ''}
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              navigate('/')
+            }}
+          >
+            <ListItemIcon>
+              {location.pathname === '/' ? (
+                <HomeIcon sx={{ fontSize: 30, color: 'black' }} />
+              ) : (
+                <HomeOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
+              )}
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'} ${location.pathname === '/' && 'font-semibold'}`}
+              primary="Home"
+            />
+          </ListItemButton>
+          <ListItemButton
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              toggleSearch()
+            }}
+          >
+            <ListItemIcon>
+              <SearchIcon sx={{ fontSize: 30, color: 'black' }} />
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Search"
+            />
+          </ListItemButton>
+          <ListItemButton
+            className={location.pathname === '/explore' ? 'activeTab' : ''}
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              navigate('/explore')
+            }}
+          >
+            <ListItemIcon>
+              {location.pathname === '/explore' ? (
+                <ExploreIcon sx={{ fontSize: 30, color: 'black' }} />
+              ) : (
+                <ExploreOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
+              )}
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Explore"
+            />
+          </ListItemButton>
+          <ListItemButton
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              navigate('/messenger')
+            }}
+          >
+            <ListItemIcon>
+              <Badge badgeContent={_message} color="primary">
+                {location.pathname === '/messenger' ? (
+                  <EmailIcon sx={{ fontSize: 30, color: 'black' }} />
                 ) : (
-                  <HomeOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
+                  <EmailOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
                 )}
-              </ListItemIcon>
-              <ListItemText className="text" primary="Home" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={e => {
-                handleOpenSearch(e)
-              }}
-            >
-              <ListItemIcon>
-                <SearchIcon sx={{ fontSize: 30, color: 'black' }} />
-              </ListItemIcon>
-              <ListItemText className="text" primary="Search" />
-            </ListItemButton>
-            <ListItemButton
-              className={location.pathname === '/explore' ? 'activeTab' : ''}
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={() => {
-                navigate('/explore')
-              }}
-            >
-              <ListItemIcon>
-                {location.pathname === '/explore' ? (
-                  <ExploreIcon sx={{ fontSize: 30, color: 'black' }} />
-                ) : (
-                  <ExploreOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
-                )}
-              </ListItemIcon>
-              <ListItemText className="text" primary="Explore" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={() => {
-                navigate('/messenger')
-              }}
-            >
-              <ListItemIcon>
-                <Badge badgeContent={_message} color="primary">
-                  {location.pathname === '/messenger' ? (
-                    <EmailIcon sx={{ fontSize: 30, color: 'black' }} />
-                  ) : (
-                    <EmailOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
-                  )}
-                </Badge>
-              </ListItemIcon>
-              <ListItemText className="text" primary="Messages" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={() => {
-                dispatch(
-                  openModal({
-                    modalType: 'PostFormModal',
-                    id: null,
-                    post: null,
-                  }),
-                )
-              }}
-            >
-              <ListItemIcon>
-                <AddBoxOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
-              </ListItemIcon>
-              <ListItemText className="text" primary="Post" />
-            </ListItemButton>
-            <ListItemButton
-              style={{ borderRadius: '12px' }}
-              component="a"
-              onClick={() => {
-                navigate(`/profile/${user?.nickname}`)
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  alt="profile"
-                  src={user?.profileImage?.path}
-                  style={{ width: 30, height: 30 }}
-                />
-              </ListItemAvatar>
-              <ListItemText style={{ fontFamily: 'none' }} className="text" primary="Profile" />
-            </ListItemButton>
-          </div>
-          <div className="nav-bottom">
-            <ListItemButton style={{ borderRadius: '12px' }} component="a" onClick={handleSignOut}>
-              <ListItemIcon>
-                <LogoutIcon sx={{ fontSize: 30, color: 'black' }} />
-              </ListItemIcon>
-              <ListItemText className="text" primary="Logout" />
-            </ListItemButton>
-          </div>
+              </Badge>
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Messages"
+            />
+          </ListItemButton>
+          <ListItemButton
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              dispatch(
+                openModal({
+                  modalType: 'PostFormModal',
+                  id: null,
+                  post: null,
+                }),
+              )
+            }}
+          >
+            <ListItemIcon>
+              <AddBoxOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Post"
+            />
+          </ListItemButton>
+          <ListItemButton
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              navigate(`/profile/${user?.nickname}`)
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar
+                alt="profile"
+                src={user?.profileImage?.path}
+                style={{ width: 30, height: 30 }}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              style={{ fontFamily: 'none' }}
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Profile"
+            />
+          </ListItemButton>
+        </div>
+        <div className="nav-bottom">
+          <ListItemButton style={{ borderRadius: '12px' }} component="a" onClick={handleSignOut}>
+            <ListItemIcon>
+              <LogoutIcon sx={{ fontSize: 30, color: 'black' }} />
+            </ListItemIcon>
+            <ListItemText
+              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              primary="Logout"
+            />
+          </ListItemButton>
         </div>
       </div>
-      <div ref={searchRef}>
-        <Search open={searchOpen} onClose={handleCloseSearch} />
+      <div
+        ref={searchRef}
+        className={`flex flex-shrink-0 flex-col rounded-r-xl border-r bg-white transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'visible w-96 opacity-100' : 'invisible w-0 opacity-0'
+        }`}
+      >
+        <Search isCollapsed={isCollapsed} />
       </div>
     </div>
   )

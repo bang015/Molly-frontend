@@ -81,7 +81,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
     navigate(`/profile/${post.user.nickname}`)
   }
   return (
-    <div className="container">
+    <div className="w-body510 m-auto flex flex-col p-5">
       <div className="ph1">
         <div className="pht1" onClick={goToProfilePage}>
           <div>

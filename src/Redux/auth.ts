@@ -118,7 +118,7 @@ export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) 
 export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
   try {
     const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+      headers: {},
     })
     if (response.status === 200) {
       const result = response.data
@@ -136,7 +136,6 @@ export const initializeSocket = (token: string) => {
 }
 // refreshToken
 export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { dispatch }) => {
-  console.log('refresh')
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
@@ -146,7 +145,7 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
       dispatch(refreshTokens(response.data))
       if (socket) {
         socket.disconnect()
-        initializeSocket(response.data)
+        initializeSocket(response.data.accessToken)
       }
       return response.data.accessToken
     }

@@ -3,7 +3,6 @@ import { FollowType } from '@/interfaces/follow'
 import { followUser, followedCheck } from '@/redux/follow'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import './index.css'
 import { Avatar, Button, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
@@ -30,16 +29,16 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
     navigate(`/profile/${user.nickname}`)
   }
   return (
-    <div className="followListUser">
+    <div>
       <ListItem
         key={user.id}
-        style={{ zIndex: 99, padding: 0 }}
+        style={{ padding: 0 }}
         secondaryAction={
           <Button
             variant={followed ? 'outlined' : 'contained'}
             disableElevation
             onClick={() => handleFollow(user.id)}
-            style={{ zIndex: 99 }}
+            style={{ right: 0 }}
           >
             {followed ? '팔로잉' : '팔로우'}
           </Button>
@@ -54,11 +53,11 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
         <ListItemText
           style={{ cursor: 'pointer' }}
           onClick={goToProfilePage}
-          primary={<span className="nickname">{user.nickname}</span>}
+          primary={<span className="text-body14sd text-black">{user.nickname}</span>}
           secondary={
-            <span>
+            <span className="block text-body12rg">
               {user.name}
-              {type === 'sug' && <span>{user.message}</span>}
+              {type === 'sug' && <span className="block text-body12rg">{user.message}</span>}
             </span>
           }
         />

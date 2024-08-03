@@ -54,31 +54,29 @@ export const getSearchResult = createAsyncThunk(
 
 export const saveSearchHistory = createAsyncThunk(
   'search/saveSearchHistory',
-  async ({ token, result }: { token: string; result: ResultType }, { dispatch }) => {
-    const response = await axios.post(
+  async ({ result }: { result: ResultType }, { dispatch }) => {
+    const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history`,
-      { result },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        method: 'POST',
+        data: { result },
+        headers: {},
       },
     )
     if (response.status === 200) {
-      dispatch(getSearchHistory(token))
+      dispatch(getSearchHistory())
     }
   },
 )
 
 export const getSearchHistory = createAsyncThunk(
   'search/getSearchHistory',
-  async (token: string, { dispatch }) => {
-    const response = await axios.get(
+  async (_, { dispatch }) => {
+    const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history1`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        method: 'GET',
+        headers: {},
       },
     )
     if (response.status === 200) {
@@ -89,18 +87,17 @@ export const getSearchHistory = createAsyncThunk(
 
 export const deleteSearchHistory = createAsyncThunk(
   'search/deleteSearchHistory',
-  async ({ token, history }: { token: string; history: string | null }, { dispatch }) => {
-    const response = await axios.delete(
+  async ({ history }: { history: string | null }, { dispatch }) => {
+    const response = await request(
       `${process.env.REACT_APP_SERVER_URL}${INIT}${SEARCH_API}/history`,
       {
+        method: 'DELETE',
         params: { history },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: {},
       },
     )
     if (response.status === 200) {
-      dispatch(getSearchHistory(token))
+      dispatch(getSearchHistory())
     }
   },
 )
