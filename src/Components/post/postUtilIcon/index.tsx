@@ -11,14 +11,14 @@ import { bookmarkPost, getPostBookmark } from '@/redux/bookmark'
 
 interface postUtilIconProps {
   checkLiked: boolean
-  handleChatClick: () => void
+  focusCommentInput: () => void
   handleLike: () => void
   config: boolean
   postId: number
 }
 const PostUtilIcon: React.FC<postUtilIconProps> = ({
   checkLiked,
-  handleChatClick,
+  focusCommentInput,
   handleLike,
   config,
   postId,
@@ -47,7 +47,7 @@ const PostUtilIcon: React.FC<postUtilIconProps> = ({
         </IconButton>
       </div>
       <div className="icon">
-        <IconButton aria-label="chat" onClick={handleChatClick}>
+        <IconButton aria-label="chat" onClick={focusCommentInput}>
           <ChatBubbleOutlineIcon sx={{ fontSize: 25 }} />
         </IconButton>
       </div>

@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { commentType } from "@/interfaces/comment";
-import { SubCommentList } from "../subCommentList";
-import { Avatar, IconButton } from "@mui/material";
-import { displayCreateAt } from "@/utils/format/moment";
-import { NewCommentList } from "../newCommentList";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "@/components/modal/comment";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { CommentType } from '@/interfaces/comment'
+import { SubCommentList } from '../subCommentList'
+import { Avatar, IconButton } from '@mui/material'
+import { displayCreateAt } from '@/utils/format/moment'
+import { NewCommentList } from '../newCommentList'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { openSubModal } from '@/redux/modal'
 
 interface commentListProps {
-  comment: commentType;
-  handleSubComment: (nickname: string, commentId: number) => void;
-  newCommentList: { id: number; comment: commentType }[];
-  setNewCommentList: React.Dispatch<
-    React.SetStateAction<{ id: number; comment: commentType }[]>
-  >;
+  comment: CommentType
+  handleSubComment: (nickname: string, commentId: number) => void
+  newCommentList: { id: number; comment: CommentType }[]
+  setNewCommentList: React.Dispatch<React.SetStateAction<{ id: number; comment: CommentType }[]>>
 }
 export const CommentList: React.FC<commentListProps> = ({
   comment,
@@ -22,88 +21,71 @@ export const CommentList: React.FC<commentListProps> = ({
   newCommentList,
   setNewCommentList,
 }) => {
-  const [isSubCommentVisible, setIsSubCommentVisible] = useState(false);
-  const [open, setOpen] = useState<boolean>(false);
-  const [newSub, setNewSub] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [isSubCommentVisible, setIsSubCommentVisible] = useState(false)
+  const [newSub, setNewSub] = useState<boolean>(false)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   useEffect(() => {
-    const check = newCommentList.some((c) => c.id === comment.id);
-    if (check) setNewSub(true);
-  }, [newCommentList]);
+    const check = newCommentList.some(c => c.id === comment.id)
+    if (check) setNewSub(true)
+  }, [newCommentList])
   const handleSubCommentList = () => {
-    setIsSubCommentVisible(!isSubCommentVisible);
-    const updatedCommentList = newCommentList.filter(
-      (item) => item.id !== comment.id
-    );
-    setNewCommentList(updatedCommentList);
-  };
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-  const handleModalClose = () => {
-    setOpen(false);
-  };
+    setIsSubCommentVisible(!isSubCommentVisible)
+    const updatedCommentList = newCommentList.filter(item => item.id !== comment.id)
+    setNewCommentList(updatedCommentList)
+  }
   const goToProfilePage = () => {
     if (comment) {
-      navigate(`/profile/${comment.user.nickname}`);
+      navigate(`/profile/${comment.user.nickname}`)
     }
-  };
+  }
   return (
     <div key={comment.id}>
-      <div className="cml">
-        <div className="c1" onClick={goToProfilePage}>
+      <div className="flex py-2.5">
+        <div className="mr-4" onClick={goToProfilePage}>
           <Avatar alt="profile" src={comment.user.profileImage?.path} />
         </div>
-        <div style={{ flexGrow: 1 }}>
-          <div className="c2" onClick={goToProfilePage}>
+        <div className="grow">
+          <div className="mr-1.5 inline-flex text-body12sd" onClick={goToProfilePage}>
             <span>{comment.user.nickname}</span>
           </div>
           <div
-            className="c3"
+            className="inline-flex text-body14rg"
             dangerouslySetInnerHTML={{
               __html: comment.content,
             }}
           />
-          <div className="crAt">
+          <div className="flex pt-1 text-body12rg text-gray-500">
             <div>{displayCreateAt(comment.createdAt)}</div>
-            <div>
-              <button
-                className="c-btn"
-                onClick={() => {
-                  handleSubComment(comment.user.nickname, comment.id);
-                }}
-              >
-                답글 달기
-              </button>
-            </div>
+            <button
+              className="ml-1.5 text-body12sd"
+              onClick={() => {
+                handleSubComment(comment.user.nickname, comment.id)
+              }}
+            >
+              답글 달기
+            </button>
           </div>
         </div>
-        <div className="cmb">
-          <IconButton
-            aria-label="delete"
-            onClick={() => {
-              handleModalOpen();
-            }}
-          >
-            <MoreHorizIcon />
-          </IconButton>
-        </div>
+        <IconButton
+          aria-label="delete"
+          onClick={() => {
+            dispatch(
+              openSubModal({
+                subModalType: 'CommentActionModal',
+                comment: comment,
+              }),
+            )
+          }}
+        >
+          <MoreHorizIcon />
+        </IconButton>
       </div>
-      {open && (
-        <EditDeleteModal
-          open={open}
-          comment={comment}
-          onClose={handleModalClose}
-        />
-      )}
       {(comment.subCommentsCount! > 0 || newSub) && (
-        <div className="cmb ml">
-          <button onClick={handleSubCommentList}>
-            <div className="cmll"></div>
-            <span>
-              {isSubCommentVisible
-                ? "답글 숨기기"
-                : `답글 보기(${comment.subCommentsCount}개)`}
+        <div className="ml-14">
+          <button className="flex" onClick={handleSubCommentList}>
+            <span className="text-body12sd">
+              {isSubCommentVisible ? '답글 숨기기' : `답글 보기(${comment.subCommentsCount}개)`}
             </span>
           </button>
           {isSubCommentVisible ? (
@@ -127,5 +109,5 @@ export const CommentList: React.FC<commentListProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

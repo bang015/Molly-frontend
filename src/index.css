@@ -20,7 +20,7 @@ body,
   @apply font-pretendard !important;
 }
 .css-1e6y48t-MuiButtonBase-root-MuiButton-root {
-  @apply font-pretendard  !important;
+  @apply font-pretendard !important;
 }
 .css-zddlty-MuiButtonBase-root-MuiButton-root {
   @apply font-pretendard !important;
@@ -28,8 +28,22 @@ body,
 .css-518kzi-MuiListItemSecondaryAction-root {
   @apply right-0 !important;
 }
+.media {
+  @apply max-w-media max-h-media pointer-events-auto relative flex aspect-square min-h-96 flex-col justify-center overflow-hidden rounded-l-lg;
+}
+.modal {
+  @apply pointer-events-none relative flex size-full flex-col items-center justify-center;
+}
+.switch-btn {
+  @apply absolute top-1/2 z-10 -translate-y-1/2 transform;
+}
+
 .btn {
-  @apply inline-flex h-12 items-center justify-center whitespace-nowrap rounded-md bg-[#5253ea] px-4 text-white ring-offset-white transition-colors disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400;
+  @apply bg-main hover:bg-hover inline-flex h-12 items-center justify-center whitespace-nowrap rounded-md border px-4 text-white ring-offset-white transition-colors disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400;
+}
+
+.out-line {
+  @apply border-main text-main hover:border-hover border bg-white hover:bg-white;
 }
 
 .link {

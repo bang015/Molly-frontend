@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { getSubComment } from "@/redux/comment";
-import { Avatar, IconButton } from "@mui/material";
-import { commentType } from "@/interfaces/comment";
-import { displayCreateAt } from "@/utils/format/moment";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import EditDeleteModal from "@/components/modal/comment";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { getSubComment } from '@/redux/comment'
+import { Avatar, IconButton } from '@mui/material'
+import { CommentType } from '@/interfaces/comment'
+import { displayCreateAt } from '@/utils/format/moment'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { useNavigate } from 'react-router-dom'
+import { openSubModal } from '@/redux/modal'
 
 interface subCommentListProps {
-  postId: number;
-  id: number;
-  newCommentList: { id: number; comment: commentType }[];
-  subcommentCount: number;
+  postId: number
+  id: number
+  newCommentList: { id: number; comment: CommentType }[]
+  subcommentCount: number
 }
 export const SubCommentList: React.FC<subCommentListProps> = ({
   postId,
@@ -21,131 +21,110 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
   newCommentList,
   subcommentCount,
 }) => {
-  const updatedComment = useSelector(
-    (state: RootState) => state.commentReducer.updatedComment
-  );
-  const deleteComment = useSelector(
-    (state: RootState) => state.commentReducer.deleteComment
-  );
-  const [page, setPage] = useState(1);
-  const [subComment, setSubComment] = useState<commentType[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const updatedComment = useSelector((state: RootState) => state.commentReducer.updatedComment)
+  const deleteComment = useSelector((state: RootState) => state.commentReducer.deleteComment)
+  const [page, setPage] = useState(1)
+  const [subComment, setSubComment] = useState<CommentType[]>([])
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   useEffect(() => {
     const subList = async () => {
-      setSubComment([]);
-      const result = await getSubComment(postId, id, page);
-      setSubComment([...subComment, ...result]);
-    };
-    subList();
-  }, [postId, id, page]);
+      setSubComment([])
+      const result = await getSubComment(postId, id, page)
+      setSubComment([...subComment, ...result])
+    }
+    subList()
+  }, [postId, id, page])
 
   useEffect(() => {
-    newComment();
-  }, [newCommentList]);
+    newComment()
+  }, [newCommentList])
   const newComment = () => {
-    newCommentList.forEach((item) => {
+    newCommentList.forEach(item => {
       if (item.id === id) {
-        setSubComment([item.comment, ...subComment]);
+        setSubComment([item.comment, ...subComment])
       }
-    });
-  };
+    })
+  }
 
   useEffect(() => {
     if (deleteComment.length !== 0) {
-      const CommentList = subComment.filter(
-        (item) => !deleteComment.includes(item.id)
-      );
-      setSubComment(CommentList);
+      const CommentList = subComment.filter(item => !deleteComment.includes(item.id))
+      setSubComment(CommentList)
     }
-  }, [deleteComment]);
+  }, [deleteComment])
 
   useEffect(() => {
     if (updatedComment) {
-      const updatedCommentIndex = subComment.findIndex(
-        (map) => map.id === updatedComment?.id
-      );
+      const updatedCommentIndex = subComment.findIndex(map => map.id === updatedComment?.id)
       if (updatedCommentIndex !== -1) {
-        const updatedCommentList = [...subComment];
-        updatedCommentList[updatedCommentIndex] = updatedComment;
-        setSubComment(updatedCommentList);
+        const updatedCommentList = [...subComment]
+        updatedCommentList[updatedCommentIndex] = updatedComment
+        setSubComment(updatedCommentList)
       }
     }
-  }, [updatedComment]);
-
-  const handleModalOpen = () => {
-    setOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setOpen(false);
-  };
+  }, [updatedComment])
 
   const handleNextPage = () => {
-    setPage(page + 1);
-  };
-  const subCommentPages = Math.ceil(subcommentCount / 3);
+    setPage(page + 1)
+  }
+  const subCommentPages = Math.ceil(subcommentCount / 3)
   const goToProfilePage = (nickname: string) => {
     if (nickname) {
-      navigate(`/profile/${nickname}`);
+      navigate(`/profile/${nickname}`)
     }
-  };
+  }
   return (
     <div>
-      {subComment.map((comment) => (
-        <div key={comment.id} className="cml">
+      {subComment.map(comment => (
+        <div key={comment.id} className="flex py-2.5">
           <div
-            className="c1"
+            className="mr-4"
             onClick={() => {
-              goToProfilePage(comment.user.nickname);
+              goToProfilePage(comment.user.nickname)
             }}
           >
             <Avatar alt="profile" src={comment.user.profileImage?.path} />
           </div>
-          <div style={{ flexGrow: 1 }}>
+          <div className="grow">
             <div
-              className="c2"
+              className="mr-1.5 inline-flex text-body12sd"
               onClick={() => {
-                goToProfilePage(comment.user.nickname);
+                goToProfilePage(comment.user.nickname)
               }}
             >
               <span>{comment.user.nickname}</span>
             </div>
             <div
-              className="c3"
+              className="inline-flex text-body14rg"
               dangerouslySetInnerHTML={{
                 __html: comment.content,
               }}
             />
-            <div className="crAt">
+            <div className="flex pt-1 text-body12rg text-gray-500">
               <div>{displayCreateAt(comment.createdAt)}</div>
             </div>
           </div>
-          <div className="cmb">
-            <IconButton
-              aria-label="delete"
-              onClick={() => {
-                handleModalOpen();
-              }}
-            >
-              <MoreHorizIcon />
-            </IconButton>
-          </div>
-          {open && (
-            <EditDeleteModal
-              open={open}
-              comment={comment}
-              onClose={handleModalClose}
-            />
-          )}
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              dispatch(
+                openSubModal({
+                  subModalType: 'CommentActionModal',
+                  comment: comment,
+                }),
+              )
+            }}
+          >
+            <MoreHorizIcon />
+          </IconButton>
         </div>
       ))}
       {subCommentPages > page && (
         <button onClick={handleNextPage}>
-          <div className="cmll"></div>
           <span>{`답글 더 보기(${subcommentCount - page * 3}개)`}</span>
         </button>
       )}
     </div>
-  );
-};
+  )
+}

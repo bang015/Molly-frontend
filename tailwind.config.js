@@ -5,6 +5,9 @@ export default {
     extend: {
       colors: {
         background: '#F6F8FF',
+        main: '#5253ea',
+        hover: '#4445c6',
+        customGray: 'rgb(219, 219, 219)',
       },
       margin: {
         4.5: '1.125rem',
@@ -25,8 +28,16 @@ export default {
       width: {
         body510: '510px',
       },
+      maxWidth: {
+        body510: '510px',
+        media: '850px',
+      },
       minWidth: {
         body510: '510px',
+        body400: '400px'
+      },
+      maxHeight: {
+        media: '850px',
       },
       fontSize: {
         body18sd: [

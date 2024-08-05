@@ -2,7 +2,7 @@
 .post-image {
   width: 700px;
   height: 700px;
-  position: absolute;
+  position: relative;
   overflow: hidden;
 }
 .create-post {
@@ -34,9 +34,8 @@
 .create-post-content {
   width: 700px;
   height: 700px;
-  position: absolute;
   display: flex;
-  justify-content: center;
+  justify-content: start;
   overflow: hidden;
   flex-grow: 1;
 }

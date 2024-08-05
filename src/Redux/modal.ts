@@ -1,16 +1,23 @@
+import { CommentType } from '@/interfaces/comment'
 import { PostType } from '@/interfaces/post'
 import { createSlice } from '@reduxjs/toolkit'
 interface modalState {
   modalType: string
+  subModalType: string
   isOpen: boolean
+  isSubOpen: boolean
   id: number | null
   post: PostType | null
+  comment: CommentType | null
 }
 const initialState: modalState = {
   modalType: '',
+  subModalType: '',
   isOpen: false,
+  isSubOpen: false,
   id: null,
   post: null,
+  comment: null,
 }
 
 export const modalSlice = createSlice({
@@ -22,15 +29,29 @@ export const modalSlice = createSlice({
       state.modalType = modalType
       state.id = id
       state.post = post
+      state.isSubOpen = false
       state.isOpen = true
     },
     closeModal: state => {
       state.isOpen = false
+      state.isSubOpen = false
       state.id = null
       state.post = null
+    },
+    openSubModal: (state, actions) => {
+      const { subModalType, id, post, comment } = actions.payload
+      state.subModalType = subModalType
+      if (post) state.post = post
+      if (id) state.id = id
+      if (comment) state.comment = comment
+      state.isSubOpen = true
+    },
+    closeSubModal: state => {
+      state.isSubOpen = false
+      state.comment = null
     },
   },
 })
 
-export const { openModal, closeModal } = modalSlice.actions
+export const { openModal, closeModal, openSubModal, closeSubModal } = modalSlice.actions
 export default modalSlice.reducer

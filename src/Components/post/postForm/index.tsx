@@ -195,8 +195,7 @@ const PostForm: React.FC = () => {
                       </IconButton>
                     </div>
                   )}
-                  {post &&
-                    post.postMedias &&
+                  {
                     post.postMedias.length > 1 &&
                     currentImageIndex < post.postMedias.length - 1 && (
                       <div className="c-next-btn">

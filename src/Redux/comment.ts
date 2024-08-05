@@ -1,12 +1,8 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { addCommentType, commentType } from '../interfaces/comment'
-import axios from 'axios'
 import { COMMENT_API, INIT } from '../utils/api-url'
 import { showSnackBar } from './post'
-import { useSelector } from 'react-redux'
-import { RootState } from '.'
 import { request } from './baseRequest'
-import { authStore } from './auth'
 interface commentState {
   deleteComment: number[]
   updatePending: boolean
@@ -30,7 +26,7 @@ const commentSlice = createSlice({
     },
     updatePending: (state, action: PayloadAction<commentType>) => {
       state.updatePending = true
-      state.updateCommentId = action.payload
+      state.updateCommentId = action.payload 
     },
     updateCommentSuccess: (state, action: PayloadAction<commentType>) => {
       state.updatedComment = action.payload
@@ -129,7 +125,7 @@ export const updateComment = createAsyncThunk(
       const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
         {
-          data: {content},
+          data: { content },
           method: 'PATCH',
           headers: {},
         },

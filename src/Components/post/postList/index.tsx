@@ -7,14 +7,14 @@ import { Avatar, Button, IconButton, InputAdornment, TextField } from '@mui/mate
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import { addCommentType, commentType } from '@/interfaces/comment'
+import { addCommentType, CommentType } from '@/interfaces/comment'
 import { addComment, getMyCommentByPost } from '@/redux/comment'
 import PostUtilIcon from '../postUtilIcon'
 import { getPostLike, likePost } from '@/redux/like'
 import PostLikeCount from '../postLikeCount'
 import { displayCreateAt } from '@/utils/format/moment'
 import { useNavigate } from 'react-router-dom'
-import { openModal } from '@/redux/modal'
+import { openModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
 
 interface postListProps {
@@ -27,14 +27,14 @@ const PostList: React.FC<postListProps> = ({ post }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const [comment, setComment] = useState<string>('')
   const textFieldRef = useRef<HTMLInputElement | null>(null)
-  const [commentList, setCommentList] = useState<commentType[]>([])
+  const [commentList, setCommentList] = useState<CommentType[]>([])
   const [likeCount, setLikeCount] = useState<number>(0)
   const [checkLiked, setCheckLiked] = useState(false)
 
   useEffect(() => {
     const myComment = async () => {
       const result = await getMyCommentByPost(post.id)
-      setCommentList(result)
+      setCommentList(result.slice(0, 3))
     }
     myComment()
   }, [user, post])
@@ -72,7 +72,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
     const check = await likePost(post.id)
     setCheckLiked(check)
   }
-  const handleChatClick = () => {
+  const focusCommentInput = () => {
     if (textFieldRef.current) {
       textFieldRef.current.focus()
     }
@@ -81,7 +81,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
     navigate(`/profile/${post.user.nickname}`)
   }
   return (
-    <div className="w-body510 m-auto flex flex-col p-5">
+    <div className="m-auto flex w-body510 flex-col p-5">
       <div className="ph1">
         <div className="pht1" onClick={goToProfilePage}>
           <div>
@@ -101,8 +101,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
             aria-label="more"
             onClick={() => {
               dispatch(
-                openModal({
-                  modalType: 'PostActionModal',
+                openSubModal({
+                  subModalType: 'PostActionModal',
                   post: post,
                   id: post.id,
                 }),
@@ -159,7 +159,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
         <PostUtilIcon
           checkLiked={checkLiked}
           handleLike={handleLike}
-          handleChatClick={handleChatClick}
+          focusCommentInput={focusCommentInput}
           config={true}
           postId={post.id}
         />

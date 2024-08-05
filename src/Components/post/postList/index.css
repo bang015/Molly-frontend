@@ -70,11 +70,13 @@
 .medias-wrapper {
   display: flex;
   transition: transform 0.5s ease-in-out;
+  object-fit: cover;
 }
 
 .medias-wrapper img {
   flex: 0 0 auto;
   width: 100%;
+  object-fit: cover;
 }
 
 .ctf {

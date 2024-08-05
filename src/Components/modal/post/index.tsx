@@ -1,50 +1,62 @@
-import { Modal } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { followUser, followedCheck } from "@/redux/follow";
-import { closeModal, openModal } from "@/redux/modal";
+import { Modal } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { followUser, followedCheck } from '@/redux/follow'
+import { closeSubModal, openModal } from '@/redux/modal'
 
 const PostActionModal: React.FC = () => {
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const token = useSelector((state: RootState) => state.authReducer.token);
-  const Followed = useSelector(
-    (state: RootState) => state.followReducer.chekcFollowed
-  );
-  const {isOpen,post} = useSelector((state:RootState) => state.modalReducer);
-  const [checkFollowed, setCheckFollowed] = useState(false);
+  const dispatch = useDispatch()
+  const user = useSelector((state: RootState) => state.authReducer.user)
+  const Followed = useSelector((state: RootState) => state.followReducer.followed)
+  const { isSubOpen, post } = useSelector((state: RootState) => state.modalReducer)
+  const [checkFollowed, setCheckFollowed] = useState(false)
 
   useEffect(() => {
-    followCheck();
-  }, [post, Followed]);
+    if(user?.id !== post?.userId){
+      followCheck()
+    }
+  }, [user, post, Followed])
   const handleUnFollow = () => {
-    if (token) {
-      const followUserId = post?.userId!;
-      dispatch(followUser({ token, followUserId }) as any);
-    }
-    dispatch(closeModal());
-  };
+    const followUserId = post?.userId!
+    dispatch(followUser({ followUserId }) as any)
+    dispatch(closeSubModal())
+  }
   const followCheck = async () => {
-    if (token && post) {
-      const result = await followedCheck(token, post.userId);
-      setCheckFollowed(result);
+    if (post) {
+      const result = await followedCheck(post.userId)
+      setCheckFollowed(result)
     }
-  };
+  }
   return (
     <div>
-      <Modal open={isOpen} onClose={()=> {dispatch(closeModal())}}>
-        <div className="post-detail">
+      <Modal
+        open={isSubOpen}
+        onClose={() => {
+          dispatch(closeSubModal())
+        }}
+      >
+        <div className="modal">
           <div className="modal-container">
             {post?.userId === user!.id ? (
               <div className="editBtn">
                 <div>
-                  <button className="mbtn1 mbtnc" onClick={() => {dispatch(openModal({modalType: "PostFormModal", id: post?.id, post: post}))}}>
+                  <button
+                    className="mbtn1 mbtnc"
+                    onClick={() => {
+                      dispatch(openModal({ modalType: 'PostFormModal', id: post?.id, post: post }))
+                    }}
+                  >
                     수정
                   </button>
                 </div>
                 <div>
-                  <button className="mbtnc" onClick={() => {dispatch(openModal({modalType: "DeleteModal", id: post?.id, post: post}))}}>
+                  <button
+                    className="mbtnc"
+                    onClick={() => {
+                      dispatch(openModal({ modalType: 'DeleteModal', id: post?.id, post: post }))
+                    }}
+                  >
                     삭제
                   </button>
                 </div>
@@ -64,7 +76,12 @@ const PostActionModal: React.FC = () => {
               </div>
             )}
             <div className="editBtn">
-              <button className="mbtn2" onClick={()=> {dispatch(closeModal())}}>
+              <button
+                className="mbtn2"
+                onClick={() => {
+                  dispatch(closeSubModal())
+                }}
+              >
                 취소
               </button>
             </div>
@@ -72,6 +89,6 @@ const PostActionModal: React.FC = () => {
         </div>
       </Modal>
     </div>
-  );
-};
-export default PostActionModal;
+  )
+}
+export default PostActionModal

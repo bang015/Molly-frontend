@@ -3,7 +3,7 @@ import { FollowType } from '@/interfaces/follow'
 import { followUser, followedCheck } from '@/redux/follow'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import { Avatar, Button, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
 interface followListUserProps {
@@ -34,14 +34,12 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
         key={user.id}
         style={{ padding: 0 }}
         secondaryAction={
-          <Button
-            variant={followed ? 'outlined' : 'contained'}
-            disableElevation
+          <button
+            className={`btn h-9 rounded text-body14m ${followed && 'out-line'}`}
             onClick={() => handleFollow(user.id)}
-            style={{ right: 0 }}
           >
             {followed ? '팔로잉' : '팔로우'}
-          </Button>
+          </button>
         }
       >
         <ListItemAvatar onClick={goToProfilePage}>

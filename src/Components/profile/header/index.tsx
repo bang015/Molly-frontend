@@ -61,6 +61,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   const EditProfileClose = () => {
     setEditProfile(false);
   };
+  console.log(profile)
   return (
     <div className="header">
       <div className="profile_image">
@@ -124,7 +125,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
             팔로워 <span>{profile.followerCount}</span>
           </div>
           <div onClick={() => onFollowOpen("follow")}>
-            팔로우 <span>{profile.followCount}</span>
+            팔로우 <span>{profile.followingCount}</span>
           </div>
         </div>
         {profile && followOpen && (

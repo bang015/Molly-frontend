@@ -24,14 +24,14 @@ import {
   getMyCommentByPost,
   updateComment,
 } from '@/redux/comment'
-import { addCommentType, commentType } from '@/interfaces/comment'
+import { addCommentType, CommentType } from '@/interfaces/comment'
 import { CommentList } from '../comment/commentList'
 import { followUser, followedCheck } from '@/redux/follow'
 import { getPostLike, likePost } from '@/redux/like'
 import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
-import { closeModal, openModal } from '@/redux/modal'
+import { closeModal, openModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
 
 const PostDetail: React.FC = () => {
@@ -40,20 +40,19 @@ const PostDetail: React.FC = () => {
   const { updatePending, updateCommentId, updatedComment, deleteComment } = useSelector(
     (state: RootState) => state.commentReducer,
   )
-  const {followed} = useSelector((state: RootState) => state.followReducer)
+  const { followed } = useSelector((state: RootState) => state.followReducer)
   const { user } = useSelector((state: RootState) => state.authReducer)
   const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
   const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const navigate = useNavigate()
   const textFieldRef = useRef<HTMLInputElement | null>(null)
-  const crAt = post?.createdAt as string
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const [comment, setComment] = useState('')
   const [commentId, setCommentId] = useState<number | null>(null)
   const [page, setPage] = useState(1)
-  const [commentList, setCommentList] = useState<commentType[]>([])
+  const [commentList, setCommentList] = useState<CommentType[]>([])
   const [totalPages, setTotalPages] = useState<number>(0)
-  const [newCommentList, setNewCommentList] = useState<{ id: number; comment: commentType }[]>([])
+  const [newCommentList, setNewCommentList] = useState<{ id: number; comment: CommentType }[]>([])
   const [likeCount, setLikeCount] = useState<number>(0)
   const [checkLiked, setCheckLiked] = useState(false)
   const [checkFollowed, setCheckFollowed] = useState(false)
@@ -65,12 +64,12 @@ const PostDetail: React.FC = () => {
       const comment = await getComment(id!, page)
       if (page === 1) {
         const myComment = await getMyCommentByPost(id!)
-        console.log(myComment)
-        
+
         setCommentList([...myComment, ...comment.commentList])
       } else {
         setCommentList(prevList => [...prevList, ...comment.commentList])
       }
+      console.log(comment)
       setTotalPages(comment.totalPages)
     }
     fetchData()
@@ -157,7 +156,7 @@ const PostDetail: React.FC = () => {
       setCurrentImageIndex(prevIndex => (prevIndex + 1) % post.postMedias.length)
     }
   }
-  const handleChatClick = () => {
+  const focusCommentInput = () => {
     if (textFieldRef.current) {
       textFieldRef.current.focus()
     }
@@ -229,16 +228,16 @@ const PostDetail: React.FC = () => {
     <div>
       {post && (
         <Modal open={isOpen} onClose={close}>
-          <div className="post-detail">
-            <div className="post-container">
+          <div className="modal">
+            <div className="flex">
               {loading ? (
-                <div className="post-media">
+                <div className="media">
                   <Skeleton variant="rectangular" width={897} height={897} />
                 </div>
               ) : (
-                <div className="post-media">
+                <div className="media">
                   {currentImageIndex > 0 && (
-                    <div className="c-back-btn">
+                    <div className="switch-btn left-2">
                       <IconButton
                         aria-label="fingerprint"
                         color="secondary"
@@ -249,65 +248,60 @@ const PostDetail: React.FC = () => {
                       </IconButton>
                     </div>
                   )}
-                  {post &&
-                    post.postMedias &&
-                    post.postMedias.length > 1 &&
-                    currentImageIndex < post.postMedias.length - 1 && (
-                      <div className="c-next-btn">
-                        <IconButton
-                          aria-label="fingerprint"
-                          color="secondary"
-                          style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                          }}
-                          onClick={onNextClick}
-                        >
-                          <NavigateNextIcon style={{ color: 'black' }} />
-                        </IconButton>
-                      </div>
-                    )}
-                  <div>
-                    <div
-                      className="medias-wrapper"
-                      style={{
-                        transform: `translateX(-${currentImageIndex * 100}%)`,
-                      }}
-                    >
-                      {post.postMedias.map((media, index) => (
-                        <img key={index} src={media.path} alt="img" />
-                      ))}
+                  {post.postMedias.length > 1 && currentImageIndex < post.postMedias.length - 1 && (
+                    <div className="switch-btn right-2">
+                      <IconButton
+                        aria-label="fingerprint"
+                        color="secondary"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        }}
+                        onClick={onNextClick}
+                      >
+                        <NavigateNextIcon style={{ color: 'black' }} />
+                      </IconButton>
                     </div>
+                  )}
+                  <div
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{
+                      transform: `translateX(-${currentImageIndex * 100}%)`,
+                    }}
+                  >
+                    {post.postMedias.map((media, index) => (
+                      <img key={index} src={media.path} alt="img" />
+                    ))}
                   </div>
                 </div>
               )}
-              <div className="post-comment">
-                <div className="comment-header">
-                  <div className="ch1">
-                    <div className="cht1">
-                      <div className="pi" onClick={goToProfilePage}>
+              <div className="max-w-body510 min-w-body400 pointer-events-auto flex flex-col rounded-r-lg bg-white">
+                <div className="border-b border-l">
+                  <div className="flex items-center">
+                    <div className="flex grow items-center px-5 py-3">
+                      <div onClick={goToProfilePage}>
                         {post && <Avatar alt="Remy Sharp" src={post?.user?.profileImage?.path} />}
                       </div>
-                      <div className="uf">
-                        <div className="un" onClick={goToProfilePage}>
+                      <div className="ml-2.5 flex">
+                        <div className="mr-1 text-body14m" onClick={goToProfilePage}>
                           {post.user.nickname}
                         </div>
                         {!checkFollowed && post.userId !== user?.id && (
                           <div>
                             <span>•</span>
                             <button onClick={handleFollow}>
-                              <div className="ft">팔로우</div>
+                              <div className="text-main ml-1 text-body14sd">팔로우</div>
                             </button>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="mb">
+                    <div className="p-2">
                       <IconButton
                         aria-label="more"
                         onClick={() => {
                           dispatch(
-                            openModal({
-                              modalType: 'PostActionModal',
+                            openSubModal({
+                              subModalType: 'PostActionModal',
                               post: post,
                               id: post.id,
                             }),
@@ -319,29 +313,32 @@ const PostDetail: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="comment-main">
-                  <div className="comment">
-                    <ul className="comment-list">
+                <div className="relative flex grow flex-col border-l">
+                  <div className="relative order-1 grow overflow-auto">
+                    <ul className="absolute size-full overflow-y-scroll p-5">
                       <li>
-                        <div className="p-content">
-                          <div className="c1" onClick={goToProfilePage}>
+                        <div className="flex">
+                          <div className="mr-4" onClick={goToProfilePage}>
                             {post && <Avatar src={post?.user?.profileImage?.path} />}
                           </div>
-                          <div>
-                            <div className="c2" onClick={goToProfilePage}>
+                          <div className="grow">
+                            <div
+                              className="mr-1.5 inline-flex text-body12sd"
+                              onClick={goToProfilePage}
+                            >
                               <span>{post.user.nickname}</span>
                             </div>
                             <div
-                              className="c3"
+                              className="inline-flex text-body14rg"
                               dangerouslySetInnerHTML={{ __html: post.content }}
                             />
-                            <div className="crAt">
-                              <div>{displayCreateAt(crAt)}</div>
+                            <div className="pt-1 text-body12rg text-gray-500">
+                              <div>{displayCreateAt(post?.createdAt)}</div>
                             </div>
                           </div>
                         </div>
                       </li>
-                      <div>
+                      <div className='pt-3'>
                         {commentList.map(comment => (
                           <CommentList
                             key={comment.id}
@@ -352,7 +349,7 @@ const PostDetail: React.FC = () => {
                           />
                         ))}
                         {totalPages > page && (
-                          <div className="moreBtn" onClick={handleNextPage}>
+                          <div className="mt-2.5 text-center" onClick={handleNextPage}>
                             <AddCircleOutlineIcon sx={{ fontSize: 30 }} />
                           </div>
                         )}
@@ -361,14 +358,16 @@ const PostDetail: React.FC = () => {
                   </div>
                   <PostUtilIcon
                     config={false}
-                    handleChatClick={handleChatClick}
+                    focusCommentInput={focusCommentInput}
                     checkLiked={checkLiked}
                     handleLike={handleLike}
                     postId={id!}
                   />
                   <PostLikeCount config={false} likeCount={likeCount} handleLike={handleLike} />
-                  <div className="section3">{createdAt(crAt)}</div>
-                  <div className="section4">
+                  <div className="order-5 mb-2.5 px-5 text-body14rg text-gray-500">
+                    {createdAt(post?.createdAt)}
+                  </div>
+                  <div className="order-6 border-t">
                     <TextField
                       variant="standard"
                       className="comment-textField"

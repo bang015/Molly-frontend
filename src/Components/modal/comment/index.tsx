@@ -1,36 +1,37 @@
-import { Modal } from "@mui/material";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import "./index.css";
-import { deleteComment, updatePending } from "@/redux/comment";
-import { commentType } from "@/interfaces/comment";
-interface EditDeleteModalProps {
-  open: boolean;
-  comment: commentType;
-  onClose: () => void;
-}
-const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
-  open,
-  comment,
-  onClose,
-}) => {
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const id = comment.id;
-  const userId = comment.userId;
+import { Modal } from '@mui/material'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import './index.css'
+import { deleteComment, updatePending } from '@/redux/comment'
+import { CommentType } from '@/interfaces/comment'
+import { closeSubModal } from '@/redux/modal'
+// interface EditDeleteModalProps {
+//   open: boolean;
+//   comment: CommentType;
+//   onClose: () => void;
+// }
+const CommentActionModal: React.FC = () => {
+  const dispatch = useDispatch()
+  const user = useSelector((state: RootState) => state.authReducer.user)
+  const { comment, isOpen } = useSelector((state: RootState) => state.modalReducer)
+  if (!comment) {
+    return
+  }
+  const id = comment.id
+  const userId = comment.userId
   const removeComment = () => {
-    dispatch(deleteComment({ id }) as any);
-    onClose();
-  };
+    dispatch(deleteComment({ id }) as any)
+    dispatch(closeSubModal())
+  }
 
   const updateComment = () => {
-    dispatch(updatePending(comment));
-    onClose();
-  };
+    dispatch(updatePending(comment))
+    dispatch(closeSubModal())
+  }
   return (
     <div>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={isOpen} onClose={() => {dispatch(closeSubModal())}}>
         <div className="post-detail">
           <div className="modal-container">
             {userId === user!.id ? (
@@ -52,7 +53,7 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
               </div>
             )}
             <div className="editBtn">
-              <button className="mbtn2" onClick={onClose}>
+              <button className="mbtn2" onClick={() => {dispatch(closeSubModal())}}>
                 취소
               </button>
             </div>
@@ -60,7 +61,7 @@ const EditDeleteModal: React.FC<EditDeleteModalProps> = ({
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default EditDeleteModal;
+export default CommentActionModal

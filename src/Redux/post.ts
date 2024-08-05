@@ -1,11 +1,9 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { updatePostType, uploadPostType } from '../interfaces/post'
 import { INIT, POST_API } from '../utils/api-url'
 import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postList'
 import { deletePostProfile } from './user'
 import { request } from './baseRequest'
-import { authStore } from './auth'
 export interface updatedPost {
   updatedPost: { id: number | null; content: string | null }
 }

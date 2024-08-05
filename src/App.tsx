@@ -65,20 +65,20 @@ const App: React.FC = () => {
         <Route path="/auth/password/reset" element={<PasswordReset />} />
         <Route
           path="/profile/:nickname"
-          element={isLogin ? <ProfilePage /> : <Navigate to="/signin" />}
+          element={isLogin ? <ProfilePage /> : <Navigate to="/sign/in" />}
         />
-        <Route path="/explore" element={isLogin ? <ExplorePage /> : <Navigate to="/signin" />} />
+        <Route path="/explore" element={isLogin ? <ExplorePage /> : <Navigate to="/sign/in" />} />
         <Route
           path="/explore/people"
-          element={isLogin ? <PeoplePage /> : <Navigate to="/signin" />}
+          element={isLogin ? <PeoplePage /> : <Navigate to="/sign/in" />}
         />
         <Route
           path="/explore/tags/:tagName"
-          element={isLogin ? <TagsPage /> : <Navigate to="/signin" />}
+          element={isLogin ? <TagsPage /> : <Navigate to="/sign/in" />}
         />
         <Route
           path="/messenger"
-          element={isLogin ? <MessengerPage /> : <Navigate to="/signin" />}
+          element={isLogin ? <MessengerPage /> : <Navigate to="/sign/in" />}
         />
       </Routes>
       <Snackbar

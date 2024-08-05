@@ -9,7 +9,6 @@ import { closeModal } from '@/redux/modal'
 const DeleteModal: React.FC = () => {
   const dispatch = useDispatch()
   const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
-  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
   const postDelete = async () => {
     if (id) {
       const result = await dispatch(deletePost({ postId: id }) as any)
@@ -18,7 +17,6 @@ const DeleteModal: React.FC = () => {
       }
     }
   }
-  console.log(isOpen)
   return (
     <div>
       <Modal
