@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { INIT, QUERY_NICKNAME, USER_API } from '../utils/api-url'
 import { UpdateProfileInput, UserType } from '../interfaces/user'
-import { showSnackBar } from './post'
-import { authStore, getUser } from './auth'
+import { getUser } from './auth'
 import { request } from './baseRequest'
+import { openSnackBar } from './snackBar'
 
 interface UserState {
   profile: UserType | null
@@ -75,12 +74,12 @@ export const updateUser = createAsyncThunk(
         method: 'PATCH',
       })
       if (response.status === 200) {
-        dispatch(showSnackBar(response.data.message))
+        dispatch(openSnackBar(response.data.message))
         dispatch(updatedProfileSucces(response.data.result))
         dispatch(getUser())
       }
     } catch (e) {
-      dispatch(showSnackBar('프로필 수정 실패, 다시 시도해주세요.'))
+      dispatch(openSnackBar('프로필 수정 실패, 다시 시도해주세요.'))
     }
   },
 )

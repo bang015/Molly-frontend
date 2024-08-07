@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getFollower } from '@/redux/follow'
+import { getFollowing } from '@/redux/follow'
 import { RootState } from '@/redux'
 import FollowListUser from '../followListUser'
-interface followerListProps {
+interface followListProps {
   userId: number
   keyword: string
   onFollowClose: () => void
 }
-const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowClose }) => {
+const FollowingList: React.FC<followListProps> = ({ userId, keyword, onFollowClose }) => {
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
-  const follow = useSelector((state: RootState) => state.followReducer.list.follower)
-  const totalPages = useSelector((state: RootState) => state.followReducer.totalPages.follower)
+  const follow = useSelector((state: RootState) => state.followReducer.list.following)
+  const totalPages = useSelector((state: RootState) => state.followReducer.totalPages.following)
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
@@ -27,8 +27,9 @@ const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowCl
     }
   }, [page, totalPages])
   useEffect(() => {
-    dispatch(getFollower({ userId, page, keyword }) as any)
+    dispatch(getFollowing({ userId, page, keyword }) as any)
   }, [userId, page, keyword])
+
   return (
     <div className="follow">
       {follow.map(user => (
@@ -40,4 +41,4 @@ const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowCl
   )
 }
 
-export default FollowerList
+export default FollowingList

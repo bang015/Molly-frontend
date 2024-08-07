@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { UserType } from '@/interfaces/user'
 import { Avatar, CircularProgress, Modal, TextField } from '@mui/material'
-import './index.css'
 import { checkNameValidation, checkNickValidation } from '@/utils/validation'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from '@/redux/user'
@@ -63,23 +62,25 @@ const EditProfile: React.FC<editProfileProps> = ({ open, onClose, profile }) => 
   return (
     <div>
       <Modal open={open} onClose={onClose}>
-        <div className="post-detail">
-          <div className="modal_content">
-            <div className="title">프로필 수정</div>
-            <div className="user">
-              <div className="img">
+        <div className="modal">
+          <div className="pointer-events-auto flex flex-col rounded-lg bg-white">
+            <div className="flex justify-center border-b p-3 text-body16sd">프로필 수정</div>
+            <div className="flex items-center p-5">
+              <div className="mr-5">
                 <label className="profileImg" htmlFor="profileImageInput">
-                  {loading && (
-                    <div className="loading">
-                      <CircularProgress />
-                    </div>
-                  )}
-                  <Avatar src={profile.profileImage?.path} sx={{ width: 150, height: 150 }} />
+                  <div className="relative mx-auto size-[150px] overflow-hidden rounded-full border">
+                    {loading && (
+                      <div className="absolute z-10 flex size-full items-center justify-center bg-black bg-opacity-50">
+                        <CircularProgress />
+                      </div>
+                    )}
+                    <Avatar src={profile.profileImage?.path} sx={{ width: 150, height: 150 }} />
+                  </div>
                 </label>
               </div>
-              <div className="info">
+              <div className="w-[250px]">
                 <div>
-                  <span>사용자 이름</span>
+                  <div className="py-1 text-body14m">사용자 이름</div>
                   <TextField
                     size="small"
                     fullWidth
@@ -90,7 +91,7 @@ const EditProfile: React.FC<editProfileProps> = ({ open, onClose, profile }) => 
                   />
                 </div>
                 <div>
-                  <span>성명</span>
+                  <div className="py-1 text-body14m">성명</div>
                   <TextField
                     size="small"
                     fullWidth
@@ -102,11 +103,11 @@ const EditProfile: React.FC<editProfileProps> = ({ open, onClose, profile }) => 
                 </div>
               </div>
             </div>
-            <div className="intro">
-              <span>소개</span>
+            <div className="p-5">
+              <div className="py-1 text-body14m">소개</div>
               <TextField
                 multiline
-                rows={3}
+                rows={5}
                 fullWidth
                 onChange={handleIntroduce}
                 value={newInfo.introduce}
@@ -118,9 +119,13 @@ const EditProfile: React.FC<editProfileProps> = ({ open, onClose, profile }) => 
                 }}
               />
             </div>
-            <div className="btn">
-              <button onClick={onClose}>취소</button>
-              <button onClick={editProfile}>저장</button>
+            <div className="flex justify-end px-5 pb-2.5">
+              <button className="p-1 text-body14sd hover:text-main" onClick={onClose}>
+                취소
+              </button>
+              <button className="p-1 text-body14sd hover:text-main" onClick={editProfile}>
+                저장
+              </button>
             </div>
           </div>
         </div>

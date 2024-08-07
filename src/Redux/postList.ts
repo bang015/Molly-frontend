@@ -1,10 +1,9 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { INIT, POST_API } from '../utils/api-url'
 import { PostType } from '../interfaces/post'
 import { updatedPost } from './post'
 import { request } from './baseRequest'
-import { authStore } from './auth'
+import { openSnackBar } from './snackBar'
 
 interface PostListState {
   posts: {
@@ -13,7 +12,6 @@ interface PostListState {
     user: PostType[]
     bookmark: PostType[]
   }
-  getPostLoading: boolean
   getPostDetail: PostType | null
   totalPages: {
     all: number
@@ -30,7 +28,6 @@ const initialState: PostListState = {
     user: [],
     bookmark: [],
   },
-  getPostLoading: false,
   getPostDetail: null,
   totalPages: {
     all: 1,
@@ -43,22 +40,19 @@ const postListSlice = createSlice({
   name: 'postList',
   initialState,
   reducers: {
-    getListStart: state => {
-      state.getPostLoading = true
-    },
-    getExplorePostList: (state, action: PayloadAction<PostType[]>) => {
-      state.getPostLoading = false
-      const post = [...state.posts.explore, ...action.payload]
+    getExplorePostList: (
+      state,
+      action: PayloadAction<{ post: PostType[]; totalPages: number }>,
+    ) => {
+      const post = [...state.posts.explore, ...action.payload.post]
       const filter = post.filter(
         (post, index, self) => index === self.findIndex(p => p.id === post.id),
       )
       state.posts.explore = filter
+      state.totalPages.all = action.payload.totalPages
     },
-    getListfailure: state => {
-      state.getPostLoading = false
-    },
+
     getPostDetailSuccess: (state, action: PayloadAction<PostType>) => {
-      state.getPostLoading = false
       state.getPostDetail = action.payload
     },
     getMainPostList: (state, action: PayloadAction<{ post: PostType[]; totalPages: number }>) => {
@@ -69,19 +63,22 @@ const postListSlice = createSlice({
       state.posts.main = filter
       state.totalPages.main = action.payload.totalPages
     },
-    getUserPostList: (state, action: PayloadAction<PostType[]>) => {
-      const post = [...state.posts.user, ...action.payload]
+    getUserPostList: (state, action: PayloadAction<{ post: PostType[]; totalPages: number }>) => {
+      console.log(action.payload)
+      const post = [...state.posts.user, ...action.payload.post]
       const filter = post.filter(
         (post, index, self) => index === self.findIndex(p => p.id === post.id),
       )
       state.posts.user = filter
+      state.totalPages.user = action.payload.totalPages
     },
-    getbookmarkList: (state, action: PayloadAction<PostType[]>) => {
-      const post = [...state.posts.bookmark, ...action.payload]
+    getbookmarkList: (state, action: PayloadAction<{ post: PostType[]; totalPages: number }>) => {
+      const post = [...state.posts.bookmark, ...action.payload.post]
       const filter = post.filter(
         (post, index, self) => index === self.findIndex(p => p.id === post.id),
       )
       state.posts.bookmark = filter
+      state.totalPages.bookmark = action.payload.totalPages
     },
     postUpload: (state, action: PayloadAction<PostType>) => {
       state.posts.main = [action.payload, ...state.posts.main]
@@ -114,9 +111,7 @@ const postListSlice = createSlice({
 })
 
 export const {
-  getListStart,
   getExplorePostList,
-  getListfailure,
   getPostDetailSuccess,
   getMainPostList,
   getUserPostList,
@@ -143,29 +138,29 @@ export const getMainPost = createAsyncThunk(
       if (response.status === 200) {
         dispatch(getMainPostList(response.data))
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
   },
 )
 
 export const getAllPost = createAsyncThunk(
   'postList/getAllPost',
   async ({ page }: { page: number }, { dispatch }) => {
-    dispatch(getListStart())
     try {
-      const response = await axios.get(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}?page=${page}`,
         {
+          method: 'GET',
           headers: {},
         },
       )
       if (response.status === 200) {
         const result = response.data
         dispatch(getExplorePostList(result))
-      } else {
-        dispatch(getListfailure())
       }
-    } catch (err) {
-      dispatch(getListfailure())
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
     }
   },
 )
@@ -173,16 +168,18 @@ export const getAllPost = createAsyncThunk(
 export const getPostByPostId = createAsyncThunk(
   'postList/getPostByPostId',
   async (postId: number, { dispatch }) => {
-    dispatch(getListStart())
     try {
-      const response = await axios.get(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
+        {
+          method: 'GET',
+        },
       )
       if (response.status === 200) {
         dispatch(getPostDetailSuccess(response.data))
       }
-    } catch (err) {
-      dispatch(getListfailure())
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
     }
   },
 )
@@ -191,26 +188,36 @@ export const getPostByUserId = createAsyncThunk(
   'postList/getPostByUserId',
   async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
     try {
-      const response = await axios.get(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/my/${userId}?page=${page}`,
+        {
+          method: 'GET',
+        },
       )
       if (response.status === 200) {
-        dispatch(getUserPostList(response.data.post))
+        dispatch(getUserPostList(response.data))
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(e.response.data.message)
+    }
   },
 )
 export const getPostByTagName = createAsyncThunk(
   'postList/getPostByTagName',
   async ({ tagName, page }: { tagName: string; page: number }, { dispatch }) => {
     try {
-      const response = await axios.get(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`,
+        {
+          method: 'GET',
+        },
       )
       if (response.status === 200) {
         dispatch(getUserPostList(response.data))
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
   },
 )
 
@@ -218,12 +225,17 @@ export const getBookmarkPost = createAsyncThunk(
   'postList/getBookmarkPost',
   async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
     try {
-      const response = await axios.get(
+      const response = await request(
         `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`,
+        {
+          method: 'GET',
+        },
       )
       if (response.status === 200) {
         dispatch(getbookmarkList(response.data))
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(e.response.data.message)
+    }
   },
 )

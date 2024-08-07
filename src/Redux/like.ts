@@ -1,7 +1,5 @@
-import axios from 'axios'
 import { INIT, LIKE_API } from '../utils/api-url'
 import { request } from './baseRequest'
-import { authStore } from './auth'
 
 export const likePost = async (postId: number) => {
   try {

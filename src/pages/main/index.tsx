@@ -46,7 +46,7 @@ const Main: React.FC = () => {
       <div className="w-2/6">
         <div className="w-96 p-5">
           <div className="flex items-center justify-between">
-            <div className='text-body14sd text-[#737373]'>회원님을 위한 추천</div>
+            <div className="text-body14sd text-[#737373]">회원님을 위한 추천</div>
             <div>
               <Button
                 onClick={() => {

@@ -7,6 +7,7 @@ import postReducer from './post'
 import userReducer from './user'
 import searchReducer from './search'
 import modalReducer from './modal'
+import snackBarReducer from './snackBar'
 
 const rootReducer = combineReducers({
   authReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   userReducer,
   searchReducer,
   modalReducer,
+  snackBarReducer,
 })
 
 export default rootReducer

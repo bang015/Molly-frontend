@@ -12,13 +12,12 @@ import MessengerPage from './pages/messenger'
 import { useDispatch, useSelector } from 'react-redux'
 import { authStore, getUser, initializeSocket, refreshToken } from './redux/auth'
 import { Snackbar } from '@mui/material'
-import { resetSnackBar } from './redux/post'
 import PasswordReset from './pages/auth/passwordReset'
+import { closeSnackBar } from './redux/snackBar'
 
 const App: React.FC = () => {
   const { isLogin, user } = useSelector((state: RootState) => state.authReducer)
-  const showSnackBar = useSelector((state: RootState) => state.postReducer.showSnackBar)
-  const message = useSelector((state: RootState) => state.postReducer.message)
+  const { showSnackBar, message } = useSelector((state: RootState) => state.snackBarReducer)
   const dispatch = useDispatch()
   useEffect(() => {
     if (isLogin) {
@@ -37,7 +36,7 @@ const App: React.FC = () => {
     if (reason === 'clickaway') {
       return
     }
-    dispatch(resetSnackBar())
+    dispatch(closeSnackBar())
   }
   return (
     <>

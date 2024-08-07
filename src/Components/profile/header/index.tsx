@@ -1,131 +1,122 @@
-import React, { useEffect, useState } from "react";
-import { UserType } from "@/interfaces/user";
-import { Avatar, CircularProgress } from "@mui/material";
-import "./index.css";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux";
-import { clearFollowList, followUser, followedCheck } from "@/redux/follow";
-import EditImage from "../profileImage/editImage";
-import EditProfile from "../editProfile";
-import Follow from "@/components/follow/follow";
+import React, { useEffect, useState } from 'react'
+import { UserType } from '@/interfaces/user'
+import { Avatar, CircularProgress } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux'
+import { clearFollowList, followUser, followedCheck } from '@/redux/follow'
+import EditImage from '../profileImage/editImage'
+import EditProfile from '../editProfile'
+import Follow from '@/components/follow/follow'
 interface headerProps {
-  profile: UserType;
+  profile: UserType
 }
 const Header: React.FC<headerProps> = ({ profile }) => {
-  const user = useSelector((state: RootState) => state.authReducer.user);
-  const loading = useSelector(
-    (state: RootState) => state.userReducer.editLoading
-  );
-  const [showImage, setShowImage] = useState("");
-  const [followOpen, setFollowOpen] = useState(false);
-  const [followType, setFollowType] = useState("");
-  const [checkFollowed, setCheckFollowed] = useState(false);
-  const [editImage, setEditImage] = useState(false);
-  const [editProfile, setEditProfile] = useState(false);
-  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.authReducer.user)
+  const loading = useSelector((state: RootState) => state.userReducer.editLoading)
+  const [showImage, setShowImage] = useState('')
+  const [followOpen, setFollowOpen] = useState(false)
+  const [followType, setFollowType] = useState('')
+  const [checkFollowed, setCheckFollowed] = useState(false)
+  const [editImage, setEditImage] = useState(false)
+  const [editProfile, setEditProfile] = useState(false)
+  const dispatch = useDispatch()
   useEffect(() => {
+    dispatch(clearFollowList())
     if (profile.id !== user?.id) {
       const check = async () => {
-        const result = await followedCheck(profile.id!);
-        setCheckFollowed(result);
-      };
-      check();
+        const result = await followedCheck(profile.id!)
+        setCheckFollowed(result)
+      }
+      check()
     }
-  }, [profile]);
+  }, [profile])
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files![0];
-    const currentImageUrl = URL.createObjectURL(file);
-    setEditImage(true);
-    setShowImage(currentImageUrl);
-  };
+    const file = e.target.files![0]
+    const currentImageUrl = URL.createObjectURL(file)
+    setEditImage(true)
+    setShowImage(currentImageUrl)
+    e.target.value = ''
+  }
 
   const onFollowOpen = (type: string) => {
-    setFollowOpen(true);
-    setFollowType(type);
-  };
+    setFollowOpen(true)
+    setFollowType(type)
+  }
   const onFollowClose = () => {
-    setFollowOpen(false);
-    dispatch(clearFollowList());
-    setFollowType("");
-  };
+    setFollowOpen(false)
+    dispatch(clearFollowList())
+    setFollowType('')
+  }
   const onEditImgClose = () => {
-    setEditImage(false);
-  };
+    setEditImage(false)
+    setShowImage('')
+  }
   const handleFollow = () => {
-      const followUserId = profile?.id!;
-      dispatch(followUser({ followUserId }) as any);
-  };
+    const followUserId = profile?.id!
+    dispatch(followUser({ followUserId }) as any)
+  }
   const EditProfileOpen = () => {
-    setEditProfile(true);
-  };
+    setEditProfile(true)
+  }
   const EditProfileClose = () => {
-    setEditProfile(false);
-  };
-  console.log(profile)
+    setEditProfile(false)
+  }
   return (
-    <div className="header">
-      <div className="profile_image">
-        <label className="profileImg" htmlFor="profileImageInput">
+    <div className="flex items-center pb-[100px]">
+      <div className="px-20">
+        <label htmlFor="profileImageInput">
           <input
+            className="hidden"
             type="file"
             id="profileImageInput"
             accept="image/*"
             onChange={handleProfileImg}
           />
           {editImage && (
-            <EditImage
-              open={editImage}
-              onClose={onEditImgClose}
-              showImage={showImage}
-            />
+            <EditImage open={editImage} onClose={onEditImgClose} showImage={showImage} />
           )}
-          <div className="profileImg">
+          <div className="relative mx-auto size-[150px] overflow-hidden rounded-full border">
             {loading && (
-              <div className="loading">
+              <div className="absolute z-10 flex size-full items-center justify-center bg-black bg-opacity-50">
                 <CircularProgress />
               </div>
             )}
-            <Avatar
-              src={profile.profileImage?.path}
-              sx={{ width: 150, height: 150 }}
-            />
+            <Avatar src={profile.profileImage?.path} sx={{ width: 150, height: 150 }} />
           </div>
         </label>
       </div>
-      <div className="pui">
-        <div className="mgb20 mgt20 nick">
+      <div className="flex grow flex-col">
+        <div className="my-3 flex items-center text-body18sd">
           <div>{profile?.nickname}</div>
-          <div>
+          <div className="ml-3">
             {profile.id === user?.id ? (
               <div>
-                <button onClick={EditProfileOpen}>프로필 편집</button>
+                <button className="btn h-9 text-body14sd" onClick={EditProfileOpen}>
+                  프로필 편집
+                </button>
                 {editProfile && (
-                  <EditProfile
-                    open={editProfile}
-                    onClose={EditProfileClose}
-                    profile={profile}
-                  />
+                  <EditProfile open={editProfile} onClose={EditProfileClose} profile={profile} />
                 )}
               </div>
             ) : (
               <button
                 onClick={handleFollow}
-                className={checkFollowed ? "" : "followbtn"}
+                className={`btn h-9 text-body14sd ${checkFollowed && 'out-line'}`}
               >
-                {checkFollowed ? "팔로잉" : "팔로우"}
+                {checkFollowed ? '팔로잉' : '팔로우'}
               </button>
             )}
           </div>
         </div>
-        <div className="mgb20 activity">
-          <div>
-            게시물 <span>{profile.postCount}</span>
+        <div className="text-body16rg mr-5 flex space-x-7 py-3">
+          <div className="cursor-pointer">
+            게시물 <span className="text-body16sd">{profile.postCount}</span>
           </div>
-          <div onClick={() => onFollowOpen("follower")}>
-            팔로워 <span>{profile.followerCount}</span>
+          <div className="cursor-pointer" onClick={() => onFollowOpen('follower')}>
+            팔로워 <span className="text-body16sd">{profile.followerCount}</span>
           </div>
-          <div onClick={() => onFollowOpen("follow")}>
-            팔로우 <span>{profile.followingCount}</span>
+          <div className="cursor-pointer" onClick={() => onFollowOpen('follow')}>
+            팔로우 <span className="text-body16sd">{profile.followingCount}</span>
           </div>
         </div>
         {profile && followOpen && (
@@ -136,11 +127,11 @@ const Header: React.FC<headerProps> = ({ profile }) => {
             onFollowClose={onFollowClose}
           />
         )}
-        <div className="fonts14 fontw6">{profile?.name}</div>
-        <div className="fonts14">{profile?.introduce}</div>
+        <div className="text-body14sd">{profile?.name}</div>
+        <div className="text-body14rg">{profile?.introduce}</div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

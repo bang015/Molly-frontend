@@ -15,7 +15,6 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import './index.css'
 import { createdAt, displayCreateAt } from '@/utils/format/moment'
 import {
   addComment,
@@ -31,7 +30,7 @@ import { getPostLike, likePost } from '@/redux/like'
 import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
-import { closeModal, openModal, openSubModal } from '@/redux/modal'
+import { closeModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
 
 const PostDetail: React.FC = () => {
@@ -61,16 +60,15 @@ const PostDetail: React.FC = () => {
     dispatch(getPostByPostId(id!) as any)
 
     const fetchData = async () => {
-      const comment = await getComment(id!, page)
+      const comment = await dispatch(getComment({ postId: id!, page }) as any)
       if (page === 1) {
-        const myComment = await getMyCommentByPost(id!)
+        const myComment = await dispatch(getMyCommentByPost(id!) as any)
 
-        setCommentList([...myComment, ...comment.commentList])
+        setCommentList([...myComment.payload, ...comment.payload.commentList])
       } else {
-        setCommentList(prevList => [...prevList, ...comment.commentList])
+        setCommentList(prevList => [...prevList, ...comment.payload.commentList])
       }
-      console.log(comment)
-      setTotalPages(comment.totalPages)
+      setTotalPages(comment.payload.totalPages)
     }
     fetchData()
   }, [id!, page])
@@ -168,12 +166,12 @@ const PostDetail: React.FC = () => {
       content: commentContent,
       commentId: commentId,
     }
-    const newComment = await addComment(commentInfo)
-    if (newComment.commentId === null) {
-      setCommentList([newComment, ...commentList])
+    const newComment = await dispatch(addComment(commentInfo) as any)
+    if (newComment.payload.commentId === null) {
+      setCommentList([newComment.payload, ...commentList])
     } else {
-      const id: number = newComment.commentId
-      const commentlist = { id, comment: newComment }
+      const id: number = newComment.payload.commentId
+      const commentlist = { id, comment: newComment.payload }
       setNewCommentList([...newCommentList, commentlist])
     }
     setComment('')
@@ -274,7 +272,7 @@ const PostDetail: React.FC = () => {
                   </div>
                 </div>
               )}
-              <div className="max-w-body510 min-w-body400 pointer-events-auto flex flex-col rounded-r-lg bg-white">
+              <div className="pointer-events-auto flex min-w-body400 max-w-body510 flex-col rounded-r-lg bg-white">
                 <div className="border-b border-l">
                   <div className="flex items-center">
                     <div className="flex grow items-center px-5 py-3">
@@ -289,7 +287,7 @@ const PostDetail: React.FC = () => {
                           <div>
                             <span>•</span>
                             <button onClick={handleFollow}>
-                              <div className="text-main ml-1 text-body14sd">팔로우</div>
+                              <div className="ml-1 text-body14sd text-main">팔로우</div>
                             </button>
                           </div>
                         )}
@@ -338,7 +336,7 @@ const PostDetail: React.FC = () => {
                           </div>
                         </div>
                       </li>
-                      <div className='pt-3'>
+                      <div className="pt-3">
                         {commentList.map(comment => (
                           <CommentList
                             key={comment.id}

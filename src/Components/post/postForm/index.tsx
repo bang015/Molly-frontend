@@ -4,12 +4,11 @@ import IconButton from '@mui/material/IconButton'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import TextField from '@mui/material/TextField'
-import './index.css'
 import { Avatar, Button, Modal } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import getCroppedImg, { initializeImage } from '@/utils/image-crop'
-import { PostType, updatePostType, uploadPostType } from '@/interfaces/post'
+import { updatePostType, uploadPostType } from '@/interfaces/post'
 import { updatePost, uploadPost } from '@/redux/post'
 import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import { getSearchResult, resetResult } from '@/redux/search'
@@ -156,12 +155,11 @@ const PostForm: React.FC = () => {
           dispatch(closeModal())
         }}
       >
-        <div className="create-post">
-          <div className="create-post-title">
+        <div className="relative left-1/2 top-1/2 h-[740px] w-[1060px] -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white">
+          <div className="flex h-10 w-full items-center justify-center border-b text-body16sd">
             {post ? '게시물 수정' : '새 게시물 만들기'}
-            <div className="post-btn">
+            <div className="absolute right-0">
               <Button
-                className=""
                 onClick={() => {
                   dispatch(closeModal())
                 }}
@@ -170,19 +168,18 @@ const PostForm: React.FC = () => {
               </Button>
               <Button
                 disabled={post ? false : postContent === '' || showImages.length === 0}
-                className=""
                 onClick={post ? handleUpdatePost : handleuploadPost}
               >
                 완료
               </Button>
             </div>
           </div>
-          <div className="create-post-container">
-            <div className="create-post-content">
+          <div className="flex h-[calc(100%-2.5rem)] w-full">
+            <div className="relative flex w-[700px] justify-start overflow-hidden">
               {post ? (
-                <div className="pmedia">
+                <div className="flex flex-col justify-center overflow-hidden rounded-bl-lg">
                   {currentImageIndex > 0 && (
-                    <div className="c-back-btn">
+                    <div className="switch-btn left-2">
                       <IconButton
                         aria-label="fingerprint"
                         color="secondary"
@@ -195,25 +192,23 @@ const PostForm: React.FC = () => {
                       </IconButton>
                     </div>
                   )}
-                  {
-                    post.postMedias.length > 1 &&
-                    currentImageIndex < post.postMedias.length - 1 && (
-                      <div className="c-next-btn">
-                        <IconButton
-                          aria-label="fingerprint"
-                          color="secondary"
-                          style={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                          }}
-                          onClick={onNextClick}
-                        >
-                          <NavigateNextIcon style={{ color: 'black' }} />
-                        </IconButton>
-                      </div>
-                    )}
+                  {post.postMedias.length > 1 && currentImageIndex < post.postMedias.length - 1 && (
+                    <div className="switch-btn right-2">
+                      <IconButton
+                        aria-label="fingerprint"
+                        color="secondary"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        }}
+                        onClick={onNextClick}
+                      >
+                        <NavigateNextIcon style={{ color: 'black' }} />
+                      </IconButton>
+                    </div>
+                  )}
                   <div>
                     <div
-                      className="medias-wrapper"
+                      className="flex transition-transform duration-500 ease-in-out"
                       style={{
                         transform: `translateX(-${currentImageIndex * 100}%)`,
                       }}
@@ -227,14 +222,15 @@ const PostForm: React.FC = () => {
               ) : (
                 <>
                   {showImages.length === 0 ? (
-                    <div className="create-post-text">
+                    <div className="flex size-full items-center justify-center text-body18sd">
                       <label htmlFor="fileInput">
-                        <div className="ipicon">
+                        <div className="p-5 text-center">
                           <ImageSearchIcon sx={{ fontSize: 100 }} />
                         </div>
                         당신의 추억을 업로드하세요!
                       </label>
                       <input
+                        className="hidden"
                         type="file"
                         id="fileInput"
                         accept="image/*,video/*"
@@ -243,7 +239,7 @@ const PostForm: React.FC = () => {
                       />
                     </div>
                   ) : (
-                    <div className="post-image">
+                    <div className="relative size-full overflow-hidden">
                       <Cropper
                         image={showImages[currentImageIndex]}
                         crop={crop}
@@ -253,10 +249,11 @@ const PostForm: React.FC = () => {
                         onCropComplete={onCropComplete}
                         onZoomChange={setZoom}
                         objectFit="cover"
+                        showGrid
                       />
                       {currentImageIndex > 0 && (
                         <IconButton
-                          className="back-btn"
+                          className="switch-btn left-2"
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
@@ -269,7 +266,7 @@ const PostForm: React.FC = () => {
                       )}
                       {showImages.length > 1 && currentImageIndex < showImages.length - 1 && (
                         <IconButton
-                          className="next-btn"
+                          className="switch-btn right-2"
                           aria-label="fingerprint"
                           color="secondary"
                           style={{
@@ -285,20 +282,18 @@ const PostForm: React.FC = () => {
                 </>
               )}
             </div>
-            <div className="post-text">
+            <div className="h-full w-[360px] border-l">
               <div>
                 {user && (
-                  <div className="cpuf">
-                    <div className="pi">
-                      <Avatar alt="profile" src={user.profileImage?.path} />
-                    </div>
-                    <div className="uf unts">{user.nickname}</div>
+                  <div className="flex items-center px-1 py-3">
+                    <Avatar alt="profile" src={user.profileImage?.path} />
+                    <div className="ml-2 text-body14m">{user.nickname}</div>
                   </div>
                 )}
-                <div>
+                <div className="border-b">
                   <TextField
                     variant="standard"
-                    className="post-textField"
+                    className="w-full"
                     placeholder="문구를 입력하세요..."
                     value={postContent}
                     rows={6}
@@ -310,13 +305,16 @@ const PostForm: React.FC = () => {
                     }}
                   />
                 </div>
-                <div className="tag_search">
+                <div className="border-b py-1 text-center text-body14sd">tag</div>
+                <div className="h-[200px] overflow-y-scroll border-b">
                   {result.map(r => (
-                    <div className="tag_result" key={r.id} onClick={() => handleHasTag(r.name)}>
-                      <div>#{r.name}</div>
-                      <div>
-                        <span>게시물 {r.tagCount}</span>
-                      </div>
+                    <div
+                      className="cursor-pointer border-b px-3 py-2"
+                      key={r.id}
+                      onClick={() => handleHasTag(r.name)}
+                    >
+                      <div className="text-body14sd">#{r.name}</div>
+                      <span className="text-body14rg text-gray-500">게시물 {r.tagCount}</span>
                     </div>
                   ))}
                 </div>

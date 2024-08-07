@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { PostType } from '@/interfaces/post'
-import './index.css'
 import { Avatar, Button, IconButton, InputAdornment, TextField } from '@mui/material'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
@@ -33,8 +32,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
 
   useEffect(() => {
     const myComment = async () => {
-      const result = await getMyCommentByPost(post.id)
-      setCommentList(result.slice(0, 3))
+      const result = await dispatch(getMyCommentByPost(post.id) as any)
+      setCommentList(result.payload.slice(0, 3))
     }
     myComment()
   }, [user, post])
@@ -64,8 +63,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
       postId: post.id,
       content: commentContent,
     }
-    const newComment = await addComment(commentInfo)
-    setCommentList([newComment, ...commentList])
+    const newComment = await dispatch(addComment(commentInfo) as any)
+    setCommentList([newComment.payload, ...commentList])
     setComment('')
   }
   const handleLike = async () => {
@@ -82,8 +81,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
   }
   return (
     <div className="m-auto flex w-body510 flex-col p-5">
-      <div className="ph1">
-        <div className="pht1" onClick={goToProfilePage}>
+      <div className="flex py-1">
+        <div className="flex grow cursor-pointer items-center" onClick={goToProfilePage}>
           <div>
             <Avatar
               alt="Remy Sharp"
@@ -91,9 +90,9 @@ const PostList: React.FC<postListProps> = ({ post }) => {
               sx={{ width: 34, height: 34 }}
             />
           </div>
-          <div className="fs14 ml10">
-            <div>{post.user.nickname}</div> <div className="ms5 cAt">•</div>{' '}
-            <div className="cAt">{displayCreateAt(post.createdAt)}</div>
+          <div className="ml-2.5 flex text-body14sd">
+            <div>{post.user.nickname}</div> <div className="mx-1 text-gray-400">•</div>{' '}
+            <div className="text-body14rg text-gray-400">{displayCreateAt(post.createdAt)}</div>
           </div>
         </div>
         <div>
@@ -113,10 +112,10 @@ const PostList: React.FC<postListProps> = ({ post }) => {
           </IconButton>
         </div>
       </div>
-      <div className="content">
-        <div className="media">
+      <div className="flex flex-col">
+        <div className="media rounded">
           {currentImageIndex > 0 && (
-            <div className="c-back-btn">
+            <div className="switch-btn left-2">
               <IconButton
                 aria-label="fingerprint"
                 color="secondary"
@@ -130,25 +129,23 @@ const PostList: React.FC<postListProps> = ({ post }) => {
               </IconButton>
             </div>
           )}
-          {post.postMedias &&
-            post.postMedias.length > 1 &&
-            currentImageIndex < post.postMedias.length - 1 && (
-              <div className="c-next-btn">
-                <IconButton
-                  aria-label="fingerprint"
-                  color="secondary"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                    padding: 0,
-                  }}
-                  onClick={onNextClick}
-                >
-                  <NavigateNextIcon style={{ color: 'black' }} />
-                </IconButton>
-              </div>
-            )}
+          {post && post.postMedias.length > 1 && currentImageIndex < post.postMedias.length - 1 && (
+            <div className="switch-btn right-2">
+              <IconButton
+                aria-label="fingerprint"
+                color="secondary"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                  padding: 0,
+                }}
+                onClick={onNextClick}
+              >
+                <NavigateNextIcon style={{ color: 'black' }} />
+              </IconButton>
+            </div>
+          )}
           <div
-            className="medias-wrapper"
+            className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
           >
             {post.postMedias.map((media, index) => (
@@ -164,13 +161,16 @@ const PostList: React.FC<postListProps> = ({ post }) => {
           postId={post.id}
         />
         <PostLikeCount config={true} likeCount={likeCount} handleLike={handleLike} />
-        <div className="pct">
-          <div className="c2">
+        <div className="py-1">
+          <div className="mr-1.5 inline-flex text-body12sd">
             <span>{post.user.nickname}</span>
           </div>
-          <div className="c3" dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div
+            className="inline-flex text-body14rg"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
-        <div className="cabtn">
+        <div className="pb-1 text-body14rg text-gray-500">
           <button
             onClick={() => {
               dispatch(openModal({ modalType: 'PostDetailModal', id: post.id }))
@@ -183,18 +183,20 @@ const PostList: React.FC<postListProps> = ({ post }) => {
           <div>
             {commentList.map(comment => (
               <div key={comment.id}>
-                <div className="c2">
+                <div className="mr-1.5 inline-flex text-body12sd">
                   <span>{comment.user.nickname}</span>
                 </div>
-                <div className="c3" dangerouslySetInnerHTML={{ __html: comment.content }} />
+                <div
+                  className="inline-flex text-body14rg"
+                  dangerouslySetInnerHTML={{ __html: comment.content }}
+                />
               </div>
             ))}
           </div>
         )}
-        <div className="ctf">
+        <div className="border-b pb-4 pt-1">
           <TextField
             variant="standard"
-            className="comment-textField"
             placeholder="댓글 달기..."
             maxRows={3}
             multiline

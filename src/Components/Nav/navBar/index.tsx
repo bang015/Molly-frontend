@@ -20,7 +20,6 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import './index.css'
 import { signOut } from '@/redux/auth'
 import Search from '@/components/nav/search/search'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -80,7 +79,7 @@ const Nav: React.FC = () => {
         className={`flex flex-shrink-0 flex-col border-r py-3 transition-all duration-300 ${isCollapsed || location.pathname === '/messenger' ? 'w-16' : 'w-full'}`}
       >
         <div
-          className="nav-logo"
+          className="mb-3 flex h-[70px] flex-col pl-3.5 pt-2"
           onClick={() => {
             navigate('/')
           }}
@@ -91,9 +90,8 @@ const Nav: React.FC = () => {
             <Logo width={110} />
           )}
         </div>
-        <div className="nav-menu">
+        <div className="grow space-y-2">
           <ListItemButton
-            className={location.pathname === '/' ? 'font-semibold' : ''}
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -108,8 +106,11 @@ const Nav: React.FC = () => {
               )}
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'} ${location.pathname === '/' && 'font-semibold'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Home"
+              primaryTypographyProps={{
+                className: ` ${location.pathname === '/' && 'text-body16sd'}`,
+              }}
             />
           </ListItemButton>
           <ListItemButton
@@ -123,12 +124,11 @@ const Nav: React.FC = () => {
               <SearchIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Search"
             />
           </ListItemButton>
           <ListItemButton
-            className={location.pathname === '/explore' ? 'activeTab' : ''}
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -143,8 +143,11 @@ const Nav: React.FC = () => {
               )}
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Explore"
+              primaryTypographyProps={{
+                className: `${location.pathname === '/explore' && 'text-body16sd'}`,
+              }}
             />
           </ListItemButton>
           <ListItemButton
@@ -164,7 +167,7 @@ const Nav: React.FC = () => {
               </Badge>
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Messages"
             />
           </ListItemButton>
@@ -185,7 +188,7 @@ const Nav: React.FC = () => {
               <AddBoxOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Post"
             />
           </ListItemButton>
@@ -204,19 +207,21 @@ const Nav: React.FC = () => {
               />
             </ListItemAvatar>
             <ListItemText
-              style={{ fontFamily: 'none' }}
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Profile"
+              primaryTypographyProps={{
+                className: `${location.pathname.includes('/profile/') && 'text-body16sd'}`,
+              }}
             />
           </ListItemButton>
         </div>
-        <div className="nav-bottom">
+        <div className="mb-4">
           <ListItemButton style={{ borderRadius: '12px' }} component="a" onClick={handleSignOut}>
             <ListItemIcon>
               <LogoutIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
             <ListItemText
-              className={`${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
               primary="Logout"
             />
           </ListItemButton>

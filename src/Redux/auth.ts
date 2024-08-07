@@ -5,6 +5,7 @@ import { AUTH_API, INIT, REFRESH_TOKEN, SIGN_IN, SIGN_UP } from '../utils/api-ur
 import io, { Socket } from 'socket.io-client'
 import { SignUpInput, Token } from '@/interfaces/auth'
 import { request } from './baseRequest'
+import { openSnackBar } from './snackBar'
 
 interface AuthState {
   isLogin: boolean
@@ -79,7 +80,7 @@ export const createUser = createAsyncThunk(
         dispatch(setTokens(response.data))
       }
     } catch (e: any) {
-      return false
+      dispatch(openSnackBar('회원가입에 실패했습니다.'))
     }
   },
 )
@@ -98,7 +99,6 @@ export const signIn = createAsyncThunk(
       )
       if (response.status === 200) {
         const result = response.data
-        console.log(result)
         dispatch(setTokens(result))
         return ''
       }
@@ -126,6 +126,7 @@ export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) 
     }
   } catch (e: any) {
     dispatch(getUserFail())
+    dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
   }
 })
 // 소켓 연결

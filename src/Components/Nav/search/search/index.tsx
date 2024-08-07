@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import './index.css'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { deleteSearchHistory, getSearchHistory, getSearchResult, resetResult } from '@/redux/search'
 import { useDispatch, useSelector } from 'react-redux'
@@ -53,13 +52,13 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
   }
   return (
     <>
-      <div className="text-body18sd p-5 pb-10">
+      <div className="p-5 pb-10 text-body18sd">
         <h2>검색</h2>
       </div>
       <div className="flex grow flex-col">
         <div className="relative border-b px-4 pb-10">
           <input
-            className="text-body16m h-11 w-full rounded-lg bg-[#EFEFEF] px-3 focus:outline-none"
+            className="h-11 w-full rounded-lg bg-[#EFEFEF] px-3 text-body16m focus:outline-none"
             value={keyword}
             type="text"
             placeholder="검색"
@@ -69,9 +68,9 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
             <CancelIcon color="disabled" sx={{ fontSize: 16 }} />
           </button>
         </div>
-        <div className="flex grow flex-col p-5">
+        <div className="flex grow flex-col p-2.5">
           {keyword === '' && (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-2.5">
               <div className="text-body16sd">최근 검색 항목</div>
               <div>
                 <button
@@ -83,7 +82,7 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
               </div>
             </div>
           )}
-          <div className="flex grow">
+          <div className="flex grow flex-col">
             {keyword === '' ? (
               <>
                 {history.length ? (
@@ -93,7 +92,7 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
                     ))}
                   </>
                 ) : (
-                  <div className="text-body14m flex grow items-center justify-center text-[#737373]">
+                  <div className="flex grow items-center justify-center text-body14m text-[#737373]">
                     최근 검색 내역 없음.
                   </div>
                 )}

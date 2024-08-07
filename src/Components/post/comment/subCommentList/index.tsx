@@ -30,8 +30,8 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
   useEffect(() => {
     const subList = async () => {
       setSubComment([])
-      const result = await getSubComment(postId, id, page)
-      setSubComment([...subComment, ...result])
+      const result = await dispatch(getSubComment({ postId, id, page }) as any)
+      setSubComment([...subComment, ...result.payload])
     }
     subList()
   }, [postId, id, page])

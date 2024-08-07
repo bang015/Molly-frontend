@@ -35,7 +35,7 @@ body,
   @apply pointer-events-none relative flex size-full flex-col items-center justify-center;
 }
 .switch-btn {
-  @apply absolute top-1/2 z-10 -translate-y-1/2 transform;
+  @apply absolute top-1/2 z-10 -translate-y-1/2 transform !important;
 }
 
 .btn {

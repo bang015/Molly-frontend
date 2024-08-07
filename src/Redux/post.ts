@@ -4,19 +4,18 @@ import { INIT, POST_API } from '../utils/api-url'
 import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postList'
 import { deletePostProfile } from './user'
 import { request } from './baseRequest'
+import { openSnackBar } from './snackBar'
 export interface updatedPost {
   updatedPost: { id: number | null; content: string | null }
 }
 interface postState {
   posting: boolean
   message: string
-  showSnackBar: boolean
 }
 
 const initialState: postState = {
   posting: false,
   message: '',
-  showSnackBar: false,
 }
 const postSlice = createSlice({
   name: 'post',
@@ -33,21 +32,9 @@ const postSlice = createSlice({
       state.posting = false
       state.message = action.payload
     },
-    postUpdate: state => {
-      state.showSnackBar = true
-      state.message = '게시물이 수정되었습니다.'
-    },
-    showSnackBar: (state, action: PayloadAction<string>) => {
-      state.showSnackBar = true
-      state.message = action.payload
-    },
-    resetSnackBar: state => {
-      state.showSnackBar = false
-    },
   },
 })
-export const { postStart, postSuccess, postFailure, postUpdate, showSnackBar, resetSnackBar } =
-  postSlice.actions
+export const { postStart, postSuccess, postFailure } = postSlice.actions
 export default postSlice.reducer
 
 export const uploadPost = createAsyncThunk(
@@ -107,10 +94,12 @@ export const updatePost = createAsyncThunk(
       })
       if (response.status === 200) {
         dispatch(getPostByPostId(response.data.updatedPost.id))
-        dispatch(postUpdate())
+        dispatch(openSnackBar('게시물이 수정되었습니다.'))
         dispatch(postUpdateList(response.data))
       }
-    } catch {}
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
   },
 )
 
@@ -128,11 +117,11 @@ export const deletePost = createAsyncThunk(
       if (response.status === 200) {
         dispatch(postDelete(response.data.postId))
         dispatch(deletePostProfile())
-        dispatch(showSnackBar(response.data.message))
+        dispatch(openSnackBar(response.data.message))
         return true
       }
     } catch (e: any) {
-      dispatch(showSnackBar(e.response.data.message))
+      dispatch(openSnackBar(e.response.data.message))
       return false
     }
   },
