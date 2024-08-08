@@ -41,7 +41,7 @@ export const CommentList: React.FC<commentListProps> = ({
   }
   return (
     <div key={comment.id}>
-      <div className="flex py-2.5">
+      <div className="flex py-2">
         <div className="mr-4" onClick={goToProfilePage}>
           <Avatar alt="profile" src={comment.user.profileImage?.path} />
         </div>
@@ -68,6 +68,7 @@ export const CommentList: React.FC<commentListProps> = ({
           </div>
         </div>
         <IconButton
+        className='my-1'
           aria-label="delete"
           onClick={() => {
             dispatch(

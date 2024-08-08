@@ -70,7 +70,7 @@ export const createUser = createAsyncThunk(
   async (data: SignUpInput, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${SIGN_UP}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${SIGN_UP}`,
         {
           method: 'POST',
           data,
@@ -91,7 +91,7 @@ export const signIn = createAsyncThunk(
   async (data: { email: string; password: string }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${SIGN_IN}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${SIGN_IN}`,
         {
           method: 'POST',
           data,
@@ -117,7 +117,8 @@ export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) 
 // 유저 정보
 export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
   try {
-    const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}`, {
+    console.log(import.meta.env.VITE_SERVER_URL)
+    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}`, {
       headers: {},
     })
     if (response.status === 200) {
@@ -139,7 +140,7 @@ export const initializeSocket = (token: string) => {
 export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { dispatch }) => {
   try {
     const response = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
+      `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
       { refreshToken: localStorage.getItem('refreshToken') },
     )
     if (response.status === 200) {

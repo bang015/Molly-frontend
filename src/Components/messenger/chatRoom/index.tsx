@@ -23,7 +23,6 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
       socket.emit(`joinChatRoom`, { roomId })
       socket.on('joinRoomSuccess', (data): void => {
         setChatUser(data.user)
-        console.log(data)
         const messageList: MessageType[] = data.message
         const messageByDate: { date: string; message: MessageType[] }[] = []
         if (messageList.length > 0) {
@@ -60,6 +59,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
   }, [roomId, socket])
   if (socket) {
     socket.on(`sendMessagesuccess`, (data: MessageType): void => {
+      console.log(data)
       if (data.roomId === roomId) {
         const messageByDate1: { date: string; message: MessageType[] }[] = [...messages]
         const date = data.createdAt.substring(0, 10)
@@ -89,50 +89,61 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
     setMessage(e.target.value)
   }
   const sendMessage = () => {
+    console.log(message)
     if (message !== '' && socket) {
       socket.emit('sendMessage', { roomId, message })
     }
     setMessage('')
   }
+  const handleEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
   return (
     <>
       {roomId ? (
-        <div className="room">
-          <div className="header">
+        <div className="flex size-full flex-col">
+          {/* 해더 */}
+          <div className="border-b p-5">
             {chatUser && (
-              <div>
-                <div>
-                  <Avatar src={chatUser?.profileImage?.path} sx={{ width: 50, height: 50 }} />
-                </div>
-                <div>
-                  <span>{chatUser.name}</span>
-                </div>
+              <div className="flex items-center">
+                <Avatar
+                  className="border"
+                  src={chatUser?.profileImage?.path}
+                  sx={{ width: 50, height: 50 }}
+                />
+                <span className="ml-3 text-body16sd">{chatUser.name}</span>
               </div>
             )}
           </div>
-          <div className="content">
-            <div className="list">
+          {/* 메시지 */}
+          <div className="flex size-full grow flex-col">
+            <div className="flex grow flex-col-reverse overflow-y-scroll px-5">
               {messages.map((message, index) => (
                 <div key={index}>
-                  <div className="createdAt">{message.date}</div>
+                  <div className="p-3 text-center text-body14rg text-gray-500">{message.date}</div>
                   {message.message.map(msg => (
                     <div
                       key={msg.id}
-                      className={msg.userId === user?.id ? 'msg_list my' : 'msg_list'}
+                      className={`flex ${msg.userId === user?.id && 'justify-end'}`}
                     >
                       {msg.userId === user?.id ? (
-                        <div className="msg">
-                          <div className="myMessage message">{msg.message}</div>
+                        <div className="p-1">
+                          <div className="rounded-xl bg-main px-3 py-2 text-white whitespace-pre-wrap">
+                            {msg.message}
+                          </div>
                         </div>
                       ) : (
-                        <div className="msg">
-                          <div className="profile">
+                        <div className="p-1">
+                          <div className="mr-2">
                             <Avatar
                               src={msg?.user.profileImage?.path}
                               sx={{ width: 30, height: 30 }}
                             />
                           </div>
-                          <div className="message">{msg.message}</div>
+                          <div className="rounded-xl bg-gray-300 px-3 py-2 whitespace-pre-wrap">{msg.message}</div>
                         </div>
                       )}
                     </div>
@@ -140,15 +151,24 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
                 </div>
               ))}
             </div>
-            <div className="input">
-              <textarea
-                name="message"
-                id="message"
-                value={message}
-                onChange={handleMessage}
-              ></textarea>
-              <div>
-                <button onClick={sendMessage}>보내기</button>
+            {/* 인풋 */}
+            <div className="p-5">
+              <div className="flex rounded-full border">
+                <textarea
+                  className="grow resize-none rounded-full px-5 outline-none"
+                  name="message"
+                  id="message"
+                  autoFocus
+                  value={message}
+                  onChange={handleMessage}
+                  onKeyDown={handleEnter}
+                ></textarea>
+                <button
+                  className="px-5 text-body14sd text-main hover:text-hover"
+                  onClick={sendMessage}
+                >
+                  보내기
+                </button>
               </div>
             </div>
           </div>

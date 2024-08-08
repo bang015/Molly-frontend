@@ -46,7 +46,7 @@ export const addComment = createAsyncThunk(
   'comment/add',
   async (commentInfo: addCommentType, { dispatch }) => {
     try {
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}`, {
         data: commentInfo,
         method: 'POST',
         headers: {},
@@ -65,7 +65,7 @@ export const getComment = createAsyncThunk(
   async ({ postId, page }: { postId: number; page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/${postId}?page=${page}`,
         {
           method: 'GET',
           headers: {},
@@ -85,7 +85,7 @@ export const getMyCommentByPost = createAsyncThunk(
   async (postId: number, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/my/${postId}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/my/${postId}`,
         {
           method: 'GET',
           headers: {},
@@ -104,7 +104,7 @@ export const getSubComment = createAsyncThunk(
   async ({ postId, id, page }: { postId: number; id: number; page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/sub/${postId}/${id}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/sub/${postId}/${id}?page=${page}`,
         { method: 'GET' },
       )
 
@@ -121,7 +121,7 @@ export const deleteComment = createAsyncThunk(
   async ({ id }: { id: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
         {
           method: 'DELETE',
           headers: {},
@@ -141,7 +141,7 @@ export const updateComment = createAsyncThunk(
   async ({ id, content }: { id: number; content: string }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/${id}`,
         {
           data: { content },
           method: 'PATCH',

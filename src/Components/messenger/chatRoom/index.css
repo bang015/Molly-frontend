@@ -4,26 +4,26 @@
   width: 100%;
   flex-grow: 1;
 }
-.room .header {
+.header {
   margin: 0;
   padding: 15px 20px;
   border-bottom: 1px solid rgb(219, 219, 219);
 }
-.room .header div {
+.header div {
   display: flex;
   align-items: center;
 }
-.room .header span {
+.header span {
   font-size: 14px;
   font-weight: 600;
   margin-left: 10px;
 }
-.room .content {
+.content {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
-.room .content .list {
+.list {
   flex-grow: 1;
   display: flex;
   flex-direction: column-reverse;
@@ -31,13 +31,13 @@
   max-height: 780px;
   padding: 0px 20px;
 }
-.room .content .list .my {
+.list .my {
   justify-content: flex-end;
 }
-.room .content .list .msg_list {
+.list .msg_list {
   display: flex;
 }
-.room .content .list .msg {
+.list .msg {
   display: flex;
   align-items: center;
   padding: 5px;
@@ -45,7 +45,7 @@
 .list .msg .profile {
   margin-right: 8px;
 }
-.room .content .list .msg .message{
+.list .msg .message{
   border-radius: 12px;
   background-color: rgb(239, 239, 239);
   padding: 10px;
@@ -54,11 +54,11 @@
   background-color: rgb(0, 149, 246) !important;
   color: white;
 }
-.room .content .input {
+ .input {
   padding: 20px 20px;
   position: relative;
 }
-.room .content .input textarea {
+.input textarea {
   width: calc(100% - 40px);
   outline: none;
   border-radius: 50px;
@@ -69,12 +69,12 @@
   display: flex;
   height: 20px;
 }
-.room .content .input div {
+.input div {
   position: absolute;
   bottom: 25px;
   right: 30px;
 }
-.room .content .input button {
+.input button {
   padding: 7px;
   border: none;
   background: none;
@@ -83,26 +83,26 @@
   cursor: pointer;
   color: rgb(0, 149, 246);
 }
-.room .content .input button:hover {
+.input button:hover {
   color: rgb(0, 55, 107);
 }
-.room .msgIcon{
+.msgIcon{
   border: 1px solid rgb(219, 219, 219);
   border-radius: 50%;
   padding: 20px;
   display: flex;
 }
-.room .msgBtn{
+.msgBtn{
   margin-top: 20px;
 }
-.room .msgBtn button{
+.msgBtn button{
   border: none;
   background-color: rgb(0, 149, 246);
   color: white;
   border-radius: 8px;
   padding: 7px 10px;
 }
-.room .msgBtn button:hover{
+.msgBtn button:hover{
   background-color: rgb(0, 55, 107);
 }
 .list .createdAt {

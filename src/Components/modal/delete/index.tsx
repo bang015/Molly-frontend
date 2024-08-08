@@ -1,18 +1,18 @@
 import { Modal } from '@mui/material'
-import React, { useEffect } from 'react'
-import './index.css'
+import React from 'react'
 import { deletePost } from '@/redux/post'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import { closeModal } from '@/redux/modal'
+import { closeModal, closeSubModal } from '@/redux/modal'
 
 const DeleteModal: React.FC = () => {
   const dispatch = useDispatch()
-  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
+  const { isSubOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const postDelete = async () => {
     if (id) {
       const result = await dispatch(deletePost({ postId: id }) as any)
       if (result) {
+        dispatch(closeSubModal())
         dispatch(closeModal())
       }
     }
@@ -20,24 +20,29 @@ const DeleteModal: React.FC = () => {
   return (
     <div>
       <Modal
-        open={isOpen}
+        open={isSubOpen}
         onClose={() => {
-          dispatch(closeModal())
+          dispatch(closeSubModal())
         }}
       >
-        <div className="post-detail">
-          <div className="modal-container">
-            <div className="dbtnt">게시물을 삭제할까요?</div>
-            <div className="editBtn">
-              <button className="mbtnc" onClick={postDelete}>
+        <div className="modal">
+          <div className="pointer-events-auto flex flex-col rounded-xl bg-white">
+            <div className="w-[400px] border-b p-5 text-center text-body18sd">
+              게시물을 삭제할까요?
+            </div>
+            <div className="flex flex-col">
+              <button
+                className="w-[400px] border-b p-5 text-body14sd text-red-500"
+                onClick={postDelete}
+              >
                 삭제
               </button>
             </div>
-            <div className="editBtn">
+            <div className="flex flex-col">
               <button
-                className="mbtn2"
+                className="w-[400px] p-5 text-body14sd"
                 onClick={() => {
-                  dispatch(closeModal())
+                  dispatch(closeSubModal())
                 }}
               >
                 취소

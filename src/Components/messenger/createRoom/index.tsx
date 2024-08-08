@@ -32,54 +32,49 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
   }
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="post-detail">
-        <div className="modal-container" style={{ height: '65vh' }}>
-          <div className="create_message">
-            <div>새로운 메시지</div>
-            <button onClick={onClose}>
-              <CloseIcon />
-            </button>
-          </div>
-          <div className="search_user">
-            <div className="se1">받는 사람: </div>
-            <div className="se2">
-              <input type="text" placeholder="검색..." onChange={handleSeach} />
+      <div className="modal">
+        <div className="pointer-events-auto flex h-[550px] flex-col rounded-lg bg-white">
+          <div className="w-[540px] border-b p-5 text-center text-body16sd">새로운 메시지</div>
+          <div className="flex items-center px-5 py-1">
+            <div className="text-body14sd">받는 사람: </div>
+            <div className="grow">
+              <input
+                className="w-full p-2 outline-none"
+                type="text"
+                placeholder="검색..."
+                onChange={handleSeach}
+              />
             </div>
           </div>
-          <div className="result_list">
+          <div className="grow overflow-y-scroll border-t">
             {result.map(user => (
               <label key={user.id} htmlFor={user.id.toString()}>
-                <div className="search_result" style={{ borderRadius: 0 }}>
-                  <div className="se1">
-                    <div>
-                      <Avatar src={user.profileImage?.path} sx={{ width: 44, height: 44 }} />
-                    </div>
+                <div
+                  className="flex cursor-pointer items-center rounded-lg p-2.5 hover:bg-gray-100"
+                  style={{ borderRadius: 0 }}
+                >
+                  <div className="flex size-[44px] flex-col justify-center overflow-hidden rounded-full border bg-white">
+                    <Avatar src={user.profileImage?.path} sx={{ width: 44, height: 44 }} />
                   </div>
-                  <div className="se2">
-                    <div>
-                      <div>{user.name}</div>
-                    </div>
-                    <div className="ch">
-                      <div>{user.nickname}</div>
-                    </div>
+                  <div className="flex grow flex-col pl-2.5 text-body14m">
+                    {user.name}
+                    <div className="text-body14rg text-gray-500">{user.nickname}</div>
                   </div>
-                  <div className="se3">
-                    <input
-                      type="radio"
-                      name="user"
-                      id={user.id.toString()}
-                      value={user.id}
-                      onChange={handleChatUser}
-                    />
-                  </div>
+                  <input
+                    type="radio"
+                    name="user"
+                    id={user.id.toString()}
+                    value={user.id}
+                    onChange={handleChatUser}
+                  />
                 </div>
               </label>
             ))}
           </div>
-          <div className="message_btn">
-            <Button size="large" variant="contained" onClick={handleCteartChat}>
+          <div className="p-4">
+            <button className="btn w-full" onClick={handleCteartChat}>
               채팅
-            </Button>
+            </button>
           </div>
         </div>
       </div>

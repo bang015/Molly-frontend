@@ -84,7 +84,7 @@ export const followUser = createAsyncThunk(
   'follow/followUser',
   async ({ followUserId }: { followUserId: number }, { dispatch }) => {
     try {
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
         data: { followUserId },
         method: 'POST',
         headers: {},
@@ -104,7 +104,7 @@ export const getSuggestFollow = createAsyncThunk(
   'follow/getFollow',
   async ({ limit }: { limit: number }, { dispatch }) => {
     try {
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
         method: 'GET',
         headers: {},
         params: {
@@ -129,7 +129,7 @@ export const getFollowing = createAsyncThunk(
   ) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/${userId}/?page=${page}&query=${keyword}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
       if (response.status === 200) {
@@ -149,7 +149,7 @@ export const getFollower = createAsyncThunk(
   ) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/r/${userId}/?page=${page}&query=${keyword}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/r/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
       if (response.status === 200) {
@@ -163,7 +163,7 @@ export const getFollower = createAsyncThunk(
 export const followedCheck = async (userId: number) => {
   try {
     const response = await request(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${FOLLOW_API}/check/${userId}`,
+      `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/check/${userId}`,
       {
         method: 'GET',
         headers: {},

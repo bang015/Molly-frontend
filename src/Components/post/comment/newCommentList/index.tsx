@@ -26,7 +26,7 @@ export const NewCommentList: React.FC<newCommentListProps> = ({ id, newCommentLi
   return (
     <div>
       {subComment.map(comment => (
-        <div key={comment.id} className="flex py-2.5">
+        <div key={comment.id} className="flex py-2">
           <div className="mr-4">
             <Avatar alt="profile" src={comment.user.profileImage?.path} />
           </div>
@@ -44,7 +44,7 @@ export const NewCommentList: React.FC<newCommentListProps> = ({ id, newCommentLi
               <div>{displayCreateAt(comment.createdAt)}</div>
             </div>
           </div>
-          <IconButton aria-label="delete">
+          <IconButton className='my-1' aria-label="delete">
             <MoreHorizIcon />
           </IconButton>
         </div>

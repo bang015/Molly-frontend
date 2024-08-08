@@ -77,7 +77,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
   return (
     <div>
       {subComment.map(comment => (
-        <div key={comment.id} className="flex py-2.5">
+        <div key={comment.id} className="flex py-2">
           <div
             className="mr-4"
             onClick={() => {
@@ -106,6 +106,7 @@ export const SubCommentList: React.FC<subCommentListProps> = ({
             </div>
           </div>
           <IconButton
+            className="my-1"
             aria-label="delete"
             onClick={() => {
               dispatch(

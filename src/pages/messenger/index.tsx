@@ -49,26 +49,24 @@ const Messenger: React.FC = () => {
     setChatRoom(roomId)
   }
   return (
-    <div className="mainPage">
-      <Nav></Nav>
-      <div className="chat">
-        <div className="chatList">
-          <div className="chat_header">
-            <h3>{user?.nickname}</h3>
-            <div onClick={handleCeateOpen}>
+    <div className="relative flex size-full overflow-auto">
+      <Nav />
+      <div className="ml-[4rem] flex size-full">
+        <div className="flex w-[540px] flex-col border-r">
+          <div className="flex justify-between p-5">
+            <div className="text-body16sd">{user?.nickname}</div>
+            <div className="rounded border-2 border-gray-500" onClick={handleCeateOpen}>
               <EditIcon sx={{ color: 'rgb(85,85,85)' }} />
             </div>
           </div>
-          <div className="chat_t">
-            <div>메시지</div>
-          </div>
-          <div className="chat_content">
+          <div className="p-5 text-body18sd">메시지</div>
+          <div className="grow overflow-y-scroll">
             {chatRoomList.map(chat => (
               <ChatRoomList key={chat} roomId={chat} handleChatRoom={handleChatRoom} />
             ))}
           </div>
         </div>
-        <div className="chat_room">
+        <div className="flex size-full">
           <ChatRoom
             roomId={chatRoom}
             handleCeateOpen={handleCeateOpen}

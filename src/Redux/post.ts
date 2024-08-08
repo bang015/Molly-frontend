@@ -54,7 +54,7 @@ export const uploadPost = createAsyncThunk(
           formData.append(`hashtags[${index}]`, tag)
         })
       }
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}`, {
         data: formData,
         method: 'POST',
         headers: {
@@ -85,7 +85,7 @@ export const updatePost = createAsyncThunk(
           formData.append(`hashtags[${index}]`, tag)
         })
       }
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}`, {
         method: 'PATCH',
         data: formData,
         headers: {
@@ -108,7 +108,7 @@ export const deletePost = createAsyncThunk(
   async ({ postId }: { postId: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/${postId}`,
         {
           method: 'DELETE',
           headers: {},

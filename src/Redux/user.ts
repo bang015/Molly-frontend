@@ -43,7 +43,7 @@ export const getProfile = createAsyncThunk(
   'profile/getProfile',
   async (nickname: string, { dispatch }) => {
     const response = await request(
-      `${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
+      `${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
       { method: 'GET' },
     )
     if (response.status === 200) {
@@ -66,7 +66,7 @@ export const updateUser = createAsyncThunk(
         const profileImageFile = new File([newInfo.profileImg], 'profile_image.jpg')
         formData.append('profileImage', profileImageFile)
       }
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${USER_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}`, {
         data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',

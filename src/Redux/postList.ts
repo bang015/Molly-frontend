@@ -129,7 +129,7 @@ export const getMainPost = createAsyncThunk(
   async ({ page }: { page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
         {
           method: 'GET',
           headers: {},
@@ -149,7 +149,7 @@ export const getAllPost = createAsyncThunk(
   async ({ page }: { page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}?page=${page}`,
         {
           method: 'GET',
           headers: {},
@@ -170,7 +170,7 @@ export const getPostByPostId = createAsyncThunk(
   async (postId: number, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/${postId}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/${postId}`,
         {
           method: 'GET',
         },
@@ -189,7 +189,7 @@ export const getPostByUserId = createAsyncThunk(
   async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/my/${userId}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/my/${userId}?page=${page}`,
         {
           method: 'GET',
         },
@@ -207,7 +207,7 @@ export const getPostByTagName = createAsyncThunk(
   async ({ tagName, page }: { tagName: string; page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`,
         {
           method: 'GET',
         },
@@ -226,7 +226,7 @@ export const getBookmarkPost = createAsyncThunk(
   async ({ userId, page }: { userId: number; page: number }, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`,
         {
           method: 'GET',
         },

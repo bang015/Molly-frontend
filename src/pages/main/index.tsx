@@ -35,10 +35,7 @@ const Main: React.FC = () => {
   return (
     <section className="relative flex size-full overflow-auto">
       <Nav />
-      <div
-        style={{ '--nav-width': '16.6667%' } as React.CSSProperties}
-        className={`ml-[--nav-width] w-4/6 min-w-body510`}
-      >
+      <div className={`ml-[16.6667%] w-4/6 min-w-body510`}>
         {postList.map(post => (
           <PostList key={post.id} post={post} />
         ))}

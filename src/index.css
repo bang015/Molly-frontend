@@ -28,8 +28,11 @@ body,
 .css-518kzi-MuiListItemSecondaryAction-root {
   @apply right-0 !important;
 }
+.css-zza0ns-MuiBadge-badge {
+  @apply bg-main font-pretendard !important;
+}
 .media {
-  @apply max-w-media max-h-media pointer-events-auto relative flex aspect-square min-h-96 flex-col justify-center overflow-hidden rounded-l-lg;
+  @apply pointer-events-auto relative flex aspect-square max-h-media min-h-96 max-w-media flex-col justify-center overflow-hidden rounded-l-lg;
 }
 .modal {
   @apply pointer-events-none relative flex size-full flex-col items-center justify-center;
@@ -39,11 +42,11 @@ body,
 }
 
 .btn {
-  @apply bg-main hover:bg-hover inline-flex h-12 items-center justify-center whitespace-nowrap rounded-md border px-4 text-white ring-offset-white transition-colors disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400;
+  @apply inline-flex h-12 items-center justify-center whitespace-nowrap rounded-md border bg-main px-4 text-white ring-offset-white transition-colors hover:bg-hover disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400;
 }
 
 .out-line {
-  @apply border-main text-main hover:border-hover border bg-white hover:bg-white;
+  @apply border border-main bg-white text-main hover:border-hover hover:bg-white;
 }
 
 .link {

@@ -35,28 +35,29 @@ const ChatRoomList: React.FC<chatRoomListProps> = ({ roomId, handleChatRoom }) =
 
   return (
     <div
+      className="flex items-center rounded p-5 hover:bg-gray-100"
       onClick={() => {
         handleChatRoom(roomId)
       }}
     >
-      <div className="search_result" style={{ borderRadius: 0 }}>
-        <div className="se1">
-          <div>
-            <Avatar src={chatUser?.profileImage?.path} sx={{ width: 44, height: 44 }} />
+      <div className="mr-3 rounded-full border">
+        <Avatar src={chatUser?.profileImage?.path} sx={{ width: 44, height: 44 }} />
+      </div>
+      <div className="flex flex-col">
+        <div className="text-body16m">{chatUser?.name}</div>
+        <div className="flex items-center">
+          <div className="text-body14rg">{latestMessage?.message}</div>
+          <div className="ml-1 text-body14rg">
+            • {latestMessage && displayCreateAt(latestMessage.createdAt)}
           </div>
         </div>
-        <div className="se2">
-          <div>
-            <div>{chatUser?.name}</div>
-          </div>
-          <div className="ch">
-            <div>{latestMessage?.message}</div>
-            <div className="cAt">• {latestMessage && displayCreateAt(latestMessage.createdAt)}</div>
-          </div>
-        </div>
-        <div className="se3">
-          {_message !== 0 && <span className="notReadMsg">{_message}</span>}
-        </div>
+      </div>
+      <div className="flex grow justify-end">
+        {_message !== 0 && (
+          <span className="flex size-[20px] items-center justify-center rounded-full bg-main p-1 text-body12rg text-white">
+            {_message}
+          </span>
+        )}
       </div>
     </div>
   )

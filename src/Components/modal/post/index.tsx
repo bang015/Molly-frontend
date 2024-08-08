@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { followUser, followedCheck } from '@/redux/follow'
-import { closeSubModal, openModal } from '@/redux/modal'
+import { closeSubModal, openModal, openSubModal } from '@/redux/modal'
 
 const PostActionModal: React.FC = () => {
   const dispatch = useDispatch()
@@ -13,7 +13,7 @@ const PostActionModal: React.FC = () => {
   const [checkFollowed, setCheckFollowed] = useState(false)
 
   useEffect(() => {
-    if(user?.id !== post?.userId){
+    if (user?.id !== post?.userId) {
       followCheck()
     }
   }, [user, post, Followed])
@@ -37,47 +37,42 @@ const PostActionModal: React.FC = () => {
         }}
       >
         <div className="modal">
-          <div className="modal-container">
+          <div className="pointer-events-auto flex flex-col rounded-xl bg-white">
             {post?.userId === user!.id ? (
-              <div className="editBtn">
-                <div>
-                  <button
-                    className="mbtn1 mbtnc"
-                    onClick={() => {
-                      dispatch(openModal({ modalType: 'PostFormModal', id: post?.id, post: post }))
-                    }}
-                  >
-                    수정
-                  </button>
-                </div>
-                <div>
-                  <button
-                    className="mbtnc"
-                    onClick={() => {
-                      dispatch(openModal({ modalType: 'DeleteModal', id: post?.id, post: post }))
-                    }}
-                  >
-                    삭제
-                  </button>
-                </div>
+              <div className="flex flex-col">
+                <button
+                  className="w-[400px] border-b p-5 text-body14sd text-red-500"
+                  onClick={() => {
+                    dispatch(openModal({ modalType: 'PostFormModal', id: post?.id, post: post }))
+                  }}
+                >
+                  수정
+                </button>
+                <button
+                  className="w-[400px] border-b p-5 text-body14sd text-red-500"
+                  onClick={() => {
+                    dispatch(openSubModal({ subModalType: 'DeleteModal', id: post?.id, post: post }))
+                  }}
+                >
+                  삭제
+                </button>
               </div>
             ) : (
-              <div className="editBtn">
-                <div>
-                  <button className="mbtn1 mbtnc">신고</button>
-                </div>
+              <div className="flex flex-col">
+                <button className="w-[400px] border-b p-5 text-body14sd text-red-500">신고</button>
                 {checkFollowed && (
-                  <div>
-                    <button className="mbtnc" onClick={handleUnFollow}>
-                      팔로우 취소
-                    </button>
-                  </div>
+                  <button
+                    className="w-[400px] border-b p-5 text-body14sd text-red-500"
+                    onClick={handleUnFollow}
+                  >
+                    팔로우 취소
+                  </button>
                 )}
               </div>
             )}
-            <div className="editBtn">
+            <div className="flex flex-col">
               <button
-                className="mbtn2"
+                className="w-[400px] p-5 text-body14sd"
                 onClick={() => {
                   dispatch(closeSubModal())
                 }}

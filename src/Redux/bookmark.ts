@@ -7,7 +7,7 @@ export const bookmarkPost = createAsyncThunk(
   'bookmark/post',
   async (postId: number, { dispatch }) => {
     try {
-      const response = await request(`${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
         method: 'POST',
         data: { postId },
         headers: {},
@@ -26,7 +26,7 @@ export const getPostBookmark = createAsyncThunk(
   async (postId: number, { dispatch }) => {
     try {
       const response = await request(
-        `${process.env.REACT_APP_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
         {
           method: 'GET',
           headers: {},

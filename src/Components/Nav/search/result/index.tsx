@@ -13,15 +13,6 @@ interface resultProps {
 const Result: React.FC<resultProps> = ({ result, type }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [isHovered, setIsHovered] = useState(false)
-
-  const handleMouseEnter = () => {
-    setIsHovered(true)
-  }
-
-  const handleMouseLeave = () => {
-    setIsHovered(false)
-  }
   const goToPage = () => {
     if (result.type === 'user') {
       navigate(`/profile/${result.nickname}`)
