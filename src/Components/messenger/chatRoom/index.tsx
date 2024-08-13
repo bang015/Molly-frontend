@@ -1,95 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import { socket } from '@/redux/auth'
-import './index.css'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import { UserType } from '@/interfaces/user'
 import { Avatar } from '@mui/material'
-import { MessageType } from '@/interfaces/message'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
+import DehazeIcon from '@mui/icons-material/Dehaze'
+import { addNewMessage, chatRoomDetails, updateUnreadCount } from '@/redux/chat'
+import { MessageType } from '@/interfaces/chat'
+import { openSubModal } from '@/redux/modal'
+import { useNavigate } from 'react-router-dom'
 interface chatRoomProps {
-  roomId: number | null
-  previousRoom: number | null
   handleCeateOpen: () => void
 }
-const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRoom }) => {
+const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.authReducer.user)
+  const roomId = useSelector((state: RootState) => state.chatReducer.roomId)
+  const messageList = useSelector((state: RootState) => state.chatReducer.list.message)
+  const members = useSelector((state: RootState) => state.chatReducer.members)
   const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState<{ date: string; message: MessageType[] }[]>([])
-  const [chatUser, setChatUser] = useState<UserType | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
-    if (socket && roomId) {
-      socket.emit('leaveRoom', previousRoom)
-      socket.emit(`joinChatRoom`, { roomId })
-      socket.on('joinRoomSuccess', (data): void => {
-        setChatUser(data.user)
-        const messageList: MessageType[] = data.message
-        const messageByDate: { date: string; message: MessageType[] }[] = []
-        if (messageList.length > 0) {
-          for (var i = 0; i < messageList.length; i++) {
-            const message = messageList[i]
-            const date = message.createdAt.substring(0, 10)
-            const messageId = message.id
-            let found = false
-            for (var j = 0; j < messageByDate.length; j++) {
-              if (messageByDate[j].date === date) {
-                const existingMessageIndex = messageByDate[j].message.findIndex(
-                  msg => msg.id === messageId,
-                )
-                if (existingMessageIndex === -1) {
-                  messageByDate[j].message.unshift(message)
-                }
-                found = true
-                break
-              }
-            }
-            if (!found) {
-              messageByDate.push({ date: date, message: [message] })
-            }
-          }
+    if (roomId) {
+      dispatch(chatRoomDetails(roomId) as any)
+      dispatch(updateUnreadCount(roomId))
+      if (socket) {
+        const handleNewMessage = (data: MessageType) => {
+          socket?.emit('messageRead', { roomId })
+          dispatch(addNewMessage(data) as any)
         }
-        setMessages(messageByDate)
-        if (socket) {
-          socket.emit('getRoomInfo', { roomId })
-          socket.emit('getNotReadMessage')
+        socket.emit('joinChatRoom', { roomId })
+        socket.on('sendMessagesuccess', handleNewMessage)
+
+        return () => {
+          socket?.off('sendMessagesuccess', handleNewMessage)
         }
-      })
-      socket.emit('messageRead', { roomId })
+      }
     }
   }, [roomId, socket])
-  if (socket) {
-    socket.on(`sendMessagesuccess`, (data: MessageType): void => {
-      console.log(data)
-      if (data.roomId === roomId) {
-        const messageByDate1: { date: string; message: MessageType[] }[] = [...messages]
-        const date = data.createdAt.substring(0, 10)
-        const messageId = data.id
-        let found = false
-        for (var i = 0; i < messageByDate1.length; i++) {
-          if (messageByDate1[i].date === date) {
-            const existingMessageIndex = messageByDate1[i].message.findIndex(
-              msg => msg.id === messageId,
-            )
-            if (existingMessageIndex === -1) {
-              messageByDate1[i].message.push(data)
-            }
-            found = true
-            break
-          }
-        }
-        if (!found) {
-          messageByDate1.unshift({ date: date, message: [data] })
-        }
-        setMessages(messageByDate1)
-      }
-    })
-  }
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
   }
   const sendMessage = () => {
-    console.log(message)
     if (message !== '' && socket) {
       socket.emit('sendMessage', { roomId, message })
     }
@@ -104,87 +58,174 @@ const ChatRoom: React.FC<chatRoomProps> = ({ roomId, handleCeateOpen, previousRo
   return (
     <>
       {roomId ? (
-        <div className="flex size-full flex-col">
-          {/* 해더 */}
-          <div className="border-b p-5">
-            {chatUser && (
-              <div className="flex items-center">
-                <Avatar
-                  className="border"
-                  src={chatUser?.profileImage?.path}
-                  sx={{ width: 50, height: 50 }}
-                />
-                <span className="ml-3 text-body16sd">{chatUser.name}</span>
-              </div>
-            )}
-          </div>
-          {/* 메시지 */}
+        <div className="flex size-full">
           <div className="flex size-full grow flex-col">
-            <div className="flex grow flex-col-reverse overflow-y-scroll px-5">
-              {messages.map((message, index) => (
-                <div key={index}>
-                  <div className="p-3 text-center text-body14rg text-gray-500">{message.date}</div>
-                  {message.message.map(msg => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.userId === user?.id && 'justify-end'}`}
-                    >
-                      {msg.userId === user?.id ? (
-                        <div className="p-1">
-                          <div className="rounded-xl bg-main px-3 py-2 text-white whitespace-pre-wrap">
-                            {msg.message}
+            {/* 해더 */}
+            <div className="border-b p-5">
+              <div className="flex items-center">
+                <div className="flex grow items-center">
+                  <Avatar
+                    className="border"
+                    src={members[0]?.profileImage?.path}
+                    sx={{ width: 50, height: 50 }}
+                  />
+                  {members.length > 0 ? (
+                    members.map(member => (
+                      <button
+                        key={member.id}
+                        onClick={() => {
+                          navigate(`/profile/${member.nickname}`)
+                        }}
+                        className="ml-3 text-body16sd"
+                      >
+                        {member.name}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="ml-3 text-body16sd">대화상대 없음</div>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setIsOpen(!isOpen)
+                  }}
+                >
+                  <DehazeIcon className="mr-5" />
+                </button>
+              </div>
+            </div>
+            {/* 메시지 */}
+            <div className="flex size-full grow flex-col">
+              <div className="flex max-h-[730px] grow flex-col-reverse overflow-y-scroll px-5">
+                {messageList.map((message, index) => (
+                  <div key={`${message.date}-${index}`}>
+                    <div className="p-3 text-center text-body14rg text-gray-500">
+                      {message.date}
+                    </div>
+                    {message.messages.map(msg => (
+                      <div key={msg.id}>
+                        {msg.type === 'USER' ? (
+                          <div className={`flex ${msg.userId === user?.id && 'justify-end'}`}>
+                            {msg.userId === user?.id ? (
+                              <div className="p-1">
+                                <div className="whitespace-pre-wrap rounded-xl bg-main px-3 py-2 text-white">
+                                  {msg.message}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center p-1">
+                                <div className="mr-2">
+                                  <Avatar
+                                    src={msg?.user?.profileImage?.path}
+                                    sx={{ width: 50, height: 50 }}
+                                  />
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <div className="p-1 text-body14m">{msg.user.name}</div>
+                                  <div className="whitespace-pre-wrap rounded-xl bg-gray-100 px-3 py-2">
+                                    {msg.message}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ) : (
-                        <div className="p-1">
-                          <div className="mr-2">
+                        ) : (
+                          <div className="py-5 text-center">
+                            <span className="rounded-xl bg-gray-100 p-2 text-body14sd">
+                              {msg.message}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              {/* 인풋 */}
+              <div className="p-5">
+                <div className="flex rounded-full border">
+                  <textarea
+                    className="grow resize-none rounded-full px-5 outline-none"
+                    name="message"
+                    id="message"
+                    autoFocus
+                    value={message}
+                    onChange={handleMessage}
+                    onKeyDown={handleEnter}
+                  ></textarea>
+                  <button
+                    className="px-5 text-body14sd text-main hover:text-hover"
+                    onClick={sendMessage}
+                  >
+                    보내기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={`flex flex-col border-l ${isOpen ? 'w-[500px]' : 'hidden'}`}>
+            <div className="border-b p-5 text-body20sd">
+              <div className="flex h-[50px] items-center">상세 정보</div>
+            </div>
+            <div className="flex grow flex-col border-b">
+              <div className="p-5 text-body18m">멤버</div>
+              <div className="flex grow flex-col">
+                {members &&
+                  members.map(member => (
+                    <div key={member.id}>
+                      {member.id !== user?.id && (
+                        <button
+                          key={member.id}
+                          onClick={() => {
+                            navigate(`/profile/${member.nickname}`)
+                          }}
+                          className="flex items-center p-5 hover:bg-gray-100"
+                        >
+                          <div className="mr-3">
                             <Avatar
-                              src={msg?.user.profileImage?.path}
-                              sx={{ width: 30, height: 30 }}
+                              src={member?.profileImage?.path}
+                              sx={{ width: 60, height: 60 }}
                             />
                           </div>
-                          <div className="rounded-xl bg-gray-300 px-3 py-2 whitespace-pre-wrap">{msg.message}</div>
-                        </div>
+                          <div>
+                            <div className="text-body16sd">{member.nickname}</div>
+                            <div className="text-body14rg">{member.name}</div>
+                          </div>
+                        </button>
                       )}
                     </div>
                   ))}
-                </div>
-              ))}
-            </div>
-            {/* 인풋 */}
-            <div className="p-5">
-              <div className="flex rounded-full border">
-                <textarea
-                  className="grow resize-none rounded-full px-5 outline-none"
-                  name="message"
-                  id="message"
-                  autoFocus
-                  value={message}
-                  onChange={handleMessage}
-                  onKeyDown={handleEnter}
-                ></textarea>
-                <button
-                  className="px-5 text-body14sd text-main hover:text-hover"
-                  onClick={sendMessage}
-                >
-                  보내기
-                </button>
               </div>
+            </div>
+            <div className="p-5">
+              <button
+                onClick={() => {
+                  dispatch(
+                    openSubModal({
+                      subModalType: 'LeaveRoomModal',
+                    }),
+                  )
+                }}
+                className="text-body18sd text-red-500"
+              >
+                채팅방 나가기
+              </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="room" style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <div className="msgIcon">
+        <div className="flex grow flex-col items-center justify-center">
+          <div className="rounded-full border-2 p-3">
             <EmailOutlinedIcon sx={{ fontSize: 70, color: 'black' }} />
           </div>
-          <h2 style={{ fontWeight: 500 }}>내 메시지</h2>
-          <div style={{ fontSize: '14px', color: 'rgb(115,115,115)' }}>
-            사람들에게 메시지를 보내보세요
-          </div>
-          <div className="msgBtn">
-            <button onClick={handleCeateOpen}>메시지 보내기</button>
-          </div>
+          <div className="p-2 text-body18sd">내 메시지</div>
+          <div className="text-body14m text-gray-500">사람들에게 메시지를 보내보세요</div>
+          <button
+            className="p-3 text-body16sd text-main hover:text-hover"
+            onClick={handleCeateOpen}
+          >
+            메시지 보내기
+          </button>
         </div>
       )}
     </>

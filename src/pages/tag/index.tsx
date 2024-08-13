@@ -3,7 +3,7 @@ import Nav from '@/components/nav/navBar'
 import { useParams } from 'react-router-dom'
 import TagIcon from '@/icons/tag-icon.svg?react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostList, getPostByTagName } from '@/redux/postList'
+import { clearPostList, getTagPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import { openModal } from '@/redux/modal'
 
@@ -11,37 +11,48 @@ const Tag: React.FC = () => {
   const { tagName } = useParams()
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
-  const post = useSelector((state: RootState) => state.postListReducer.posts.user)
+  const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.tag)
+  const { count, posts } = useSelector((state: RootState) => state.postListReducer.posts.tag)
   useEffect(() => {
     if (tagName) {
-      dispatch(getPostByTagName({ tagName, page }) as any)
+      dispatch(getTagPost({ tagName, page }) as any)
     }
   }, [tagName, page])
   useEffect(() => {
     dispatch(clearPostList())
   }, [tagName])
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+        if (page < totalPages) {
+          setPage(prevPage => prevPage + 1)
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [page, totalPages])
+  posts.map(post => {})
   return (
-    <div className="mainPage">
-      <div className="nav-container">
-        <Nav></Nav>
-      </div>
-      <div className="pcontent">
-        <div className="prfile">
-          <div className="header">
-            <div style={{ flexGrow: 0 }} className="profile_image">
-              <div className="profileImg">
-                <TagIcon width={50} />
-              </div>
+    <div className="relative flex size-full overflow-auto">
+      <Nav></Nav>
+      <div className="ml-[16.6667%] flex w-full justify-center">
+        <div className="flex w-2/3 flex-col p-10">
+          <div className="flex items-center border-b p-10">
+            <div className="rounded-full border p-4">
+              <TagIcon className="h-20 w-20" />
             </div>
-            <div className="pui">
-              <h2 className="tagN">#{tagName}</h2>
-              <div>게시물</div>
+            <div className="ml-5">
+              <h2 className="text-body20sd">#{tagName}</h2>
+              <div className="text-body16rg">게시물 {count}개</div>
             </div>
           </div>
-          <div>
-            <h4 style={{ color: 'rgb(115,115,115)' }}>게시물</h4>
-            <div className="user_post">
-              {post.map(post => (
+          <div className="py-5 text-body18m">게시물</div>
+          <div className="grid grid-cols-3 gap-1">
+            {posts.length > 0 &&
+              posts.map(post => (
                 <div
                   key={post.id}
                   onClick={() => {
@@ -54,10 +65,9 @@ const Tag: React.FC = () => {
                     )
                   }}
                 >
-                  <img className="image_item" src={post.postMedias[0]?.path} />
+                  <img className="" src={post.postMedias?.[0]?.path} loading="lazy" />
                 </div>
               ))}
-            </div>
           </div>
         </div>
       </div>

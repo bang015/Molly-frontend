@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { FOLLOW_API, INIT } from '../utils/api-url'
+import { FOLLOW_API, FOLLOWER, FOLLOWING, INIT } from '../utils/api-url'
 import { FollowType } from '../interfaces/follow'
 import { request } from './baseRequest'
 import { getUser } from './auth'
@@ -53,14 +53,18 @@ const followSlice = createSlice({
       state,
       action: PayloadAction<{ followings: FollowType[]; totalPages: number }>,
     ) => {
-      state.list.following = [...state.list.following, ...action.payload.followings]
+      const followings = [...state.list.following, ...action.payload.followings]
+      const filter = new Map(followings.map(f => [f.id, f]))
+      state.list.following = Array.from(filter.values())
       state.totalPages.following = action.payload.totalPages
     },
     getFollowerSuccess: (
       state,
       action: PayloadAction<{ followers: FollowType[]; totalPages: number }>,
     ) => {
-      state.list.follower = [...state.list.follower, ...action.payload.followers]
+      const followers = [...state.list.follower, ...action.payload.followers]
+      const filter = new Map(followers.map(f => [f.id, f]))
+      state.list.follower = Array.from(filter.values())
       state.totalPages.follower = action.payload.totalPages
     },
     clearFollowList: state => {
@@ -129,7 +133,7 @@ export const getFollowing = createAsyncThunk(
   ) => {
     try {
       const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${userId}/?page=${page}&query=${keyword}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWING}/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
       if (response.status === 200) {
@@ -149,7 +153,7 @@ export const getFollower = createAsyncThunk(
   ) => {
     try {
       const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/r/${userId}/?page=${page}&query=${keyword}`,
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWER}/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
       if (response.status === 200) {

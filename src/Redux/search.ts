@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { INIT, SEARCH_API } from '../utils/api-url'
 import { ResultType } from '../interfaces/search'
 import { request } from './baseRequest'

@@ -18,6 +18,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import LogoutIcon from '@mui/icons-material/Logout'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
+import DehazeIcon from '@mui/icons-material/Dehaze'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { signOut } from '@/redux/auth'
@@ -25,16 +26,17 @@ import Search from '@/components/nav/search/search'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { socket } from '@/redux/auth'
 import { clearPostList } from '@/redux/postList'
-import { openModal } from '@/redux/modal'
+import { openModal, openSubModal } from '@/redux/modal'
+import { getUnreadCount } from '@/redux/chat'
 const Nav: React.FC = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef<HTMLDivElement>(null)
   const { user } = useSelector((state: RootState) => state.authReducer)
-  const [_message, set_message] = useState(0)
+  const { unreadCount } = useSelector((state: RootState) => state.chatReducer)
   const [isCollapsed, setIsCollapsed] = useState(false)
-
+  const [isMore, setIsMore] = useState(false)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -49,15 +51,10 @@ const Nav: React.FC = () => {
   }, [searchRef])
 
   useEffect(() => {
+    dispatch(getUnreadCount() as any)
     if (socket) {
-      socket.emit('getNotReadMessage')
-      socket.on('allNotReadMessage', data => {
-        set_message(data)
-      })
-      socket.on('newMessage', data => {
-        if (data.sendUser === user?.id && socket) {
-          socket.emit('getNotReadMessage')
-        }
+      socket.on('updateCount', data => {
+        dispatch(getUnreadCount() as any)
       })
     }
   }, [socket])
@@ -107,7 +104,7 @@ const Nav: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Home"
+              primary="홈"
               primaryTypographyProps={{
                 className: ` ${location.pathname === '/' && 'text-body16sd'}`,
               }}
@@ -125,7 +122,7 @@ const Nav: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Search"
+              primary="검색"
             />
           </ListItemButton>
           <ListItemButton
@@ -144,7 +141,7 @@ const Nav: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Explore"
+              primary="탐색"
               primaryTypographyProps={{
                 className: `${location.pathname === '/explore' && 'text-body16sd'}`,
               }}
@@ -158,7 +155,7 @@ const Nav: React.FC = () => {
             }}
           >
             <ListItemIcon>
-              <Badge badgeContent={_message} color="primary">
+              <Badge badgeContent={unreadCount} color="primary">
                 {location.pathname === '/messenger' ? (
                   <EmailIcon sx={{ fontSize: 30, color: 'black' }} />
                 ) : (
@@ -168,7 +165,7 @@ const Nav: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Messages"
+              primary="메시지"
             />
           </ListItemButton>
           <ListItemButton
@@ -189,7 +186,7 @@ const Nav: React.FC = () => {
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Post"
+              primary="게시물"
             />
           </ListItemButton>
           <ListItemButton
@@ -208,21 +205,49 @@ const Nav: React.FC = () => {
             </ListItemAvatar>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Profile"
+              primary="프로필"
               primaryTypographyProps={{
                 className: `${location.pathname.includes('/profile/') && 'text-body16sd'}`,
               }}
             />
           </ListItemButton>
         </div>
+        {isMore && (
+          <div className="flex flex-col border-t">
+            <button
+              onClick={() => {
+                dispatch(
+                  openSubModal({
+                    subModalType: 'ModifyPasswordModal',
+                  }),
+                )
+              }}
+              className="flex justify-start border-b p-5 text-body16sd text-red-500"
+            >
+              비밀번호 변경
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="flex justify-start border-b p-5 text-body16sd text-red-500"
+            >
+              로그아웃
+            </button>
+          </div>
+        )}
         <div className="mb-4">
-          <ListItemButton style={{ borderRadius: '12px' }} component="a" onClick={handleSignOut}>
+          <ListItemButton
+            style={{ borderRadius: '12px' }}
+            component="a"
+            onClick={() => {
+              setIsMore(!isMore)
+            }}
+          >
             <ListItemIcon>
-              <LogoutIcon sx={{ fontSize: 30, color: 'black' }} />
+              <DehazeIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
             <ListItemText
               className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="Logout"
+              primary="더보기"
             />
           </ListItemButton>
         </div>

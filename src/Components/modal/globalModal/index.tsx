@@ -6,6 +6,8 @@ import PostForm from '@/components/post/postForm'
 import PostLoading from '@/components/post/postLoading'
 import PostDetail from '@/components/post/postDetail'
 import CommentActionModal from '../comment'
+import LeaveRoomModal from '../leaveChatRoom'
+import ModifyPasswordModal from '../password'
 
 const MODAL_TYPES = {
   DeleteModal: 'DeleteModal',
@@ -13,7 +15,9 @@ const MODAL_TYPES = {
   PostFormModal: 'PostFormModal',
   PostingModal: 'PostingModal',
   PostDetailModal: 'PostDetailModal',
-  CommentActionModal: 'CommentActionModal'
+  CommentActionModal: 'CommentActionModal',
+  LeaveRoomModal: 'LeaveRoomModal',
+  ModifyPasswordModal: 'ModifyPasswordModal',
 }
 const MODAL_COMPONENTS = [
   {
@@ -40,6 +44,14 @@ const MODAL_COMPONENTS = [
     type: MODAL_TYPES.CommentActionModal,
     component: <CommentActionModal />,
   },
+  {
+    type: MODAL_TYPES.LeaveRoomModal,
+    component: <LeaveRoomModal />,
+  },
+  {
+    type: MODAL_TYPES.ModifyPasswordModal,
+    component: <ModifyPasswordModal />,
+  },
 ]
 
 const GlobalModal: React.FC = () => {
@@ -61,7 +73,7 @@ const GlobalModal: React.FC = () => {
   }
   return (
     <div>
-      {isOpen &&renderModal()}
+      {isOpen && renderModal()}
       {isSubOpen && renderSubModal()}
     </div>
   )

@@ -9,44 +9,23 @@ import { resetResult } from '@/redux/search'
 import { socket } from '@/redux/auth'
 import ChatRoom from '@/components/messenger/chatRoom'
 import ChatRoomList from '@/components/messenger/chatRoomList'
+import { chatRoomList, clearChatRoom, updateChatRoomInfo } from '@/redux/chat'
 
 const Messenger: React.FC = () => {
-  const user = useSelector((state: RootState) => state.authReducer.user)
+  const { user } = useSelector((state: RootState) => state.authReducer)
   const [createOpen, setCreateOpen] = useState(false)
-  const [chatRoom, setChatRoom] = useState<number | null>(null)
-  const [previousRoom, setPreviousRoom] = useState<number | null>(null)
-  const [chatRoomList, setChatRoomList] = useState<number[]>([])
   const dispatch = useDispatch()
   useEffect(() => {
-    setChatRoom(null)
-    if (socket) {
-      socket.emit('getChatRoomList')
-      socket.on('newMessage', data => {
-        if (data.user.id === user?.id || data.sendUser === user?.id) {
-          socket!.emit('getChatRoomList')
-          socket!.emit('getNotReadMessage')
-        }
-      })
-      socket.on('room-created-success', (data): void => {
-        setChatRoom(data)
-      })
-      socket.on(`getChatRoomList${user?.id}`, (data): void => {
-        setChatRoomList(data)
-      })
+    return () => {
+      dispatch(clearChatRoom())
     }
-  }, [socket])
-  useEffect(() => {
-    setPreviousRoom(chatRoom)
-  }, [chatRoom, previousRoom])
+  }, [])
   const handleCeateOpen = () => {
     setCreateOpen(true)
   }
   const handleCeateClose = () => {
     setCreateOpen(false)
     dispatch(resetResult())
-  }
-  const handleChatRoom = (roomId: number) => {
-    setChatRoom(roomId)
   }
   return (
     <div className="relative flex size-full overflow-auto">
@@ -61,17 +40,11 @@ const Messenger: React.FC = () => {
           </div>
           <div className="p-5 text-body18sd">메시지</div>
           <div className="grow overflow-y-scroll">
-            {chatRoomList.map(chat => (
-              <ChatRoomList key={chat} roomId={chat} handleChatRoom={handleChatRoom} />
-            ))}
+            <ChatRoomList />
           </div>
         </div>
         <div className="flex size-full">
-          <ChatRoom
-            roomId={chatRoom}
-            handleCeateOpen={handleCeateOpen}
-            previousRoom={previousRoom}
-          />
+          <ChatRoom handleCeateOpen={handleCeateOpen} />
         </div>
       </div>
       <CreateRoom open={createOpen} onClose={handleCeateClose} />

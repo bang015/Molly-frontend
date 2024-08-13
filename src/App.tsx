@@ -10,7 +10,7 @@ import ExplorePage from './pages/explore'
 import TagsPage from './pages/tag'
 import MessengerPage from './pages/messenger'
 import { useDispatch, useSelector } from 'react-redux'
-import { authStore, getUser, initializeSocket, refreshToken } from './redux/auth'
+import { authStore, getUser, initializeSocket, refreshToken, socket } from './redux/auth'
 import { Snackbar } from '@mui/material'
 import PasswordReset from './pages/auth/passwordReset'
 import { closeSnackBar } from './redux/snackBar'
@@ -22,10 +22,17 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isLogin) {
       dispatch(getUser() as any)
-      initializeSocket(`${localStorage.getItem('accessToken')}`)
+      initializeSocket(`${sessionStorage.getItem('accessToken')}`)
+      if (socket) {
+        socket.on('connect_error', e => {
+          if (e.message === 'Token expired') {
+            dispatch(refreshToken() as any)
+          }
+        })
+      }
       const interval = setInterval(
         () => {
-          authStore.dispatch(refreshToken())
+          dispatch(refreshToken() as any)
         },
         9 * 60 * 1000,
       )

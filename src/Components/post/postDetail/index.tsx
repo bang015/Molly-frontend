@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostDetail, getPostByPostId } from '@/redux/postList'
+import { clearPostDetail, getPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
@@ -35,7 +35,7 @@ import { formatTextToHTML } from '@/utils/format/formatter'
 
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
-  const post = useSelector((state: RootState) => state.postListReducer.getPostDetail)
+  const post = useSelector((state: RootState) => state.postListReducer.postDetail)
   const { updatePending, updateCommentId, updatedComment, deleteComment } = useSelector(
     (state: RootState) => state.commentReducer,
   )
@@ -57,7 +57,7 @@ const PostDetail: React.FC = () => {
   const [checkFollowed, setCheckFollowed] = useState(false)
   const [loading, setLoading] = useState(true)
   useEffect(() => {
-    dispatch(getPostByPostId(id!) as any)
+    dispatch(getPostDetail(id!) as any)
 
     const fetchData = async () => {
       const comment = await dispatch(getComment({ postId: id!, page }) as any)

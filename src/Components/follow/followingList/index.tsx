@@ -33,7 +33,7 @@ const FollowingList: React.FC<followListProps> = ({ userId, keyword, onFollowClo
   return (
     <div className="follow">
       {follow.map(user => (
-        <div onClick={onFollowClose}>
+        <div key={user.id} onClick={onFollowClose}>
           <FollowListUser key={user.id} user={user} type="" />
         </div>
       ))}

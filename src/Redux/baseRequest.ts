@@ -5,7 +5,7 @@ import { authStore } from './auth'
 export const request = async (url: string, options: AxiosRequestConfig) => {
   try {
     if( options. headers){
-      options.headers['authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
+      options.headers['authorization'] = `Bearer ${sessionStorage.getItem('accessToken')}`
     }
     const response = await axios(url, options)
     return response

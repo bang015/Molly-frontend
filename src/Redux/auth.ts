@@ -6,19 +6,18 @@ import io, { Socket } from 'socket.io-client'
 import { SignUpInput, Token } from '@/interfaces/auth'
 import { request } from './baseRequest'
 import { openSnackBar } from './snackBar'
+import { clearChat } from './chat'
 
 interface AuthState {
   isLogin: boolean
   accessToken: string | null
   user: UserType | null
-  userLoading: boolean
 }
 
 const initialState: AuthState = {
-  isLogin: !!localStorage.getItem('accessToken'),
-  accessToken: localStorage.getItem('accessToken'),
+  isLogin: !!sessionStorage.getItem('accessToken'),
+  accessToken: sessionStorage.getItem('accessToken'),
   user: null,
-  userLoading: false,
 }
 export let socket: Socket | null = null
 
@@ -27,34 +26,33 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setTokens: (state, action: PayloadAction<Token>) => {
-      localStorage.setItem('accessToken', action.payload.accessToken)
-      localStorage.setItem('refreshToken', action.payload.refreshToken)
+      sessionStorage.setItem('accessToken', action.payload.accessToken)
+      sessionStorage.setItem('refreshToken', action.payload.refreshToken)
       state.isLogin = true
       state.accessToken = action.payload.accessToken
     },
     removeTokens: state => {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      sessionStorage.removeItem('accessToken')
+      sessionStorage.removeItem('refreshToken')
       state.isLogin = false
       state.accessToken = null
       state.user = null
       socket?.disconnect()
     },
     refreshTokens: (state, action: PayloadAction<Token>) => {
-      localStorage.setItem('accessToken', action.payload.accessToken)
-      localStorage.setItem('refreshToken', action.payload.refreshToken)
+      sessionStorage.setItem('accessToken', action.payload.accessToken)
+      sessionStorage.setItem('refreshToken', action.payload.refreshToken)
       state.accessToken = action.payload.accessToken
     },
     getUserSuccess: (state, action) => {
       state.user = action.payload
-      state.userLoading = false
     },
     getUserFail: state => {
       state.isLogin = false
       state.accessToken = null
       state.user = null
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      sessionStorage.removeItem('accessToken')
+      sessionStorage.removeItem('refreshToken')
       socket?.disconnect()
     },
   },
@@ -112,12 +110,15 @@ export const signIn = createAsyncThunk(
 // 로그아웃
 export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
   dispatch(removeTokens())
+  dispatch(clearChat())
+  if (socket) {
+    socket.disconnect()
+  }
 })
 
 // 유저 정보
 export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
   try {
-    console.log(import.meta.env.VITE_SERVER_URL)
     const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}`, {
       headers: {},
     })
@@ -132,7 +133,7 @@ export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) 
 })
 // 소켓 연결
 export const initializeSocket = (token: string) => {
-  socket = io(`${process.env.REACT_APP_SERVER_URL}`, {
+  socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
     auth: { token },
   })
 }
@@ -141,14 +142,14 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
-      { refreshToken: localStorage.getItem('refreshToken') },
+      { refreshToken: sessionStorage.getItem('refreshToken') },
     )
     if (response.status === 200) {
-      dispatch(refreshTokens(response.data))
       if (socket) {
         socket.disconnect()
         initializeSocket(response.data.accessToken)
       }
+      dispatch(refreshTokens(response.data))
       return response.data.accessToken
     }
   } catch (e) {

@@ -17,7 +17,7 @@ const Main: React.FC = () => {
 
   const [page, setPage] = useState(1)
   useEffect(() => {
-    dispatch(getMainPost({ page }) as any)
+    dispatch(getMainPost(page) as any)
   }, [page])
   useEffect(() => {
     const handleScroll = () => {

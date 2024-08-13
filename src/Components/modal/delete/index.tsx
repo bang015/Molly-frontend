@@ -18,40 +18,38 @@ const DeleteModal: React.FC = () => {
     }
   }
   return (
-    <div>
-      <Modal
-        open={isSubOpen}
-        onClose={() => {
-          dispatch(closeSubModal())
-        }}
-      >
-        <div className="modal">
-          <div className="pointer-events-auto flex flex-col rounded-xl bg-white">
-            <div className="w-[400px] border-b p-5 text-center text-body18sd">
-              게시물을 삭제할까요?
-            </div>
-            <div className="flex flex-col">
-              <button
-                className="w-[400px] border-b p-5 text-body14sd text-red-500"
-                onClick={postDelete}
-              >
-                삭제
-              </button>
-            </div>
-            <div className="flex flex-col">
-              <button
-                className="w-[400px] p-5 text-body14sd"
-                onClick={() => {
-                  dispatch(closeSubModal())
-                }}
-              >
-                취소
-              </button>
-            </div>
+    <Modal
+      open={isSubOpen}
+      onClose={() => {
+        dispatch(closeSubModal())
+      }}
+    >
+      <div className="modal">
+        <div className="pointer-events-auto flex flex-col rounded-xl bg-white">
+          <div className="w-[400px] border-b p-5 text-center text-body18sd">
+            게시물을 삭제할까요?
+          </div>
+          <div className="flex flex-col">
+            <button
+              className="w-[400px] border-b p-5 text-body14sd text-red-500"
+              onClick={postDelete}
+            >
+              삭제
+            </button>
+          </div>
+          <div className="flex flex-col">
+            <button
+              className="w-[400px] p-5 text-body14sd"
+              onClick={() => {
+                dispatch(closeSubModal())
+              }}
+            >
+              취소
+            </button>
           </div>
         </div>
-      </Modal>
-    </div>
+      </div>
+    </Modal>
   )
 }
 

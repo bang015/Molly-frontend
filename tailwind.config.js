@@ -40,11 +40,25 @@ export default {
         media: '850px',
       },
       fontSize: {
+        body20sd: [
+          '20px',
+          {
+            lineHeight: '32px',
+            fontWeight: '600',
+          },
+        ],
         body18sd: [
           '18px',
           {
             lineHeight: '28px',
             fontWeight: '600',
+          },
+        ],
+        body18m: [
+          '18px',
+          {
+            lineHeight: '28px',
+            fontWeight: '500',
           },
         ],
         body16sd: [

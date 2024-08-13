@@ -5,8 +5,10 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import FavoriteIcon from '@mui/icons-material/Favorite'
-import { bookmarkPost, getPostBookmark } from '@/redux/bookmark'
 import { useDispatch } from 'react-redux'
+import { openSnackBar } from '@/redux/snackBar'
+import { BOOKMARK_API, INIT } from '@/utils/api-url'
+import { request } from '@/redux/baseRequest'
 
 interface postUtilIconProps {
   checkLiked: boolean
@@ -26,15 +28,32 @@ const PostUtilIcon: React.FC<postUtilIconProps> = ({
   const [checkBookmark, setCheckBookmark] = useState(false)
   useEffect(() => {
     const bookmark = async () => {
-      const result = await dispatch(getPostBookmark(postId) as any)
-      setCheckBookmark(result.payload)
+      try {
+        const response = await request(
+          `${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
+          {
+            method: 'GET',
+            headers: {},
+          },
+        )
+        setCheckBookmark(response.data)
+      } catch (e: any) {
+        dispatch(openSnackBar(e.response.data.message))
+      }
     }
     bookmark()
   }, [postId])
   const handleBookmark = async () => {
-    const bookmark = await dispatch(bookmarkPost(postId) as any)
-    console.log(bookmark)
-    setCheckBookmark(bookmark.payload)
+    try {
+      const bookmark = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
+        method: 'POST',
+        data: { postId },
+        headers: {},
+      })
+      setCheckBookmark(bookmark.data)
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
   }
   return (
     <section className={`flex py-2 ${!config && 'order-2 border-t px-2'}`}>

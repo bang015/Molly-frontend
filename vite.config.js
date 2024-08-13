@@ -22,9 +22,5 @@ export default defineConfig({
     }),
     react(),
   ],
-  define: {
-    'import.meta.env.VITE_SERVER_URL': JSON.stringify(
-      import.meta.env.VITE_SERVER_URL || 'http://localhost:4000',
-    ),
-  },
+  define: {},
 })

@@ -4,7 +4,7 @@ import { request } from './baseRequest'
 export const likePost = async (postId: number) => {
   try {
     const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${LIKE_API}/`, {
-      data: {postId},
+      data: { postId },
       method: 'POST',
       headers: {},
     })

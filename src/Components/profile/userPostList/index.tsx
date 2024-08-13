@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostList, getPostByUserId } from '@/redux/postList'
+import { clearPostList, getUserPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { openModal } from '@/redux/modal'
@@ -12,12 +12,26 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   const [page, setPage] = useState(1)
   const user = useSelector((state: RootState) => state.authReducer.user)
   const post = useSelector((state: RootState) => state.postListReducer.posts.user)
+  const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.user)
   useEffect(() => {
-    dispatch(getPostByUserId({ userId, page }) as any)
+    dispatch(getUserPost({ userId, page }) as any)
   }, [userId, page])
   useEffect(() => {
     dispatch(clearPostList())
   }, [userId])
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+        if (page < totalPages) {
+          setPage(prevPage => prevPage + 1)
+        }
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [page, totalPages])
 
   return (
     <div className="">

@@ -20,5 +20,6 @@ export interface UpdateProfileInput {
   name?: string
   introduce?: string
   profileImg?: Blob | null
-  password?: string
+  currentPassword?: string
+  newPassword?: string
 }

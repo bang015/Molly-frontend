@@ -8,7 +8,7 @@ import userReducer from './user'
 import searchReducer from './search'
 import modalReducer from './modal'
 import snackBarReducer from './snackBar'
-
+import chatReducer from './chat'
 const rootReducer = combineReducers({
   authReducer,
   followReducer,
@@ -19,6 +19,7 @@ const rootReducer = combineReducers({
   searchReducer,
   modalReducer,
   snackBarReducer,
+  chatReducer
 })
 
 export default rootReducer

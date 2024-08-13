@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { updatePostType, uploadPostType } from '../interfaces/post'
 import { INIT, POST_API } from '../utils/api-url'
-import { getPostByPostId, postDelete, postUpdateList, postUpload } from './postList'
+import { getPostDetail, postDelete, postUpdateList, postUpload } from './postList'
 import { deletePostProfile } from './user'
 import { request } from './baseRequest'
 import { openSnackBar } from './snackBar'
@@ -93,7 +93,7 @@ export const updatePost = createAsyncThunk(
         },
       })
       if (response.status === 200) {
-        dispatch(getPostByPostId(response.data.updatedPost.id))
+        dispatch(getPostDetail(response.data.updatedPost.id))
         dispatch(openSnackBar('게시물이 수정되었습니다.'))
         dispatch(postUpdateList(response.data))
       }
