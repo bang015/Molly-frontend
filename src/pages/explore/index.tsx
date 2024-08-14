@@ -11,7 +11,7 @@ const Explore: React.FC = () => {
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.explore)
   const [page, setPage] = useState(1)
   useEffect(() => {
-    dispatch(getExplorePost(page) as any)
+    dispatch(getExplorePost({ page, limit: 30 }) as any)
   }, [page])
 
   useEffect(() => {

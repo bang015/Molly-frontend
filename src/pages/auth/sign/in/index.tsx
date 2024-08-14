@@ -82,7 +82,7 @@ const SignInPage: React.FC = () => {
         </div>
         <div className="w-full flex justify-end">
           <button className="link">
-            <Link className="text-body12rg text-[#5253ea]" to="/password">
+            <Link className="text-body12rg text-[#5253ea]" to="/auth/email/request">
               비밀번호를 잊으셨나요?
             </Link>
           </button>

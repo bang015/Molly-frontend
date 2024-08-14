@@ -7,8 +7,10 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { IconButton, InputAdornment, Modal, TextField } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 const ModifyPasswordModal: React.FC = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { isSubOpen } = useSelector((state: RootState) => state.modalReducer)
   const { user } = useSelector((state: RootState) => state.authReducer)
@@ -165,7 +167,15 @@ const ModifyPasswordModal: React.FC = () => {
               />
             </div>
           </div>
-          <button className="flex text-body14sd text-main">비밀번호를 잊으셨나요?</button>
+          <button
+            onClick={() => {
+              dispatch(closeSubModal())
+              navigate('/auth/email/request')
+            }}
+            className="flex text-body14sd text-main"
+          >
+            비밀번호를 잊으셨나요?
+          </button>
           <div className="pt-4">
             <button
               disabled={

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createUser } from '@/redux/auth'
+import { createUser, sendVerificationCode } from '@/redux/auth'
 import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { TextField } from '@mui/material'
@@ -17,16 +17,25 @@ interface field {
   nickname: string
   password: string
 }
+interface User {
+  email: string
+  name: string
+  nickname: string
+  password: string
+  code: string
+  [key: string]: string
+}
 const SignUpPage: React.FC = () => {
   const dispatch = useDispatch()
   type ValidationState = {
     [key: string]: boolean
   }
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<User>({
     email: '',
     name: '',
     nickname: '',
     password: '',
+    code: '',
   })
   const [isValid, setIsValid] = useState<ValidationState>({
     email: false,
@@ -46,14 +55,19 @@ const SignUpPage: React.FC = () => {
     nickname: false,
     password: false,
   })
-  const [focusedField, setFocusedField] = useState('')
+  const [isVerificationStage, setIsVerificationStage] = useState(false)
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isValid.email && isValid.name && isValid.password && isValid.nickname && e.key == 'Enter')
-      handleSignUp()
+    if (e.key == 'Enter')
+      if (isVerificationStage) {
+        if (isValid.email && isValid.name && isValid.password && isValid.nickname) {
+          handleSignUp()
+        }
+      } else {
+        handleSendVerificationCode()
+      }
   }
   const handleSignUp = async () => {
-    console.log(isValid, user)
-    if (isValid.email && isValid.name && isValid.password && isValid.nickname) {
+    if (isValid.email && isValid.name && isValid.password && isValid.nickname && user.code !== '') {
       await dispatch(createUser(user) as any)
     }
   }
@@ -83,12 +97,11 @@ const SignUpPage: React.FC = () => {
       }))
     }
   }
-  const handleFocus = (field: string) => {
-    setFocusedField(field)
+  const handleSendVerificationCode = () => {
+    sendVerificationCode(user.email)
+    setIsVerificationStage(true)
   }
-  const handleBlur = () => {
-    setFocusedField('')
-  }
+
   const inputFields = [
     {
       type: 'email',
@@ -115,41 +128,86 @@ const SignUpPage: React.FC = () => {
       validation: checkPasswordValidation,
     },
   ]
-
   return (
     <section className="flex size-full items-center justify-center bg-background p-4">
-      <div className="w-[480px] p-8 relative flex rounded-xl bg-white items-center flex-col shadow-modal">
+      <div className="relative flex w-[480px] flex-col items-center rounded-xl bg-white p-8 shadow-modal">
         <Logo width={'200px'} />
-        <h1 className="p-5">회원가입</h1>
-        <form className="w-full">
-          {inputFields.map(fieldInfo => (
-            <div className="mt-3 h-20 w-full" key={fieldInfo.field}>
+        <h1 className="p-5 text-center">{!isVerificationStage ? '회원가입' : '인증 코드 입력'}</h1>
+        {!isVerificationStage ? (
+          <>
+            <form className="w-full">
+              {inputFields.map(fieldInfo => (
+                <div className="mt-3 h-20 w-full" key={fieldInfo.field}>
+                  <TextField
+                    className="size-full"
+                    type={fieldInfo.type}
+                    label={fieldInfo.label}
+                    required
+                    value={user[fieldInfo.field]}
+                    helperText={helperText[fieldInfo.field as keyof field]}
+                    error={error[fieldInfo.field as keyof field]}
+                    onChange={e => handleChange(fieldInfo.field, e)}
+                    onKeyDown={handleEnter}
+                  />
+                </div>
+              ))}
+            </form>
+            <button
+              className="btn mt-5 w-full px-1"
+              disabled={!isValid.email || !isValid.name || !isValid.password || !isValid.nickname}
+              onClick={() => {
+                handleSendVerificationCode()
+              }}
+            >
+              가입
+            </button>
+          </>
+        ) : (
+          <div>
+            <div className="text-body16rg pb-5">
+              {user.email}주소로 전송된 인증코드를 입력하세요.{' '}
+              <button
+                onClick={() => {
+                  handleSendVerificationCode()
+                }}
+                className="text-main hover:text-hover"
+              >
+                코드 재전송
+              </button>
+            </div>
+            <div>
               <TextField
                 className="size-full"
-                type={fieldInfo.type}
-                label={fieldInfo.label}
-                onFocus={() => handleFocus(fieldInfo.field)}
-                onBlur={handleBlur}
+                type="text"
+                label="인증 코드"
                 required
-                helperText={
-                  focusedField !== fieldInfo.field && helperText[fieldInfo.field as keyof field]
-                }
-                error={focusedField !== fieldInfo.field && error[fieldInfo.field as keyof field]}
-                onChange={e => handleChange(fieldInfo.field, e)}
+                onChange={e => {
+                  setUser({ ...user, code: e.target.value })
+                }}
                 onKeyDown={handleEnter}
               />
             </div>
-          ))}
-        </form>
-        <button
-          className="btn w-full px-1 mt-5"
-          disabled={!isValid.email || !isValid.name || !isValid.password || !isValid.nickname}
-          onClick={() => {
-            handleSignUp()
-          }}
-        >
-          가입
-        </button>
+            <button
+              className="btn mt-5 w-full px-1"
+              disabled={user.code === ''}
+              onClick={() => {
+                handleSignUp()
+              }}
+            >
+              다음
+            </button>
+            <div className="pt-3 text-center">
+              <button
+                onClick={() => {
+                  setIsVerificationStage(false)
+                }}
+                className="text-body16sd text-main"
+              >
+                돌아가기
+              </button>
+            </div>
+          </div>
+        )}
         <button className="link mt-4">
           <Link className="text-body14rg text-slate-400" to="/sign/in">
             이미 계정이 있으신가요?

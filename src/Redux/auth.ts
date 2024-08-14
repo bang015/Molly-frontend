@@ -1,9 +1,18 @@
 import { configureStore, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { UserType } from '../interfaces/user'
 import axios from 'axios'
-import { AUTH_API, INIT, REFRESH_TOKEN, SIGN_IN, SIGN_UP } from '../utils/api-url'
+import {
+  AUTH_API,
+  CODE,
+  INIT,
+  LINK,
+  REFRESH_TOKEN,
+  RESET_PASSWORD,
+  SIGN_IN,
+  SIGN_UP,
+} from '../utils/api-url'
 import io, { Socket } from 'socket.io-client'
-import { SignUpInput, Token } from '@/interfaces/auth'
+import { ResetPassword, SignUpInput, Token } from '@/interfaces/auth'
 import { request } from './baseRequest'
 import { openSnackBar } from './snackBar'
 import { clearChat } from './chat'
@@ -12,12 +21,14 @@ interface AuthState {
   isLogin: boolean
   accessToken: string | null
   user: UserType | null
+  loading: boolean
 }
 
 const initialState: AuthState = {
   isLogin: !!sessionStorage.getItem('accessToken'),
   accessToken: sessionStorage.getItem('accessToken'),
   user: null,
+  loading: false,
 }
 export let socket: Socket | null = null
 
@@ -62,6 +73,45 @@ export const { setTokens, removeTokens, refreshTokens, getUserSuccess, getUserFa
 export const authStore = configureStore({ reducer: authSlice.reducer })
 export default authSlice.reducer
 
+// 이메일 인증번호 보내기
+export const sendVerificationCode = async (email: string) => {
+  try {
+    await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${CODE}`, {
+      data: { email },
+      method: 'POST',
+    })
+  } catch (e) {
+    alert('인증번호 전송에 실패했습니다.')
+  }
+}
+
+// 비밀번호 재설정 링크 보내기
+export const sendPasswordResetLink = async (email: string) => {
+  try {
+    await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${LINK}`, {
+      data: { email },
+      method: 'POST',
+    })
+  } catch (e: any) {
+    alert(e.response.data.message)
+  }
+}
+
+// 비밀번호 재설정
+export const resetPassword = async (data: ResetPassword) => {
+  try {
+    const response = await request(
+      `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${RESET_PASSWORD}`,
+      {
+        data,
+        method: 'POST',
+      },
+    )
+    if (response.status === 200) alert(response.data.message)
+  } catch (e: any) {
+    alert(e.response.data.message)
+  }
+}
 // 회원가입
 export const createUser = createAsyncThunk(
   'auth/createUser',
@@ -78,7 +128,7 @@ export const createUser = createAsyncThunk(
         dispatch(setTokens(response.data))
       }
     } catch (e: any) {
-      dispatch(openSnackBar('회원가입에 실패했습니다.'))
+      dispatch(openSnackBar(e.response.data.message))
     }
   },
 )

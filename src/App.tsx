@@ -10,10 +10,11 @@ import ExplorePage from './pages/explore'
 import TagsPage from './pages/tag'
 import MessengerPage from './pages/messenger'
 import { useDispatch, useSelector } from 'react-redux'
-import { authStore, getUser, initializeSocket, refreshToken, socket } from './redux/auth'
+import { getUser, initializeSocket, refreshToken, socket } from './redux/auth'
 import { Snackbar } from '@mui/material'
 import PasswordReset from './pages/auth/passwordReset'
 import { closeSnackBar } from './redux/snackBar'
+import EmailReqeust from './pages/auth/emailRequest'
 
 const App: React.FC = () => {
   const { isLogin, user } = useSelector((state: RootState) => state.authReducer)
@@ -69,6 +70,7 @@ const App: React.FC = () => {
         <Route path="/sign/up" element={!isLogin ? <SignUpPage /> : <Navigate to="/" />} />
         <Route path="/sign/in" element={!isLogin ? <SignInPage /> : <Navigate to="/" />} />
         <Route path="/auth/password/reset" element={<PasswordReset />} />
+        <Route path="/auth/email/request" element={<EmailReqeust />} />
         <Route
           path="/profile/:nickname"
           element={isLogin ? <ProfilePage /> : <Navigate to="/sign/in" />}

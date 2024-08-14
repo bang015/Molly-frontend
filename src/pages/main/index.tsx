@@ -6,24 +6,33 @@ import { SuggestList } from '@/components/follow/suggestList'
 import { Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import PostList from '@/components/post/postList'
-import { getMainPost } from '@/redux/postList'
+import { getExplorePost, getMainPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 const Main: React.FC = () => {
   const dispatch = useDispatch()
   const limit = 5
   const navigate = useNavigate()
   const postList = useSelector((state: RootState) => state.postListReducer.posts.main)
-  const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.main)
-
-  const [page, setPage] = useState(1)
+  const explorePostList = useSelector((state: RootState) => state.postListReducer.posts.explore)
+  const mainTotalPages = useSelector((state: RootState) => state.postListReducer.totalPages.main)
+  const exploreTotalPages = useSelector(
+    (state: RootState) => state.postListReducer.totalPages.explore,
+  )
+  const [mainPage, setMainPage] = useState(1)
+  const [explorePage, setExplorePage] = useState(1)
   useEffect(() => {
-    dispatch(getMainPost(page) as any)
-  }, [page])
+    dispatch(getMainPost(mainPage) as any)
+  }, [mainPage])
+  useEffect(() => {
+    dispatch(getExplorePost({ page: explorePage, limit: 5 }) as any)
+  }, [explorePage])
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
-        if (page < totalPages) {
-          setPage(prevPage => prevPage + 1)
+        if (mainPage < mainTotalPages) {
+          setMainPage(prevPage => prevPage + 1)
+        } else if (explorePage < exploreTotalPages) {
+          setExplorePage(prevPage => prevPage + 1)
         }
       }
     }
@@ -31,12 +40,16 @@ const Main: React.FC = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [page, totalPages])
+  }, [mainPage, mainTotalPages, explorePage, exploreTotalPages])
   return (
     <section className="relative flex size-full overflow-auto">
       <Nav />
       <div className={`ml-[16.6667%] w-4/6 min-w-body510`}>
         {postList.map(post => (
+          <PostList key={post.id} post={post} />
+        ))}
+        <div className="m-auto w-body510 px-5 text-body20sd">추천 게시물</div>
+        {explorePostList.map(post => (
           <PostList key={post.id} post={post} />
         ))}
       </div>

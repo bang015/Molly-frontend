@@ -135,21 +135,24 @@ export const getMainPost = createAsyncThunk<{ postList: PostType[]; totalPages: 
 
 export const getExplorePost = createAsyncThunk<
   { postList: PostType[]; totalPages: number },
-  number
->('postList/getExplorePost', async (page: number, { dispatch }) => {
-  try {
-    const response = await request(
-      `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}?page=${page}`,
-      {
-        method: 'GET',
-        headers: {},
-      },
-    )
-    return response.data
-  } catch (e: any) {
-    dispatch(openSnackBar(e.response.data.message))
-  }
-})
+  { page: number; limit: number }
+>(
+  'postList/getExplorePost',
+  async ({ page, limit }: { page: number; limit: number }, { dispatch }) => {
+    try {
+      const response = await request(
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}?page=${page}&limit=${limit}`,
+        {
+          method: 'GET',
+          headers: {},
+        },
+      )
+      return response.data
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
+  },
+)
 
 export const getPostDetail = createAsyncThunk<PostType, number>(
   'postList/getPostDetail',
