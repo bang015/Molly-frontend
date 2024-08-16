@@ -11,7 +11,7 @@ export const SuggestList: React.FC<SuggestListProps> = ({ limit }) => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(clearFollowList())
-    dispatch(getSuggestFollow({ limit }) as any)
+    dispatch(getSuggestFollow(limit) as any)
   }, [limit])
   const suggestList = useSelector((state: RootState) => state.followReducer.list.suggest)
 

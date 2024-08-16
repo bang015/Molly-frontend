@@ -35,58 +35,42 @@ const followSlice = createSlice({
   name: 'follow',
   initialState,
   reducers: {
-    followUserSuccess: (state, action: PayloadAction<boolean>) => {
-      state.followed = action.payload
-    },
-
-    getSuggestFollowSuccess: (
-      state,
-      action: PayloadAction<{
-        suggestFollowerList: FollowType[]
-        followed: boolean
-      }>,
-    ) => {
-      state.list.suggest = action.payload.suggestFollowerList
-      state.followed = action.payload.followed
-    },
-    getFollowingSuccess: (
-      state,
-      action: PayloadAction<{ followings: FollowType[]; totalPages: number }>,
-    ) => {
-      const followings = [...state.list.following, ...action.payload.followings]
-      const filter = new Map(followings.map(f => [f.id, f]))
-      state.list.following = Array.from(filter.values())
-      state.totalPages.following = action.payload.totalPages
-    },
-    getFollowerSuccess: (
-      state,
-      action: PayloadAction<{ followers: FollowType[]; totalPages: number }>,
-    ) => {
-      const followers = [...state.list.follower, ...action.payload.followers]
-      const filter = new Map(followers.map(f => [f.id, f]))
-      state.list.follower = Array.from(filter.values())
-      state.totalPages.follower = action.payload.totalPages
-    },
     clearFollowList: state => {
       state.list.follower = []
       state.list.following = []
       state.list.suggest = []
     },
   },
+  extraReducers: builder => {
+    builder
+      .addCase(followUser.fulfilled, (state, action) => {
+        state.followed = action.payload
+      })
+      .addCase(getSuggestFollow.fulfilled, (state, action) => {
+        state.list.suggest = action.payload.suggestFollowerList
+        state.followed = action.payload.followed
+      })
+      .addCase(getFollowing.fulfilled, (state, action) => {
+        const followings = [...state.list.following, ...action.payload.followings]
+        const filter = new Map(followings.map(f => [f.id, f]))
+        state.list.following = Array.from(filter.values())
+        state.totalPages.following = action.payload.totalPages
+      })
+      .addCase(getFollower.fulfilled, (state, action) => {
+        const followers = [...state.list.follower, ...action.payload.followers]
+        const filter = new Map(followers.map(f => [f.id, f]))
+        state.list.follower = Array.from(filter.values())
+        state.totalPages.follower = action.payload.totalPages
+      })
+  },
 })
 
-export const {
-  followUserSuccess,
-  getSuggestFollowSuccess,
-  getFollowingSuccess,
-  getFollowerSuccess,
-  clearFollowList,
-} = followSlice.actions
+export const { clearFollowList } = followSlice.actions
 export default followSlice.reducer
 
-export const followUser = createAsyncThunk(
+export const followUser = createAsyncThunk<boolean, number>(
   'follow/followUser',
-  async ({ followUserId }: { followUserId: number }, { dispatch }) => {
+  async (followUserId: number, { dispatch }) => {
     try {
       const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
         data: { followUserId },
@@ -94,38 +78,41 @@ export const followUser = createAsyncThunk(
         headers: {},
       })
       if (response.status === 200) {
-        const result = response.data
-        dispatch(followUserSuccess(result))
         dispatch(getUser())
       }
+      return response.data
     } catch (e: any) {
       dispatch(openSnackBar(e.response.data.message))
     }
   },
 )
 
-export const getSuggestFollow = createAsyncThunk(
-  'follow/getFollow',
-  async ({ limit }: { limit: number }, { dispatch }) => {
-    try {
-      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
-        method: 'GET',
-        headers: {},
-        params: {
-          limit: limit,
-        },
-      })
-      if (response.status === 200) {
-        const result = response.data
-        dispatch(getSuggestFollowSuccess(result))
-      }
-    } catch (e: any) {
-      dispatch(openSnackBar(e.response.data.message))
-    }
+export const getSuggestFollow = createAsyncThunk<
+  {
+    suggestFollowerList: FollowType[]
+    followed: boolean
   },
-)
+  number
+>('follow/getFollow', async (limit: number, { dispatch }) => {
+  try {
+    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
+      method: 'GET',
+      headers: {},
+      params: {
+        limit: limit,
+      },
+    })
 
-export const getFollowing = createAsyncThunk(
+    return response.data
+  } catch (e: any) {
+    dispatch(openSnackBar(e.response.data.message))
+  }
+})
+
+export const getFollowing = createAsyncThunk<
+  { followings: FollowType[]; totalPages: number },
+  { userId: number; page: number; keyword: string }
+>(
   'follow/getFollowing',
   async (
     { userId, page, keyword }: { userId: number; page: number; keyword: string },
@@ -136,16 +123,17 @@ export const getFollowing = createAsyncThunk(
         `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWING}/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
-      if (response.status === 200) {
-        dispatch(getFollowingSuccess(response.data))
-      }
+      return response.data
     } catch (e: any) {
       dispatch(openSnackBar(e.response.data.message))
     }
   },
 )
 
-export const getFollower = createAsyncThunk(
+export const getFollower = createAsyncThunk<
+  { followers: FollowType[]; totalPages: number },
+  { userId: number; page: number; keyword: string }
+>(
   'follow/getFollower',
   async (
     { userId, page, keyword }: { userId: number; page: number; keyword: string },
@@ -156,9 +144,7 @@ export const getFollower = createAsyncThunk(
         `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWER}/${userId}/?page=${page}&query=${keyword}`,
         { method: 'GET' },
       )
-      if (response.status === 200) {
-        dispatch(getFollowerSuccess(response.data))
-      }
+      return response.data
     } catch (e: any) {
       dispatch(openSnackBar(e.response.data.message))
     }

@@ -53,7 +53,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   }
   const handleFollow = () => {
     const followUserId = profile?.id!
-    dispatch(followUser({ followUserId }) as any)
+    dispatch(followUser(followUserId) as any)
   }
   const EditProfileOpen = () => {
     setEditProfile(true)

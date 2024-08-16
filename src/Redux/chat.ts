@@ -43,7 +43,6 @@ const chatSlice = createSlice({
       state.list.message = messages
     },
     updateChatRoomInfo: (state, action) => {
-      console.log(action.payload)
       if (state.list.room.find(room => room.roomId === action.payload.roomId)) {
         state.list.room.map(room => {
           if (room.roomId === action.payload.roomId) {
@@ -88,7 +87,6 @@ const chatSlice = createSlice({
       state.roomId = null
     },
     userLeft: (state, action) => {
-      console.log(action.payload)
       if (action.payload.roomId === state.roomId) {
         state.members = action.payload.members
         const messages = updateMessagesByDate(action.payload.sysMessage, state.list.message)
@@ -208,11 +206,9 @@ export const chatRoomDetails = createAsyncThunk<
 })
 
 export const getUnreadCount = createAsyncThunk<number>('/chat/getUnreadCount', async () => {
-  try {
     const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${CHAT_APT}/unread`, {
       method: 'GET',
       headers: {},
     })
     return response.data
-  } catch {}
 })

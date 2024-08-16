@@ -23,7 +23,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isLogin) {
       dispatch(getUser() as any)
-      initializeSocket(`${sessionStorage.getItem('accessToken')}`)
+      initializeSocket(`${localStorage.getItem('accessToken')}`)
       if (socket) {
         socket.on('connect_error', e => {
           if (e.message === 'Token expired') {

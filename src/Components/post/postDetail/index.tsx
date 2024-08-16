@@ -23,7 +23,6 @@ import {
   getMyCommentByPost,
   updateComment,
 } from '@/redux/comment'
-import { addCommentType, CommentType } from '@/interfaces/comment'
 import { CommentList } from '../comment/commentList'
 import { followUser, followedCheck } from '@/redux/follow'
 import { getPostLike, likePost } from '@/redux/like'
@@ -35,51 +34,30 @@ import { formatTextToHTML } from '@/utils/format/formatter'
 
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
-  const post = useSelector((state: RootState) => state.postListReducer.postDetail)
-  const { updatePending, updateCommentId, updatedComment, deleteComment } = useSelector(
-    (state: RootState) => state.commentReducer,
-  )
-  const { followed } = useSelector((state: RootState) => state.followReducer)
-  const { user } = useSelector((state: RootState) => state.authReducer)
-  const userPostList = useSelector((state: RootState) => state.postListReducer.posts.user)
-  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const navigate = useNavigate()
+  const { user } = useSelector((state: RootState) => state.authReducer)
+  const post = useSelector((state: RootState) => state.postListReducer.postDetail)
+  const loading = useSelector((state: RootState) => state.postListReducer.loading.detail)
+  const { editingComment } = useSelector((state: RootState) => state.commentReducer)
+  const commentList = useSelector((state: RootState) => state.commentReducer.commentList)
+  const totalPages = useSelector((state: RootState) => state.commentReducer.totalPages.comment)
+  const { followed } = useSelector((state: RootState) => state.followReducer)
+  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
   const textFieldRef = useRef<HTMLInputElement | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const [comment, setComment] = useState('')
   const [commentId, setCommentId] = useState<number | null>(null)
   const [page, setPage] = useState(1)
-  const [commentList, setCommentList] = useState<CommentType[]>([])
-  const [totalPages, setTotalPages] = useState<number>(0)
-  const [newCommentList, setNewCommentList] = useState<{ id: number; comment: CommentType }[]>([])
   const [likeCount, setLikeCount] = useState<number>(0)
   const [checkLiked, setCheckLiked] = useState(false)
   const [checkFollowed, setCheckFollowed] = useState(false)
-  const [loading, setLoading] = useState(true)
   useEffect(() => {
     dispatch(getPostDetail(id!) as any)
-
-    const fetchData = async () => {
-      const comment = await dispatch(getComment({ postId: id!, page }) as any)
-      if (page === 1) {
-        const myComment = await dispatch(getMyCommentByPost(id!) as any)
-
-        setCommentList([...myComment.payload, ...comment.payload.commentList])
-      } else {
-        setCommentList(prevList => [...prevList, ...comment.payload.commentList])
-      }
-      setTotalPages(comment.payload.totalPages)
+    dispatch(getComment({ postId: id!, page }) as any)
+    if (page === 1) {
+      dispatch(getMyCommentByPost(id!) as any)
     }
-    fetchData()
   }, [id!, page])
-  useEffect(() => {
-    if (user?.id === post?.userId && userPostList.length) {
-      const result = userPostList.filter(post => post.id === id!)
-      if (result.length === 0) {
-        ;() => dispatch(closeModal())
-      }
-    }
-  }, [userPostList, id!, post])
 
   useEffect(() => {
     followCheck()
@@ -98,38 +76,16 @@ const PostDetail: React.FC = () => {
     }
     like()
   }, [id!, checkLiked])
+  
   useEffect(() => {
-    if (deleteComment.length !== 0) {
-      const CommentList = commentList.filter(item => !deleteComment.includes(item.id))
-      setCommentList(CommentList)
-    }
-  }, [deleteComment])
-
-  useEffect(() => {
-    if (updatedComment) {
-      const updatedCommentIndex = commentList.findIndex(map => map.id === updatedComment?.id)
-      if (updatedCommentIndex !== -1) {
-        const updatedCommentList = [...commentList]
-        updatedCommentList[updatedCommentIndex] = updatedComment
-        setCommentList(updatedCommentList)
+    if (editingComment) {
+      const originalText = editingComment.content.replace(/<[^>]+>/g, '')
+      setComment(originalText)
+      if (textFieldRef.current) {
+        textFieldRef.current.focus()
       }
     }
-  }, [updatedComment])
-
-  useEffect(() => {
-    if (updatePending) {
-      if (updateCommentId) {
-        const originalText = updateCommentId.content.replace(/<[^>]+>/g, '')
-        setComment(originalText)
-        if (textFieldRef.current) {
-          textFieldRef.current.focus()
-        }
-      }
-    }
-  }, [updatePending, updateCommentId])
-  useEffect(() => {
-    post ? setLoading(false) : setLoading(true)
-  }, [post])
+  }, [editingComment])
   const goToProfilePage = () => {
     if (post) {
       navigate(`/profile/${post.user.nickname}`)
@@ -161,31 +117,17 @@ const PostDetail: React.FC = () => {
   }
   const handlePostComment = async () => {
     const commentContent = formatTextToHTML(comment)
-    const commentInfo: addCommentType = {
-      postId: id!,
-      content: commentContent,
-      commentId: commentId,
-    }
-    const newComment = await dispatch(addComment(commentInfo) as any)
-    if (newComment.payload.commentId === null) {
-      setCommentList([newComment.payload, ...commentList])
-    } else {
-      const id: number = newComment.payload.commentId
-      const commentlist = { id, comment: newComment.payload }
-      setNewCommentList([...newCommentList, commentlist])
-    }
+    dispatch(addComment({ postId: id!, content: commentContent, commentId: commentId }) as any)
     setComment('')
     setCommentId(null)
   }
   const handleUpdateComment = async () => {
     const commentContent = formatTextToHTML(comment)
-    const id = updateCommentId?.id
     const content = commentContent
-    if (id) {
-      dispatch(updateComment({ id, content }) as any)
+    if (editingComment) {
+      dispatch(updateComment({ id: editingComment.id, content }) as any)
     }
     setComment('')
-    dispatch(clearComment())
   }
   const handleSubComment = (nickname: string, commentId: number) => {
     if (textFieldRef.current) {
@@ -199,7 +141,7 @@ const PostDetail: React.FC = () => {
   }
   const handleFollow = () => {
     const followUserId = post?.userId!
-    dispatch(followUser({ followUserId }) as any)
+    dispatch(followUser(followUserId) as any)
   }
   const handleLike = async () => {
     const check = await likePost(id!)
@@ -209,7 +151,7 @@ const PostDetail: React.FC = () => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
       if (comment.trim() !== '') {
-        if (updatePending) {
+        if (editingComment) {
           handleUpdateComment()
         } else {
           handlePostComment()
@@ -342,8 +284,6 @@ const PostDetail: React.FC = () => {
                             key={comment.id}
                             comment={comment}
                             handleSubComment={handleSubComment}
-                            newCommentList={newCommentList}
-                            setNewCommentList={setNewCommentList}
                           />
                         ))}
                         {totalPages > page && (
@@ -384,7 +324,7 @@ const PostDetail: React.FC = () => {
                           paddingRight: '8px',
                           transition: 'none',
                         },
-                        endAdornment: updatePending ? (
+                        endAdornment: editingComment ? (
                           <InputAdornment position="end">
                             <Button disabled={comment === ''} onClick={handleUpdateComment}>
                               수정

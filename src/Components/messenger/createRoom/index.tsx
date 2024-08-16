@@ -4,7 +4,6 @@ import { getSearchResult } from '@/redux/search'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { createChatRoom } from '@/redux/chat'
 import { socket } from '@/redux/auth'
 interface createRoomProps {
   open: boolean

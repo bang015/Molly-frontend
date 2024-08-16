@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import './index.css'
 import { useDispatch, useSelector } from 'react-redux'
 import Nav from '@/components/nav/navBar'
 import { SuggestList } from '@/components/follow/suggestList'

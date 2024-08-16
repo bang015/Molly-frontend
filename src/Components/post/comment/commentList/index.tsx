@@ -1,38 +1,36 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { CommentType } from '@/interfaces/comment'
 import { SubCommentList } from '../subCommentList'
 import { Avatar, IconButton } from '@mui/material'
 import { displayCreateAt } from '@/utils/format/moment'
-import { NewCommentList } from '../newCommentList'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { openSubModal } from '@/redux/modal'
+import { getSubComment, setShowSubComments } from '@/redux/comment'
 
 interface commentListProps {
   comment: CommentType
   handleSubComment: (nickname: string, commentId: number) => void
-  newCommentList: { id: number; comment: CommentType }[]
-  setNewCommentList: React.Dispatch<React.SetStateAction<{ id: number; comment: CommentType }[]>>
 }
-export const CommentList: React.FC<commentListProps> = ({
-  comment,
-  handleSubComment,
-  newCommentList,
-  setNewCommentList,
-}) => {
-  const [isSubCommentVisible, setIsSubCommentVisible] = useState(false)
-  const [newSub, setNewSub] = useState<boolean>(false)
+export const CommentList: React.FC<commentListProps> = ({ comment, handleSubComment }) => {
+  const [page, setPage] = useState(1)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  useEffect(() => {
-    const check = newCommentList.some(c => c.id === comment.id)
-    if (check) setNewSub(true)
-  }, [newCommentList])
-  const handleSubCommentList = () => {
-    setIsSubCommentVisible(!isSubCommentVisible)
-    const updatedCommentList = newCommentList.filter(item => item.id !== comment.id)
-    setNewCommentList(updatedCommentList)
+  const totalSubCommentPage = Math.ceil(comment.subCommentsCount / 3)
+  const handleSubCommentList = useCallback(() => {
+    dispatch(setShowSubComments(comment.id))
+    dispatch(getSubComment({ id: comment.id, page }) as any)
+  }, [comment.id, dispatch, page])
+  const handleLoadMoreSubComments = () => {
+    setPage(prevPage => {
+      if (totalSubCommentPage > page) {
+        const nextPage = prevPage + 1
+        dispatch(getSubComment({ id: comment.id, page: nextPage }) as any)
+        return nextPage
+      }
+      return prevPage
+    })
   }
   const goToProfilePage = () => {
     if (comment) {
@@ -68,7 +66,7 @@ export const CommentList: React.FC<commentListProps> = ({
           </div>
         </div>
         <IconButton
-        className='my-1'
+          className="my-1"
           aria-label="delete"
           onClick={() => {
             dispatch(
@@ -82,29 +80,35 @@ export const CommentList: React.FC<commentListProps> = ({
           <MoreHorizIcon />
         </IconButton>
       </div>
-      {(comment.subCommentsCount! > 0 || newSub) && (
+      {comment.subCommentsCount > 0 && (
         <div className="ml-14">
           <button className="flex" onClick={handleSubCommentList}>
             <span className="text-body12sd">
-              {isSubCommentVisible ? '답글 숨기기' : `답글 보기(${comment.subCommentsCount}개)`}
+              {comment.showSubComments ? '답글 숨기기' : `답글 보기(${comment.subCommentsCount}개)`}
             </span>
           </button>
-          {isSubCommentVisible ? (
+          {comment.showSubComments && comment.subComment && (
             <div>
-              <SubCommentList
-                postId={comment.postId}
-                id={comment.id}
-                newCommentList={newCommentList}
-                subcommentCount={comment.subCommentsCount!}
-              />
-            </div>
-          ) : (
-            <div>
-              <NewCommentList
-                postId={comment.postId}
-                id={comment.id}
-                newCommentList={newCommentList}
-              />
+              {comment.subComment.map(comment => (
+                <SubCommentList key={comment.id} comment={comment} />
+              ))}
+              {comment.subCommentsCount! > comment.subComment.length && (
+                <button
+                  className="text-body12sd"
+                  onClick={() => {
+                    if (
+                      comment.subCommentsCount - comment.subComment.length >= 1 &&
+                      comment.subComment.length < 3
+                    ) {
+                      dispatch(getSubComment({ id: comment.id, page }) as any)
+                    } else {
+                      handleLoadMoreSubComments()
+                    }
+                  }}
+                >
+                  {`답글 더 보기(${comment.subCommentsCount - comment.subComment.length}개)`}
+                </button>
+              )}
             </div>
           )}
         </div>

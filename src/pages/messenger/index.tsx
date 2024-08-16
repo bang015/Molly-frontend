@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Nav from '@/components/nav/navBar'
-import './index.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import EditIcon from '@mui/icons-material/Edit'
 import CreateRoom from '@/components/messenger/createRoom'
 import { resetResult } from '@/redux/search'
-import { socket } from '@/redux/auth'
 import ChatRoom from '@/components/messenger/chatRoom'
 import ChatRoomList from '@/components/messenger/chatRoomList'
-import { chatRoomList, clearChatRoom, updateChatRoomInfo } from '@/redux/chat'
+import { clearChatRoom } from '@/redux/chat'
 
 const Messenger: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.authReducer)

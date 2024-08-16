@@ -2,7 +2,7 @@ import { Modal } from '@mui/material'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
-import { deleteComment, updatePending } from '@/redux/comment'
+import { deleteComment, setEditingComment } from '@/redux/comment'
 import { closeSubModal } from '@/redux/modal'
 
 const CommentActionModal: React.FC = () => {
@@ -15,12 +15,12 @@ const CommentActionModal: React.FC = () => {
   const id = comment.id
   const userId = comment.userId
   const removeComment = () => {
-    dispatch(deleteComment({ id }) as any)
+    dispatch(deleteComment({id, commentId: comment.commentId}) as any)
     dispatch(closeSubModal())
   }
 
   const updateComment = () => {
-    dispatch(updatePending(comment))
+    dispatch(setEditingComment(comment))
     dispatch(closeSubModal())
   }
   return (

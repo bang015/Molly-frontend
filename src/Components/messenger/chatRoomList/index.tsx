@@ -46,7 +46,6 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [page, totalPages])
-  console.log(roomList)
   return (
     <>
       {roomList.length > 0 &&
@@ -55,7 +54,6 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
             key={room.roomId}
             className="flex items-center rounded p-5 hover:bg-gray-100"
             onClick={() => {
-              console.log(room.roomId)
               dispatch(setRoomId({ roomId: room.roomId }))
             }}
           >

@@ -21,6 +21,11 @@ interface PostListState {
     bookmark: number
     tag: number
   }
+  loading: {
+    explore: boolean
+    main: boolean
+    detail: boolean
+  }
 }
 
 const initialState: PostListState = {
@@ -38,6 +43,11 @@ const initialState: PostListState = {
     user: 1,
     bookmark: 1,
     tag: 1,
+  },
+  loading: {
+    explore: false,
+    main: false,
+    detail: false,
   },
 }
 const postListSlice = createSlice({
@@ -74,17 +84,25 @@ const postListSlice = createSlice({
   },
   extraReducers: builder => {
     builder
+      .addCase(getMainPost.pending, state => {
+        state.loading.main = true
+      })
       .addCase(getMainPost.fulfilled, (state, action) => {
         const post = [...state.posts.main, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.main = Array.from(filter.values())
         state.totalPages.main = action.payload.totalPages
+        state.loading.main = false
+      })
+      .addCase(getExplorePost.pending, state => {
+        state.loading.explore = true
       })
       .addCase(getExplorePost.fulfilled, (state, action) => {
         const post = [...state.posts.explore, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.explore = Array.from(filter.values())
         state.totalPages.explore = action.payload.totalPages
+        state.loading.explore = false
       })
       .addCase(getTagPost.fulfilled, (state, action) => {
         const post = [...state.posts.tag.posts, ...action.payload.postList]
@@ -105,8 +123,12 @@ const postListSlice = createSlice({
         state.posts.bookmark = Array.from(filter.values())
         state.totalPages.bookmark = action.payload.totalPages
       })
+      .addCase(getPostDetail.pending, state => {
+        state.loading.detail = true
+      })
       .addCase(getPostDetail.fulfilled, (state, action) => {
         state.postDetail = action.payload
+        state.loading.detail = false
       })
   },
 })

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ResultType } from '@/interfaces/search'
 import { Avatar } from '@mui/material'
 import TagIcon from '@/icons/tag-icon.svg?react'

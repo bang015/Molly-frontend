@@ -25,53 +25,69 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  isLogin: !!sessionStorage.getItem('accessToken'),
-  accessToken: sessionStorage.getItem('accessToken'),
+  isLogin: !!localStorage.getItem('accessToken'),
+  accessToken: localStorage.getItem('accessToken'),
   user: null,
   loading: false,
 }
 export let socket: Socket | null = null
+// 유저 정보
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     setTokens: (state, action: PayloadAction<Token>) => {
-      sessionStorage.setItem('accessToken', action.payload.accessToken)
-      sessionStorage.setItem('refreshToken', action.payload.refreshToken)
+      localStorage.setItem('accessToken', action.payload.accessToken)
+      localStorage.setItem('refreshToken', action.payload.refreshToken)
       state.isLogin = true
       state.accessToken = action.payload.accessToken
     },
     removeTokens: state => {
-      sessionStorage.removeItem('accessToken')
-      sessionStorage.removeItem('refreshToken')
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
       state.isLogin = false
       state.accessToken = null
       state.user = null
       socket?.disconnect()
     },
     refreshTokens: (state, action: PayloadAction<Token>) => {
-      sessionStorage.setItem('accessToken', action.payload.accessToken)
-      sessionStorage.setItem('refreshToken', action.payload.refreshToken)
+      localStorage.setItem('accessToken', action.payload.accessToken)
+      localStorage.setItem('refreshToken', action.payload.refreshToken)
       state.accessToken = action.payload.accessToken
     },
-    getUserSuccess: (state, action) => {
-      state.user = action.payload
-    },
-    getUserFail: state => {
-      state.isLogin = false
-      state.accessToken = null
-      state.user = null
-      sessionStorage.removeItem('accessToken')
-      sessionStorage.removeItem('refreshToken')
-      socket?.disconnect()
-    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.user = action.payload
+      })
+      .addCase(getUser.rejected, state => {
+        state.isLogin = false
+        state.accessToken = null
+        state.user = null
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        socket?.disconnect()
+      })
   },
 })
-export const { setTokens, removeTokens, refreshTokens, getUserSuccess, getUserFail } =
-  authSlice.actions
-export const authStore = configureStore({ reducer: authSlice.reducer })
+export const { setTokens, removeTokens, refreshTokens } = authSlice.actions
 export default authSlice.reducer
+export const getUser = createAsyncThunk<UserType | null>(
+  'auth/getUser',
+  async (_, { dispatch }) => {
+    try {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}`, {
+        headers: {},
+      })
+      return response.data
+    } catch (e: any) {
+      dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
+      return null
+    }
+  },
+)
 
 // 이메일 인증번호 보내기
 export const sendVerificationCode = async (email: string) => {
@@ -166,21 +182,6 @@ export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) 
   }
 })
 
-// 유저 정보
-export const getUser = createAsyncThunk('auth/getUser', async (_, { dispatch }) => {
-  try {
-    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}`, {
-      headers: {},
-    })
-    if (response.status === 200) {
-      const result = response.data
-      dispatch(getUserSuccess(result))
-    }
-  } catch (e: any) {
-    dispatch(getUserFail())
-    dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
-  }
-})
 // 소켓 연결
 export const initializeSocket = (token: string) => {
   socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
@@ -192,7 +193,7 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${REFRESH_TOKEN}`,
-      { refreshToken: sessionStorage.getItem('refreshToken') },
+      { refreshToken: localStorage.getItem('refreshToken') },
     )
     if (response.status === 200) {
       if (socket) {
@@ -206,3 +207,5 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
     dispatch(removeTokens())
   }
 })
+
+export const authStore = configureStore({ reducer: authSlice.reducer })

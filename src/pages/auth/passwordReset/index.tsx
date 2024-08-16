@@ -58,7 +58,6 @@ const PasswordReset: React.FC = () => {
       navigate('/sign/in')
     }
   }
-  console.log(code, email, newPassword)
   return (
     <section className="flex size-full items-center justify-center bg-background p-4">
       <div className="relative flex w-[480px] flex-col items-center rounded-xl bg-white p-8 shadow-modal">
