@@ -15,7 +15,9 @@
   <img src="https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socket.io&logoColor=white"/>
   <img src="https://img.shields.io/badge/MUI-007fff?style=flat&logo=mui&logoColor=white"/>
 </div>
-<img width="2242" alt="image" src="https://github.com/bang015/Molly-frontend/assets/137017329/5990a666-26b1-43cd-a185-b81c54312aa4">
+
+<img width="2242" alt="image" src="https://github.com/bang015/Molly-frontend/assets/137017329/de2d441a-e431-45ea-bdbb-4ee7e8b9e8e9">
+
 <br>
 <h2>⚙ 핵심 기능</h2>
 <h3>[회원가입 / 로그인]</h3>
@@ -24,13 +26,15 @@
   <li>localStorage를 사용하여 유저별 token 발급 및 로그인 상태 유지</li>
 </ul>
 
+![회원가입](./readme_assets/sign.gif)
 <h3>[팔로우 추천]</h3>
 <ul>
   <li>회원가입 후 첫 로그인 시 메인페이지가 아닌 추천 팔로우 페이지로 이동</li>
   <li>랜덤으로 유저들을 팔로우 추천</li>
   <li>본인을 팔로우하고있는 유저들을 추천</li>
 </ul>
-![추천 팔로우](https://github.com/bang015/Molly-frontend/assets/137017329/3e6c2625-3941-41b4-915d-2da930abd4cd)
+
+![추천 팔로우](./readme_assets/segFollw.gif)
 
 <h3>[메인 페이지]</h3>
 <ul>
@@ -39,12 +43,15 @@
   <li>댓글 모두 보기 버튼을 통해 게시물 상세보기 가능</li>
 </ul>
 
+![메인페이지](./readme_assets/main.gif)
+
 <h3>[게시물 생성]</h3>
 <ul>
   <li>여러장의 이미지를 삽입할 수 있으며, 게시물의 내용과 태그를 작성할 수 있습니다</li>
   <li>이미지는 react-easy-crop를 이용하여 축소하거나 확대해 원하는 영역을 crop할 수 있습니다</li>
 </ul>
 
+![게시물 생성](./readme_assets/post.gif)
 <h3>[게시물 상세 보기]</h3>
 <ul>
   <li>모달을 이용하여 게시물 내용에 집중할 수 있도록 하였습니다</li>
@@ -52,11 +59,13 @@
   <li>작성한 댓글을 수정 또는 삭제 가능하며, 좋아요, 북마크 저장을 할 수 있습니다.</li>
 </ul>
 
+![게시물 상세](./readme_assets/detail.gif)
 <h3>[게시물 수정/삭제]</h3>
 <ul>
   <li>메인 페이지의 게시물 또는 상세보기 모달창을 통해 수정 또는 삭제할 수 있습니다</li>
 </ul>
 
+![게시물 수정](./readme_assets/edit.gif)
 <h3>[검색]</h3>
 <ul>
   <li>유저의 이름 또는 닉네임, 게시물의 태그를 검색 할 수 있습니다</li>
@@ -64,23 +73,28 @@
   <li>검색 내역은 저장되어 편리한 이용 가능합니다</li>
 </ul>
 
+![검색](./readme_assets/search.gif)
 <h3>[탐색]</h3>
 <ul>
   <li>본인과 팔로우중인 유저를 제외한 모든 유저의 게시물을 볼 수 있습니다</li>
   <li>게시물 미리보기 이미지를 클릭하면 상세 보기 가능</li>
 </ul>
 
+![탐색](./readme_assets/explore.gif)
 <h3>[메시지]</h3>
 <ul>
   <li>유저들과 실시간 채팅 기능을 제공합니다</li>
   <li>WebSocket를 이용하여 실시간 채팅, 알림을 받을 수 있습니다</li>
 </ul>
 
+![메시지](./readme_assets/message.gif)
 <h3>[프로필]</h3>
 <ul>
   <li>유저가 작성한 게시물, 팔로워와 팔로우를 볼 수 있습니다.</li>
   <li>본인의 프로필의 경우 북마크로 저장한 게시물을 볼 수 있고 프로필을 수정할 수 있습니다</li>
 </ul>
+
+![프로필](./readme_assets/profile.gif)
 <br>
 <h2>📺 시연 영상 </h2>
 <div>https://youtu.be/B1pdhy8Ys_0</div>
