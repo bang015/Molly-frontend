@@ -9,28 +9,23 @@ import {
 } from '@mui/material'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostDetail, getPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import { createdAt, displayCreateAt } from '@/utils/format/moment'
-import {
-  addComment,
-  clearComment,
-  getComment,
-  getMyCommentByPost,
-  updateComment,
-} from '@/redux/comment'
+
 import { CommentList } from '../comment/commentList'
-import { followUser, followedCheck } from '@/redux/follow'
-import { getPostLike, likePost } from '@/redux/like'
 import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
 import { closeModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
+import { clearPostDetail, getPostDetail } from '@/redux/postList'
+import { addComment, clearComment, getComment, getMyCommentByPost, updateComment } from '@/redux/comment'
+import { followedCheck, followUser } from '@/redux/follow'
+import { getPostLike, likePost } from '@/redux/like'
 
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
