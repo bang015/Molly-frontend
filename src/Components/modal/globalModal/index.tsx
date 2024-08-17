@@ -58,7 +58,7 @@ const GlobalModal: React.FC = () => {
   const { modalType, isOpen, subModalType, isSubOpen } = useSelector(
     (state: RootState) => state.modalReducer,
   )
-  if (!isOpen && !isSubOpen) return
+  if (!isOpen && !isSubOpen) return null
   const findModal = MODAL_COMPONENTS.find(modal => {
     return modal.type === modalType
   })

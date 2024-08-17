@@ -19,7 +19,7 @@ const PostActionModal: React.FC = () => {
   }, [user, post, Followed])
   const handleUnFollow = () => {
     const followUserId = post?.userId!
-    dispatch(followUser({ followUserId }) as any)
+    dispatch(followUser(followUserId) as any)
     dispatch(closeSubModal())
   }
   const followCheck = async () => {
@@ -51,7 +51,9 @@ const PostActionModal: React.FC = () => {
                 <button
                   className="w-[400px] border-b p-5 text-body14sd text-red-500"
                   onClick={() => {
-                    dispatch(openSubModal({ subModalType: 'DeleteModal', id: post?.id, post: post }))
+                    dispatch(
+                      openSubModal({ subModalType: 'DeleteModal', id: post?.id, post: post }),
+                    )
                   }}
                 >
                   삭제

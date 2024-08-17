@@ -10,7 +10,7 @@ const CommentActionModal: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user)
   const { comment, isOpen } = useSelector((state: RootState) => state.modalReducer)
   if (!comment) {
-    return
+    return null
   }
   const id = comment.id
   const userId = comment.userId

@@ -23,7 +23,7 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
     check()
   }, [user, checkFollowed])
   const handleFollow = (followUserId: number) => {
-    dispatch(followUser({ followUserId }) as any)
+    dispatch(followUser(followUserId) as any)
   }
   const goToProfilePage = () => {
     navigate(`/profile/${user.nickname}`)
