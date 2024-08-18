@@ -4,7 +4,7 @@ WORKDIR /app
 COPY client/package*.json ./
 RUN npm install
 COPY client/ ./
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Step 2: Serve React application with Nginx
 FROM nginx:alpine
