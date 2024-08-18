@@ -4,6 +4,7 @@ import { clearPostList, getUserPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { openModal } from '@/redux/modal'
+import { PostType } from '@/interfaces/post'
 interface userPostListProps {
   userId: number
 }
@@ -37,7 +38,7 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
     <div className="">
       {post.length ? (
         <div className="grid w-full grid-cols-3 gap-1">
-          {post.map(post => (
+          {post.map((post: PostType) => (
             <div
               key={post.id}
               onClick={() => {

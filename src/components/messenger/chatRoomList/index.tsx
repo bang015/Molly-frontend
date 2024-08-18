@@ -5,6 +5,8 @@ import { Avatar } from '@mui/material'
 import { displayCreateAt } from '@/utils/format/moment'
 import { chatRoomList, setRoomId, updateChatRoomInfo, userLeft } from '@/redux/chat'
 import { socket } from '@/redux/auth'
+import { UserType } from '@/interfaces/user'
+import { RoomListType } from '@/interfaces/chat'
 interface chatRoomListProps {}
 const ChatRoomList: React.FC<chatRoomListProps> = () => {
   const dispatch = useDispatch()
@@ -49,7 +51,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
   return (
     <>
       {roomList.length > 0 &&
-        roomList.map(room => (
+        roomList.map((room: RoomListType) => (
           <div
             key={room.roomId}
             className="flex items-center rounded p-5 hover:bg-gray-100"
@@ -63,7 +65,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
             <div className="flex flex-col">
               <div className="flex">
                 {room.members.length > 0 ? (
-                  room.members.map(member => (
+                  room.members.map((member: UserType) => (
                     <div key={member.id} className="pr-1 text-body16m">
                       {member.name}
                     </div>

@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux'
 import authReducer from './auth'
 import followReducer from './follow'
 import postListReducer from './postList'
@@ -9,6 +8,7 @@ import searchReducer from './search'
 import modalReducer from './modal'
 import snackBarReducer from './snackBar'
 import chatReducer from './chat'
+import { combineReducers } from 'redux'
 const rootReducer = combineReducers({
   authReducer,
   followReducer,
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   searchReducer,
   modalReducer,
   snackBarReducer,
-  chatReducer
+  chatReducer,
 })
 
 export default rootReducer

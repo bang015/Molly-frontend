@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFollower } from '@/redux/follow'
 import { RootState } from '@/redux'
 import FollowListUser from '../followListUser'
+import { FollowType } from '@/interfaces/follow'
 interface followerListProps {
   userId: number
   keyword: string
@@ -31,7 +32,7 @@ const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowCl
   }, [userId, page, keyword])
   return (
     <div className="follow">
-      {follow.map(user => (
+      {follow.map((user: FollowType) => (
         <div key={user.id} onClick={onFollowClose}>
           <FollowListUser key={user.id} user={user} type="" />
         </div>

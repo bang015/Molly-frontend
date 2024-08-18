@@ -8,12 +8,13 @@ import { Avatar, Button, Modal } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import getCroppedImg, { initializeImage } from '@/utils/image-crop'
-import { updatePostType, uploadPostType } from '@/interfaces/post'
+import { MediaListType, updatePostType, uploadPostType } from '@/interfaces/post'
 import { updatePost, uploadPost } from '@/redux/post'
 import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import { getSearchResult, resetResult } from '@/redux/search'
 import { closeModal, openModal } from '@/redux/modal'
 import { formatHTMLToText, formatTextToHTML } from '@/utils/format/formatter'
+import { ResultType } from '@/interfaces/search'
 
 const PostForm: React.FC = () => {
   const dispatch = useDispatch()
@@ -213,7 +214,7 @@ const PostForm: React.FC = () => {
                         transform: `translateX(-${currentImageIndex * 100}%)`,
                       }}
                     >
-                      {post.postMedias.map((media, index) => (
+                      {post.postMedias.map((media: MediaListType, index: number) => (
                         <img key={index} src={media.path} alt="img" />
                       ))}
                     </div>
@@ -307,7 +308,7 @@ const PostForm: React.FC = () => {
                 </div>
                 <div className="border-b py-1 text-center text-body14sd">tag</div>
                 <div className="h-[200px] overflow-y-scroll border-b">
-                  {result.map(r => (
+                  {result.map((r: ResultType) => (
                     <div
                       className="cursor-pointer border-b px-3 py-2"
                       key={r.id}

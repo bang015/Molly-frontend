@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { clearPostList, getTagPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import { openModal } from '@/redux/modal'
+import { PostType } from '@/interfaces/post'
 
 const Tag: React.FC = () => {
   const { tagName } = useParams()
@@ -52,7 +53,7 @@ const Tag: React.FC = () => {
           <div className="py-5 text-body18m">게시물</div>
           <div className="grid grid-cols-3 gap-1">
             {posts.length > 0 &&
-              posts.map(post => (
+              posts.map((post:PostType) => (
                 <div
                   key={post.id}
                   onClick={() => {

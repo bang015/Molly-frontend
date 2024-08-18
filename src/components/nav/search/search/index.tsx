@@ -4,6 +4,7 @@ import { deleteSearchHistory, getSearchHistory, getSearchResult, resetResult } f
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import Result from '../result'
+import { ResultType } from '@/interfaces/search'
 interface searchProps {
   isCollapsed: boolean
 }
@@ -87,7 +88,7 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
               <>
                 {history.length ? (
                   <>
-                    {history.map((res, index) => (
+                    {history.map((res: ResultType, index: number) => (
                       <Result key={index} result={res} type="history" />
                     ))}
                   </>
@@ -99,7 +100,7 @@ const Search: React.FC<searchProps> = ({ isCollapsed }) => {
               </>
             ) : (
               <>
-                {result.map((res, index) => (
+                {result.map((res: ResultType, index: number) => (
                   <Result key={index} result={res} type="result" />
                 ))}
               </>

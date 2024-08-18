@@ -31,6 +31,8 @@ import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
 import { closeModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
+import { MediaListType } from '@/interfaces/post'
+import { CommentType } from '@/interfaces/comment'
 
 const PostDetail: React.FC = () => {
   const dispatch = useDispatch()
@@ -76,7 +78,7 @@ const PostDetail: React.FC = () => {
     }
     like()
   }, [id!, checkLiked])
-  
+
   useEffect(() => {
     if (editingComment) {
       const originalText = editingComment.content.replace(/<[^>]+>/g, '')
@@ -208,7 +210,7 @@ const PostDetail: React.FC = () => {
                       transform: `translateX(-${currentImageIndex * 100}%)`,
                     }}
                   >
-                    {post.postMedias.map((media, index) => (
+                    {post.postMedias.map((media: MediaListType, index: number) => (
                       <img key={index} src={media.path} alt="img" />
                     ))}
                   </div>
@@ -279,7 +281,7 @@ const PostDetail: React.FC = () => {
                         </div>
                       </li>
                       <div className="pt-3">
-                        {commentList.map(comment => (
+                        {commentList.map((comment: CommentType) => (
                           <CommentList
                             key={comment.id}
                             comment={comment}

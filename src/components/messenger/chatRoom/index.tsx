@@ -9,6 +9,7 @@ import { addNewMessage, chatRoomDetails, updateUnreadCount } from '@/redux/chat'
 import { MessageType } from '@/interfaces/chat'
 import { openSubModal } from '@/redux/modal'
 import { useNavigate } from 'react-router-dom'
+import { UserType } from '@/interfaces/user'
 interface chatRoomProps {
   handleCeateOpen: () => void
 }
@@ -70,7 +71,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                     sx={{ width: 50, height: 50 }}
                   />
                   {members.length > 0 ? (
-                    members.map(member => (
+                    members.map((member: UserType) => (
                       <button
                         key={member.id}
                         onClick={() => {
@@ -97,49 +98,57 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
             {/* 메시지 */}
             <div className="flex size-full grow flex-col">
               <div className="flex max-h-[730px] grow flex-col-reverse overflow-y-scroll px-5">
-                {messageList.map((message, index) => (
-                  <div key={`${message.date}-${index}`}>
-                    <div className="p-3 text-center text-body14rg text-gray-500">
-                      {message.date}
-                    </div>
-                    {message.messages.map(msg => (
-                      <div key={msg.id}>
-                        {msg.type === 'USER' ? (
-                          <div className={`flex ${msg.userId === user?.id && 'justify-end'}`}>
-                            {msg.userId === user?.id ? (
-                              <div className="p-1">
-                                <div className="whitespace-pre-wrap rounded-xl bg-main px-3 py-2 text-white">
-                                  {msg.message}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center p-1">
-                                <div className="mr-2">
-                                  <Avatar
-                                    src={msg?.user?.profileImage?.path}
-                                    sx={{ width: 50, height: 50 }}
-                                  />
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <div className="p-1 text-body14m">{msg.user.name}</div>
-                                  <div className="whitespace-pre-wrap rounded-xl bg-gray-100 px-3 py-2">
+                {messageList.map(
+                  (
+                    message: {
+                      date: string
+                      messages: MessageType[]
+                    },
+                    index: number,
+                  ) => (
+                    <div key={`${message.date}-${index}`}>
+                      <div className="p-3 text-center text-body14rg text-gray-500">
+                        {message.date}
+                      </div>
+                      {message.messages.map((msg: MessageType) => (
+                        <div key={msg.id}>
+                          {msg.type === 'USER' ? (
+                            <div className={`flex ${msg.userId === user?.id && 'justify-end'}`}>
+                              {msg.userId === user?.id ? (
+                                <div className="p-1">
+                                  <div className="whitespace-pre-wrap rounded-xl bg-main px-3 py-2 text-white">
                                     {msg.message}
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="py-5 text-center">
-                            <span className="rounded-xl bg-gray-100 p-2 text-body14sd">
-                              {msg.message}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ))}
+                              ) : (
+                                <div className="flex items-center p-1">
+                                  <div className="mr-2">
+                                    <Avatar
+                                      src={msg?.user?.profileImage?.path}
+                                      sx={{ width: 50, height: 50 }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col justify-start">
+                                    <div className="p-1 text-body14m">{msg.user.name}</div>
+                                    <div className="whitespace-pre-wrap rounded-xl bg-gray-100 px-3 py-2">
+                                      {msg.message}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="py-5 text-center">
+                              <span className="rounded-xl bg-gray-100 p-2 text-body14sd">
+                                {msg.message}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ),
+                )}
               </div>
               {/* 인풋 */}
               <div className="p-5">
@@ -171,7 +180,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
               <div className="p-5 text-body18m">멤버</div>
               <div className="flex grow flex-col">
                 {members &&
-                  members.map(member => (
+                  members.map((member: UserType) => (
                     <div key={member.id}>
                       {member.id !== user?.id && (
                         <button

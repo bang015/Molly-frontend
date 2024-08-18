@@ -3,6 +3,7 @@ import { RootState } from '@/redux'
 import React, { useEffect } from 'react'
 import { clearFollowList, getSuggestFollow } from '@/redux/follow'
 import FollowListUser from '../followListUser'
+import { FollowType } from '@/interfaces/follow'
 interface SuggestListProps {
   limit: number
 }
@@ -17,7 +18,7 @@ export const SuggestList: React.FC<SuggestListProps> = ({ limit }) => {
 
   return (
     <div>
-      {suggestList.map(user => (
+      {suggestList.map((user: FollowType) => (
         <FollowListUser key={user.id} user={user} type="sug" />
       ))}
     </div>

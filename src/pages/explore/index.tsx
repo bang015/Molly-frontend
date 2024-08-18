@@ -4,6 +4,7 @@ import { getExplorePost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import Nav from '@/components/nav/navBar'
 import { openModal } from '@/redux/modal'
+import { PostType } from '@/interfaces/post'
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch()
@@ -33,7 +34,7 @@ const Explore: React.FC = () => {
       <div className={`ml-[16.6667%] w-full`}>
         <div className="m-auto w-[1000px] p-10">
           <div className="grid grid-cols-3 gap-1">
-            {allPostList.map(post => (
+            {allPostList.map((post: PostType) => (
               <button
                 key={post.id}
                 onClick={() => {

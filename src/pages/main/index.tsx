@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import PostList from '@/components/post/postList'
 import { getExplorePost, getMainPost } from '@/redux/postList'
 import { RootState } from '@/redux'
+import { PostType } from '@/interfaces/post'
 const Main: React.FC = () => {
   const dispatch = useDispatch()
   const limit = 5
@@ -44,11 +45,11 @@ const Main: React.FC = () => {
     <section className="relative flex size-full overflow-auto">
       <Nav />
       <div className={`ml-[16.6667%] w-4/6 min-w-body510`}>
-        {postList.map(post => (
+        {postList.map((post: PostType) => (
           <PostList key={post.id} post={post} />
         ))}
         <div className="m-auto w-body510 px-5 text-body20sd">추천 게시물</div>
-        {explorePostList.map(post => (
+        {explorePostList.map((post: PostType) => (
           <PostList key={post.id} post={post} />
         ))}
       </div>

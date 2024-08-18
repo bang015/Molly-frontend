@@ -116,9 +116,6 @@ const chatSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(createChatRoom.fulfilled, (state, action) => {
-        state.roomId = action.payload
-      })
       .addCase(chatRoomList.fulfilled, (state, action) => {
         const roomList = [...state.list.room, ...action.payload.roomList]
         const filter = new Map(roomList.map(r => [r.roomId, r]))
@@ -152,22 +149,6 @@ export const {
   userLeft,
 } = chatSlice.actions
 export default chatSlice.reducer
-
-export const createChatRoom = createAsyncThunk<number, { id: number; name: string }[]>(
-  'chat/create',
-  async (chatMembers: { id: number; name: string }[], { dispatch }) => {
-    try {
-      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${CHAT_APT}`, {
-        data: { chatMembers },
-        method: 'POST',
-        headers: {},
-      })
-      return response.data
-    } catch (e: any) {
-      dispatch(e.response.data.message || '오류가 발생했습니다.')
-    }
-  },
-)
 
 export const chatRoomList = createAsyncThunk<
   { roomList: RoomListType[]; totalPages: number },
@@ -206,9 +187,9 @@ export const chatRoomDetails = createAsyncThunk<
 })
 
 export const getUnreadCount = createAsyncThunk<number>('/chat/getUnreadCount', async () => {
-    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${CHAT_APT}/unread`, {
-      method: 'GET',
-      headers: {},
-    })
-    return response.data
+  const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${CHAT_APT}/unread`, {
+    method: 'GET',
+    headers: {},
+  })
+  return response.data
 })

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { socket } from '@/redux/auth'
+import { ResultType } from '@/interfaces/search'
 interface createRoomProps {
   open: boolean
   onClose: () => void
@@ -33,7 +34,6 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
   const handleCteartChat = () => {
     if (members.length > 0 && socket) {
       socket.emit('createChatRoom', { chatMembers: members })
-      // dispatch(createChatRoom(members) as any)
       setMembers([])
     }
     onClose()
@@ -80,7 +80,7 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
             </div>
           </div>
           <div className="grow overflow-y-scroll border-t">
-            {result.map(user => (
+            {result.map((user: ResultType) => (
               <label key={user.id} htmlFor={user.id.toString()}>
                 <div
                   className="flex cursor-pointer items-center rounded-lg p-2.5 hover:bg-gray-100"
