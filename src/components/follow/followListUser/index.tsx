@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { FollowType } from '@/interfaces/follow'
 import { followUser, followedCheck } from '@/redux/follow'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '@/redux'
+import { useDispatch } from 'react-redux'
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { closeSubModal } from '@/redux/modal'
 
 interface followListUserProps {
   user: FollowType
@@ -12,7 +12,6 @@ interface followListUserProps {
 }
 const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
   const navigate = useNavigate()
-  const checkFollowed = useSelector((state: RootState) => state.followReducer.followed)
   const dispatch = useDispatch()
   const [followed, setFollowed] = useState(false)
   useEffect(() => {
@@ -21,12 +20,14 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
       setFollowed(result)
     }
     check()
-  }, [user, checkFollowed])
-  const handleFollow = (followUserId: number) => {
-    dispatch(followUser(followUserId) as any)
+  }, [user])
+  const handleFollow = async (followUserId: number) => {
+    const result = await dispatch(followUser(followUserId) as any)
+    setFollowed(result.payload)
   }
   const goToProfilePage = () => {
     navigate(`/profile/${user.nickname}`)
+    dispatch(closeSubModal())
   }
   return (
     <div>

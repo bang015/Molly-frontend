@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { FOLLOW_API, FOLLOWER, FOLLOWING, INIT } from '../utils/api-url'
 import { FollowType } from '../interfaces/follow'
 import { request } from './baseRequest'
@@ -43,8 +43,8 @@ const followSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(followUser.fulfilled, (state, action) => {
-        state.followed = action.payload
+      .addCase(followUser.fulfilled, state => {
+        state.followed = !state.followed
       })
       .addCase(getSuggestFollow.fulfilled, (state, action) => {
         state.list.suggest = action.payload.suggestFollowerList

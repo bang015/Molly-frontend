@@ -9,6 +9,7 @@ interface modalState {
   id: number | null
   post: PostType | null
   comment: CommentType | null
+  followType: string
 }
 const initialState: modalState = {
   modalType: '',
@@ -18,6 +19,7 @@ const initialState: modalState = {
   id: null,
   post: null,
   comment: null,
+  followType: '',
 }
 
 export const modalSlice = createSlice({
@@ -39,16 +41,19 @@ export const modalSlice = createSlice({
       state.post = null
     },
     openSubModal: (state, actions) => {
-      const { subModalType, id, post, comment } = actions.payload
+      const { subModalType, id, post, comment, followType } = actions.payload
       state.subModalType = subModalType
       if (post) state.post = post
       if (id) state.id = id
       if (comment) state.comment = comment
+      if (followType) state.followType = followType
       state.isSubOpen = true
     },
     closeSubModal: state => {
       state.isSubOpen = false
       state.comment = null
+      state.followType = ''
+      state.id = null
     },
   },
 })

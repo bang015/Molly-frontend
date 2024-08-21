@@ -1,25 +1,23 @@
 import { Modal } from '@mui/material'
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import FollowList from '../followingList'
 import FollowerList from '../followerList'
 import { clearFollowList } from '@/redux/follow'
-interface followProps {
-  userId: number
-  followOpen: boolean
-  followType: string
-  onFollowClose: () => void
-}
-const Follow: React.FC<followProps> = ({ userId, followOpen, followType, onFollowClose }) => {
+import { RootState } from '@/redux'
+import { closeSubModal } from '@/redux/modal'
+
+const FollowModal: React.FC = () => {
   const dispatch = useDispatch()
   const [keyword, setKeyword] = useState('')
+  const {isSubOpen, followType} = useSelector((state: RootState) => state.modalReducer)
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value)
     dispatch(clearFollowList())
   }
   return (
     <div>
-      <Modal open={followOpen} onClose={onFollowClose}>
+      <Modal open={isSubOpen} onClose={() => {dispatch(closeSubModal())}}>
         <div className="modal">
           <div className="pointer-events-auto size-[400px] overflow-hidden rounded-lg bg-white">
             <div className="flex size-full flex-col">
@@ -36,10 +34,10 @@ const Follow: React.FC<followProps> = ({ userId, followOpen, followType, onFollo
               </div>
               <div className="grow overflow-y-scroll pl-5">
                 {followType === 'follow' && (
-                  <FollowList userId={userId} keyword={keyword} onFollowClose={onFollowClose} />
+                  <FollowList keyword={keyword}  />
                 )}
                 {followType === 'follower' && (
-                  <FollowerList userId={userId} keyword={keyword} onFollowClose={onFollowClose} />
+                  <FollowerList  keyword={keyword} />
                 )}
               </div>
             </div>
@@ -50,4 +48,4 @@ const Follow: React.FC<followProps> = ({ userId, followOpen, followType, onFollo
   )
 }
 
-export default Follow
+export default FollowModal

@@ -8,6 +8,7 @@ import PostDetail from '@/components/post/postDetail'
 import CommentActionModal from '../comment'
 import LeaveRoomModal from '../leaveChatRoom'
 import ModifyPasswordModal from '../password'
+import FollowModal from '@/components/follow/follow'
 
 const MODAL_TYPES = {
   DeleteModal: 'DeleteModal',
@@ -18,6 +19,7 @@ const MODAL_TYPES = {
   CommentActionModal: 'CommentActionModal',
   LeaveRoomModal: 'LeaveRoomModal',
   ModifyPasswordModal: 'ModifyPasswordModal',
+  FollowModal: 'FollowModal'
 }
 const MODAL_COMPONENTS = [
   {
@@ -51,6 +53,10 @@ const MODAL_COMPONENTS = [
   {
     type: MODAL_TYPES.ModifyPasswordModal,
     component: <ModifyPasswordModal />,
+  },
+  {
+    type: MODAL_TYPES.FollowModal,
+    component: <FollowModal />,
   },
 ]
 

@@ -50,7 +50,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
   }, [page, totalPages])
   return (
     <>
-      {roomList.length > 0 &&
+      {roomList.length > 0 ? (
         roomList.map((room: RoomListType) => (
           <div
             key={room.roomId}
@@ -91,7 +91,10 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
               )}
             </div>
           </div>
-        ))}
+        ))
+      ) : (
+        <div className="flex h-full items-center justify-center">메시지가 없습니다.</div>
+      )}
     </>
   )
 }

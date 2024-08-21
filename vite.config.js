@@ -5,7 +5,10 @@ import react from '@vitejs/plugin-react-swc'
 
 export default defineConfig({
   build: {
-    outDir: 'build'
+    outDir: 'build',
+    minify: false,
+    sourcemap: false,
+    target: 'esnext'
   },
   server: {
     host: '0.0.0.0',

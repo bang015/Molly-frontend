@@ -223,7 +223,7 @@ const PostDetail: React.FC = () => {
                       <div onClick={goToProfilePage}>
                         {post && <Avatar alt="Remy Sharp" src={post?.user?.profileImage?.path} />}
                       </div>
-                      <div className="ml-2.5 flex">
+                      <div className="ml-2.5 flex items-center">
                         <div className="mr-1 text-body14m" onClick={goToProfilePage}>
                           {post.user.nickname}
                         </div>

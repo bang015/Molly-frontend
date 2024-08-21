@@ -5,15 +5,14 @@ import { RootState } from '@/redux'
 import FollowListUser from '../followListUser'
 import { FollowType } from '@/interfaces/follow'
 interface followerListProps {
-  userId: number
   keyword: string
-  onFollowClose: () => void
 }
-const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowClose }) => {
+const FollowerList: React.FC<followerListProps> = ({ keyword }) => {
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
   const follow = useSelector((state: RootState) => state.followReducer.list.follower)
   const totalPages = useSelector((state: RootState) => state.followReducer.totalPages.follower)
+  const userId = useSelector((state: RootState) => state.modalReducer.id)
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
@@ -28,12 +27,12 @@ const FollowerList: React.FC<followerListProps> = ({ userId, keyword, onFollowCl
     }
   }, [page, totalPages])
   useEffect(() => {
-    dispatch(getFollower({ userId, page, keyword }) as any)
+    if (userId) dispatch(getFollower({ userId, page, keyword }) as any)
   }, [userId, page, keyword])
   return (
     <div className="follow">
       {follow.map((user: FollowType) => (
-        <div key={user.id} onClick={onFollowClose}>
+        <div key={user.id}>
           <FollowListUser key={user.id} user={user} type="" />
         </div>
       ))}

@@ -6,7 +6,7 @@ import { RootState } from '@/redux'
 import { clearFollowList, followUser, followedCheck } from '@/redux/follow'
 import EditImage from '../profileImage/editImage'
 import EditProfile from '../editProfile'
-import Follow from '@/components/follow/follow'
+import { openSubModal } from '@/redux/modal'
 interface headerProps {
   profile: UserType
 }
@@ -14,8 +14,6 @@ const Header: React.FC<headerProps> = ({ profile }) => {
   const user = useSelector((state: RootState) => state.authReducer.user)
   const loading = useSelector((state: RootState) => state.userReducer.editLoading)
   const [showImage, setShowImage] = useState('')
-  const [followOpen, setFollowOpen] = useState(false)
-  const [followType, setFollowType] = useState('')
   const [checkFollowed, setCheckFollowed] = useState(false)
   const [editImage, setEditImage] = useState(false)
   const [editProfile, setEditProfile] = useState(false)
@@ -29,7 +27,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
       }
       check()
     }
-  }, [profile])
+  }, [profile.id])
   const handleProfileImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0]
     const currentImageUrl = URL.createObjectURL(file)
@@ -38,22 +36,14 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     e.target.value = ''
   }
 
-  const onFollowOpen = (type: string) => {
-    setFollowOpen(true)
-    setFollowType(type)
-  }
-  const onFollowClose = () => {
-    setFollowOpen(false)
-    dispatch(clearFollowList())
-    setFollowType('')
-  }
   const onEditImgClose = () => {
     setEditImage(false)
     setShowImage('')
   }
-  const handleFollow = () => {
+  const handleFollow = async () => {
     const followUserId = profile?.id!
-    dispatch(followUser(followUserId) as any)
+    const result = await dispatch(followUser(followUserId) as any)
+    setCheckFollowed(result.payload)
   }
   const EditProfileOpen = () => {
     setEditProfile(true)
@@ -112,21 +102,23 @@ const Header: React.FC<headerProps> = ({ profile }) => {
           <div className="cursor-pointer">
             게시물 <span className="text-body16sd">{profile.postCount}</span>
           </div>
-          <div className="cursor-pointer" onClick={() => onFollowOpen('follower')}>
+          <div
+            className="cursor-pointer"
+            onClick={() =>
+              dispatch(openSubModal({ subModalType: 'FollowModal', followType: 'follower', id: profile.id }))
+            }
+          >
             팔로워 <span className="text-body16sd">{profile.followerCount}</span>
           </div>
-          <div className="cursor-pointer" onClick={() => onFollowOpen('follow')}>
+          <div
+            className="cursor-pointer"
+            onClick={() =>
+              dispatch(openSubModal({ subModalType: 'FollowModal', followType: 'follow', id: profile.id }))
+            }
+          >
             팔로우 <span className="text-body16sd">{profile.followingCount}</span>
           </div>
         </div>
-        {profile && followOpen && (
-          <Follow
-            userId={profile.id!}
-            followType={followType}
-            followOpen={followOpen}
-            onFollowClose={onFollowClose}
-          />
-        )}
         <div className="text-body14sd">{profile?.name}</div>
         <div className="text-body14rg">{profile?.introduce}</div>
       </div>
