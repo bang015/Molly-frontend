@@ -25,6 +25,9 @@ interface PostListState {
     explore: boolean
     main: boolean
     detail: boolean
+    user: boolean
+    bookmark: boolean
+    tag: boolean
   }
 }
 
@@ -48,6 +51,9 @@ const initialState: PostListState = {
     explore: false,
     main: false,
     detail: false,
+    user: false,
+    bookmark: false,
+    tag: false,
   },
 }
 const postListSlice = createSlice({
@@ -104,24 +110,36 @@ const postListSlice = createSlice({
         state.totalPages.explore = action.payload.totalPages
         state.loading.explore = false
       })
+      .addCase(getTagPost.pending, state => {
+        state.loading.tag = true
+      })
       .addCase(getTagPost.fulfilled, (state, action) => {
         const post = [...state.posts.tag.posts, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.tag.posts = Array.from(filter.values())
         state.posts.tag.count = action.payload.tagCount
         state.totalPages.tag = action.payload.totalPages
+        state.loading.tag = false
+      })
+      .addCase(getUserPost.pending, state => {
+        state.loading.user = true
       })
       .addCase(getUserPost.fulfilled, (state, action) => {
         const post = [...state.posts.user, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.user = Array.from(filter.values())
         state.totalPages.user = action.payload.totalPages
+        state.loading.user = false
+      })
+      .addCase(getBookmarkPost.pending, state => {
+        state.loading.bookmark = true
       })
       .addCase(getBookmarkPost.fulfilled, (state, action) => {
         const post = [...state.posts.bookmark, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.bookmark = Array.from(filter.values())
         state.totalPages.bookmark = action.payload.totalPages
+        state.loading.bookmark = false
       })
       .addCase(getPostDetail.pending, state => {
         state.loading.detail = true

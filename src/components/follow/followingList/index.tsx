@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFollowing } from '@/redux/follow'
 import { RootState } from '@/redux'
@@ -8,24 +8,42 @@ interface followListProps {
   keyword: string
 }
 const FollowingList: React.FC<followListProps> = ({ keyword }) => {
+  const target = useRef<HTMLDivElement | null>(null)
+  const [hasObserved, setHasObserved] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
   const follow = useSelector((state: RootState) => state.followReducer.list.following)
   const totalPages = useSelector((state: RootState) => state.followReducer.totalPages.following)
   const userId = useSelector((state: RootState) => state.modalReducer.id)
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && !isFetching) {
+      if (hasObserved) {
+        setIsFetching(true)
         if (page < totalPages) {
           setPage(prevPage => prevPage + 1)
         }
+        setIsFetching(false)
+      } else {
+        setHasObserved(true)
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+  }
+  const observer = new IntersectionObserver(callback, {
+    threshold: 0.5,
+  })
+
+  useEffect(() => {
+    if (target.current) {
+      observer.observe(target.current)
     }
-  }, [page, totalPages])
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current)
+      }
+    }
+  }, [observer])
   useEffect(() => {
     if (userId) dispatch(getFollowing({ userId, page, keyword }) as any)
   }, [userId, page, keyword])
@@ -36,6 +54,7 @@ const FollowingList: React.FC<followListProps> = ({ keyword }) => {
           <FollowListUser key={user.id} user={user} type="" />
         </div>
       ))}
+      <div ref={target}></div>
     </div>
   )
 }

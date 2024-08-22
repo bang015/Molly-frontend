@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { Avatar } from '@mui/material'
@@ -9,6 +9,9 @@ import { UserType } from '@/interfaces/user'
 import { RoomListType } from '@/interfaces/chat'
 interface chatRoomListProps {}
 const ChatRoomList: React.FC<chatRoomListProps> = () => {
+  const target = useRef<HTMLDivElement | null>(null)
+  const [hasObserved, setHasObserved] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const dispatch = useDispatch()
   const roomList = useSelector((state: RootState) => state.chatReducer.list.room)
   const totalPages = useSelector((state: RootState) => state.chatReducer.totalPages.room)
@@ -35,67 +38,88 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
       }
     }
   }, [socket, page])
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && !isFetching) {
+      if (hasObserved) {
+        setIsFetching(true)
         if (page < totalPages) {
           setPage(prevPage => prevPage + 1)
         }
+        setIsFetching(false)
+      } else {
+        setHasObserved(true)
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+  }
+  const observer = new IntersectionObserver(callback, {
+    threshold: 0.5,
+  })
+
+  useEffect(() => {
+    if (target.current) {
+      observer.observe(target.current)
     }
-  }, [page, totalPages])
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current)
+      }
+    }
+  }, [observer])
   return (
-    <>
+    <div>
       {roomList.length > 0 ? (
-        roomList.map((room: RoomListType) => (
-          <div
-            key={room.roomId}
-            className="flex items-center rounded p-5 hover:bg-gray-100"
-            onClick={() => {
-              dispatch(setRoomId({ roomId: room.roomId }))
-            }}
-          >
-            <div className="mr-3 rounded-full border">
-              <Avatar src={room?.members?.[0]?.profileImage?.path} sx={{ width: 44, height: 44 }} />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex">
-                {room.members.length > 0 ? (
-                  room.members.map((member: UserType) => (
-                    <div key={member.id} className="pr-1 text-body16m">
-                      {member.name}
+        <div>
+          {roomList.map((room: RoomListType) => (
+            <div
+              key={room.roomId}
+              className="flex items-center rounded p-5 hover:bg-gray-100"
+              onClick={() => {
+                dispatch(setRoomId({ roomId: room.roomId }))
+              }}
+            >
+              <div className="mr-3 rounded-full border">
+                <Avatar
+                  src={room?.members?.[0]?.profileImage?.path}
+                  sx={{ width: 44, height: 44 }}
+                />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex">
+                  {room.members.length > 0 ? (
+                    room.members.map((member: UserType) => (
+                      <div key={member.id} className="pr-1 text-body16m">
+                        {member.name}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="pr-1 text-body16m">대화상대 없음</div>
+                  )}
+                </div>
+                {room.latestMessage && (
+                  <div className="flex items-center">
+                    <div className="text-body14rg">{room.latestMessage.message}</div>
+                    <div className="ml-1 min-w-10 text-body14rg">
+                      • {displayCreateAt(room.latestMessage.createdAt)}
                     </div>
-                  ))
-                ) : (
-                  <div className="pr-1 text-body16m">대화상대 없음</div>
+                  </div>
                 )}
               </div>
-              {room.latestMessage && (
-                <div className="flex items-center">
-                  <div className="text-body14rg">{room.latestMessage.message}</div>
-                  <div className="ml-1 min-w-10 text-body14rg">
-                    • {displayCreateAt(room.latestMessage.createdAt)}
-                  </div>
-                </div>
-              )}
+              <div className="flex grow justify-end">
+                {room.unReadCount !== 0 && (
+                  <span className="flex size-[20px] items-center justify-center rounded-full bg-main p-1 text-body12rg text-white">
+                    {room.unReadCount}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex grow justify-end">
-              {room.unReadCount !== 0 && (
-                <span className="flex size-[20px] items-center justify-center rounded-full bg-main p-1 text-body12rg text-white">
-                  {room.unReadCount}
-                </span>
-              )}
-            </div>
-          </div>
-        ))
+          ))}
+          <div ref={target}></div>
+        </div>
       ) : (
         <div className="flex h-full items-center justify-center">메시지가 없습니다.</div>
       )}
-    </>
+    </div>
   )
 }
 

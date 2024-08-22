@@ -9,6 +9,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import UserPostList from '@/components/profile/userPostList'
 import Header from '@/components/profile/header'
 import BookmarkList from '@/components/profile/bookmarkList'
+import { clearPostList } from '@/redux/postList'
 
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.authReducer.user)
@@ -17,11 +18,13 @@ const ProfilePage: React.FC = () => {
   const dispatch = useDispatch()
   const [selection, setSelection] = useState<string>('post')
   const { nickname } = useParams()
+  
   useEffect(() => {
     if (nickname) {
       dispatch(getProfile(nickname) as any)
     }
   }, [nickname, followed])
+
   return (
     <div className="flex size-full">
       <Nav />

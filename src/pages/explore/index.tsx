@@ -1,33 +1,53 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getExplorePost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import Nav from '@/components/nav/navBar'
 import { openModal } from '@/redux/modal'
 import { PostType } from '@/interfaces/post'
+import { CircularProgress } from '@mui/material'
 
 const Explore: React.FC = () => {
   const dispatch = useDispatch()
+  const target = useRef<HTMLDivElement | null>(null)
+  const [hasObserved, setHasObserved] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const allPostList = useSelector((state: RootState) => state.postListReducer.posts.explore)
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.explore)
+  const exploreLoading = useSelector((state: RootState) => state.postListReducer.loading.explore)
   const [page, setPage] = useState(1)
   useEffect(() => {
     dispatch(getExplorePost({ page, limit: 30 }) as any)
   }, [page])
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && !isFetching && !exploreLoading) {
+      if (hasObserved) {
+        setIsFetching(true)
         if (page < totalPages) {
           setPage(prevPage => prevPage + 1)
         }
+        setIsFetching(false)
+      } else {
+        setHasObserved(true)
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+  }
+  const observer = new IntersectionObserver(callback, {
+    threshold: 0.5,
+  })
+
+  useEffect(() => {
+    if (target.current) {
+      observer.observe(target.current)
     }
-  }, [page, totalPages])
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current)
+      }
+    }
+  }, [observer])
   return (
     <div className="relative flex size-full overflow-auto">
       <Nav></Nav>
@@ -50,6 +70,12 @@ const Explore: React.FC = () => {
               </button>
             ))}
           </div>
+          {exploreLoading && (
+            <div className="p-5 text-center">
+              <CircularProgress />
+            </div>
+          )}
+          <div ref={target}></div>
         </div>
       </div>
     </div>

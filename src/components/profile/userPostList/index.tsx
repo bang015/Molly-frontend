@@ -1,43 +1,64 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearPostList, getUserPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { openModal } from '@/redux/modal'
 import { PostType } from '@/interfaces/post'
+import { CircularProgress } from '@mui/material'
 interface userPostListProps {
   userId: number
 }
 const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
+  const target = useRef<HTMLDivElement | null>(null)
+  const [hasObserved, setHasObserved] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
   const user = useSelector((state: RootState) => state.authReducer.user)
   const post = useSelector((state: RootState) => state.postListReducer.posts.user)
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.user)
-  useEffect(() => {
-    dispatch(getUserPost({ userId, page }) as any)
-  }, [userId, page])
+  const loading = useSelector((state: RootState) => state.postListReducer.loading.user)
   useEffect(() => {
     dispatch(clearPostList())
   }, [userId])
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+    dispatch(getUserPost({ userId, page }) as any)
+  }, [userId, page])
+
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && !isFetching && !loading) {
+      if (hasObserved) {
+        setIsFetching(true)
         if (page < totalPages) {
           setPage(prevPage => prevPage + 1)
         }
+        setIsFetching(false)
+      } else {
+        setHasObserved(true)
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+  }
+  const observer = new IntersectionObserver(callback, {
+    threshold: 0.5,
+  })
+
+  useEffect(() => {
+    if (target.current) {
+      observer.observe(target.current)
     }
-  }, [page, totalPages])
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current)
+      }
+    }
+  }, [observer])
 
   return (
     <div className="">
       {post.length ? (
-        <div className="grid w-full grid-cols-3 gap-1">
+        <div className="grid w-full grid-cols-3 gap-1 pb-5">
           {post.map((post: PostType) => (
             <div
               key={post.id}
@@ -48,6 +69,12 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
               <img className="cursor-pointer" src={post.postMedias[0].path} />
             </div>
           ))}
+          <div ref={target}></div>
+          {loading && (
+            <div className="p-5 text-center">
+              <CircularProgress />
+            </div>
+          )}
         </div>
       ) : (
         <div className="m-4 flex flex-col items-center p-20">

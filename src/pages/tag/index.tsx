@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Nav from '@/components/nav/navBar'
 import { useParams } from 'react-router-dom'
 import TagIcon from '@/icons/tag-icon.svg?react'
@@ -7,13 +7,18 @@ import { clearPostList, getTagPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import { openModal } from '@/redux/modal'
 import { PostType } from '@/interfaces/post'
+import { CircularProgress } from '@mui/material'
 
 const Tag: React.FC = () => {
+  const target = useRef<HTMLDivElement | null>(null)
+  const [hasObserved, setHasObserved] = useState(false)
+  const [isFetching, setIsFetching] = useState(false)
   const { tagName } = useParams()
   const dispatch = useDispatch()
   const [page, setPage] = useState(1)
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.tag)
   const { count, posts } = useSelector((state: RootState) => state.postListReducer.posts.tag)
+  const loading = useSelector((state: RootState) => state.postListReducer.loading.tag)
   useEffect(() => {
     if (tagName) {
       dispatch(getTagPost({ tagName, page }) as any)
@@ -22,20 +27,35 @@ const Tag: React.FC = () => {
   useEffect(() => {
     dispatch(clearPostList())
   }, [tagName])
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.9) {
+  const callback = (entries: IntersectionObserverEntry[]) => {
+    if (entries[0].isIntersecting && !isFetching && !loading) {
+      if (hasObserved) {
+        setIsFetching(true)
         if (page < totalPages) {
           setPage(prevPage => prevPage + 1)
         }
+        setIsFetching(false)
+      } else {
+        setHasObserved(true)
       }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
+  }
+  const observer = new IntersectionObserver(callback, {
+    threshold: 0.5,
+  })
+
+  useEffect(() => {
+    if (target.current) {
+      observer.observe(target.current)
     }
-  }, [page, totalPages])
-  posts.map(post => {})
+
+    return () => {
+      if (target.current) {
+        observer.unobserve(target.current)
+      }
+    }
+  }, [observer])
+
   return (
     <div className="relative flex size-full overflow-auto">
       <Nav></Nav>
@@ -53,7 +73,7 @@ const Tag: React.FC = () => {
           <div className="py-5 text-body18m">게시물</div>
           <div className="grid grid-cols-3 gap-1">
             {posts.length > 0 &&
-              posts.map((post:PostType) => (
+              posts.map((post: PostType) => (
                 <div
                   key={post.id}
                   onClick={() => {
@@ -69,6 +89,12 @@ const Tag: React.FC = () => {
                   <img className="" src={post.postMedias?.[0]?.path} loading="lazy" />
                 </div>
               ))}
+            <div ref={target}></div>
+            {loading && (
+              <div className="p-5 text-center">
+                <CircularProgress />
+              </div>
+            )}
           </div>
         </div>
       </div>
