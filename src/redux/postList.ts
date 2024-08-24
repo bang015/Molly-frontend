@@ -125,7 +125,7 @@ const postListSlice = createSlice({
         state.loading.user = true
       })
       .addCase(getUserPost.fulfilled, (state, action) => {
-        const post = [...state.posts.user, ...action.payload.postList]
+        const post = [...state.posts.user, ...action.payload.postList].filter(post => post.userId === action.meta.arg.userId)
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.user = Array.from(filter.values())
         state.totalPages.user = action.payload.totalPages
@@ -135,7 +135,7 @@ const postListSlice = createSlice({
         state.loading.bookmark = true
       })
       .addCase(getBookmarkPost.fulfilled, (state, action) => {
-        const post = [...state.posts.bookmark, ...action.payload.postList]
+        const post = [...state.posts.bookmark, ...action.payload.postList].filter(post => post.userId === action.meta.arg.userId)
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.bookmark = Array.from(filter.values())
         state.totalPages.bookmark = action.payload.totalPages
@@ -212,7 +212,7 @@ export const getPostDetail = createAsyncThunk<PostType, number>(
 )
 
 export const getUserPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number },
+  { postList: PostType[]; totalPages: number, userId: number },
   { userId: number; page: number }
 >(
   'postList/getUserPost',

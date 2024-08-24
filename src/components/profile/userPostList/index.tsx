@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostList, getUserPost } from '@/redux/postList'
+import {  getUserPost } from '@/redux/postList'
 import { RootState } from '@/redux'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
 import { openModal } from '@/redux/modal'
@@ -19,9 +19,6 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
   const post = useSelector((state: RootState) => state.postListReducer.posts.user)
   const totalPages = useSelector((state: RootState) => state.postListReducer.totalPages.user)
   const loading = useSelector((state: RootState) => state.postListReducer.loading.user)
-  useEffect(() => {
-    dispatch(clearPostList())
-  }, [userId])
   useEffect(() => {
     dispatch(getUserPost({ userId, page }) as any)
   }, [userId, page])
