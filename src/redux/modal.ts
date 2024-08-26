@@ -53,7 +53,7 @@ export const modalSlice = createSlice({
       state.isSubOpen = false
       state.comment = null
       state.followType = ''
-      state.id = null
+      // state.id = null
     },
   },
 })

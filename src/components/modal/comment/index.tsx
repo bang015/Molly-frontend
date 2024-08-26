@@ -8,7 +8,7 @@ import { closeSubModal } from '@/redux/modal'
 const CommentActionModal: React.FC = () => {
   const dispatch = useDispatch()
   const user = useSelector((state: RootState) => state.authReducer.user)
-  const { comment, isOpen } = useSelector((state: RootState) => state.modalReducer)
+  const { comment, isSubOpen} = useSelector((state: RootState) => state.modalReducer)
   if (!comment) {
     return null
   }
@@ -26,7 +26,7 @@ const CommentActionModal: React.FC = () => {
   return (
     <div>
       <Modal
-        open={isOpen}
+        open={isSubOpen}
         onClose={() => {
           dispatch(closeSubModal())
         }}
