@@ -108,8 +108,10 @@ export const sendPasswordResetLink = async (email: string) => {
       data: { email },
       method: 'POST',
     })
+    return true
   } catch (e: any) {
     alert(e.response.data.message)
+    return false
   }
 }
 

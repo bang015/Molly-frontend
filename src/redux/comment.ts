@@ -56,7 +56,9 @@ const commentSlice = createSlice({
         state.loading.comment = true
       })
       .addCase(getComment.fulfilled, (state, action) => {
-        const comments = [...state.commentList, ...action.payload.commentList]
+        const comments = [...state.commentList, ...action.payload.commentList].filter(
+          comment => comment.postId === action.meta.arg.postId,
+        )
         const filter = new Map(comments.map(comment => [comment.id, comment]))
         state.commentList = Array.from(filter.values())
         state.loading.comment = false
@@ -67,7 +69,9 @@ const commentSlice = createSlice({
       })
       .addCase(getMyCommentByPost.fulfilled, (state, action) => {
         state.loading.comment = false
-        const comments = [...action.payload, ...state.commentList]
+        const comments = [...action.payload, ...state.commentList].filter(
+          comment => comment.postId === action.meta.arg,
+        )
         const filter = new Map(comments.map(comment => [comment.id, comment]))
         state.commentList = Array.from(filter.values())
       })

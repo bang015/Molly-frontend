@@ -8,6 +8,8 @@ const EmailReqeust: React.FC = () => {
   const [email, setEmail] = useState('')
   const [helperText, setHelperText] = useState('')
   const [isValid, setIsValid] = useState(false)
+  const [config, setConfig] = useState<boolean>(false)
+
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
     const regExp = /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
@@ -22,9 +24,13 @@ const EmailReqeust: React.FC = () => {
       setHelperText('')
     }
   }
-  const sendPasswordReset = () => {
+  const sendPasswordReset = async () => {
     if (isValid) {
-      sendPasswordResetLink(email)
+      const result = await sendPasswordResetLink(email)
+      if (result) {
+        alert('비밀번호 재설정 링크를 보냈습니다.')
+        setConfig(true)
+      }
     }
   }
   const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -37,24 +43,37 @@ const EmailReqeust: React.FC = () => {
       <div className="relative flex w-[480px] flex-col items-center rounded-xl bg-white p-8 shadow-modal">
         <Logo width={'200px'} />
         <h1 className="py-5">비밀번호를 잊으셨나요?</h1>
-        <div className="text-center text-body14rg text-slate-400">
-          이메일 주소를 입력하시면 해당 이메일로 비밀번호를 재설정할 수 있는 링크를 보내드립니다.
-        </div>
-        <div className="mt-7 w-full">
-          <TextField
-            className="size-full"
-            type="email"
-            label="이메일"
-            required
-            helperText={helperText}
-            error={helperText !== ''}
-            onChange={handleEmail}
-            onKeyDown={handleEnter}
-          />
-        </div>
-        <button onClick={sendPasswordReset} disabled={!isValid} className="btn my-5 w-full">
-          링크 보내기
-        </button>
+        {config ? (
+          <div className="py-5">
+            <div>{email}로 비밀번호 재설정 링크를 보내드렸어요!</div>
+            <button className="py-2 text-body14sd text-main" onClick={sendPasswordReset}>
+              링크 재전송
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="text-center text-body14rg text-slate-400">
+              이메일 주소를 입력하시면 해당 이메일로 비밀번호를 재설정할 수 있는 링크를
+              보내드립니다.
+            </div>
+            <div className="mt-7 w-full">
+              <TextField
+                className="size-full"
+                type="email"
+                label="이메일"
+                required
+                helperText={helperText}
+                error={helperText !== ''}
+                onChange={handleEmail}
+                onKeyDown={handleEnter}
+              />
+            </div>
+            <button onClick={sendPasswordReset} disabled={!isValid} className="btn my-5 w-full">
+              링크 보내기
+            </button>
+          </div>
+        )}
+
         <button className="link mt-4">
           <Link className="text-body14rg text-slate-400" to="/sign/in">
             이미 계정이 있으신가요?

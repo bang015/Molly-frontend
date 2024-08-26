@@ -62,6 +62,14 @@ const postListSlice = createSlice({
   reducers: {
     postUpload: (state, action: PayloadAction<PostType>) => {
       state.posts.main = [action.payload, ...state.posts.main]
+      if (state.posts.user.length > 0) {
+        const userPostIndex = state.posts.user.findIndex(
+          post => post.userId === action.payload.userId,
+        )
+        if (userPostIndex !== -1) {
+          state.posts.user = [action.payload, ...state.posts.user]
+        }
+      }
     },
     postUpdateList: (state, action: PayloadAction<updatedPost>) => {
       const updatedPosts = state.posts.main.map(post =>
@@ -125,7 +133,9 @@ const postListSlice = createSlice({
         state.loading.user = true
       })
       .addCase(getUserPost.fulfilled, (state, action) => {
-        const post = [...state.posts.user, ...action.payload.postList].filter(post => post.userId === action.meta.arg.userId)
+        const post = [...state.posts.user, ...action.payload.postList].filter(
+          post => post.userId === action.meta.arg.userId,
+        )
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.user = Array.from(filter.values())
         state.totalPages.user = action.payload.totalPages
@@ -135,7 +145,9 @@ const postListSlice = createSlice({
         state.loading.bookmark = true
       })
       .addCase(getBookmarkPost.fulfilled, (state, action) => {
-        const post = [...state.posts.bookmark, ...action.payload.postList].filter(post => post.userId === action.meta.arg.userId)
+        const post = [...state.posts.bookmark, ...action.payload.postList].filter(
+          post => post.userId === action.meta.arg.userId,
+        )
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.bookmark = Array.from(filter.values())
         state.totalPages.bookmark = action.payload.totalPages
@@ -212,7 +224,7 @@ export const getPostDetail = createAsyncThunk<PostType, number>(
 )
 
 export const getUserPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number, userId: number },
+  { postList: PostType[]; totalPages: number; userId: number },
   { userId: number; page: number }
 >(
   'postList/getUserPost',
