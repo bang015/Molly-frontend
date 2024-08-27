@@ -2,8 +2,7 @@
 <h2>🔎 프로젝트 정보</h2>
 <div><b>📆 2023.12.19 ~ 2024.03.22 (94일)</b></div>
 <br>
-<div>웹 소셜 네트워크 서비스 Molly project의 Front-End Repository 입니다. React.js 로 구현되었으며,</div>
-<div>AWS 의 EC2를 이용한 NGINX 를 통해 배포하였습니다.</div>
+<div>웹 소셜 네트워크 서비스 Molly project의 Front-End Repository 입니다.
 <br>
 <div><b>배포 주소</b> : https://molly.n-e.kr/</div>
 <br>
@@ -22,8 +21,8 @@
 <h2>⚙ 핵심 기능</h2>
 <h3>[회원가입 / 로그인]</h3>
 <ul>
-  <li>중복 체크 및 회원가입 조건에 맞는지 확인</li>
-  <li>localStorage를 사용하여 유저별 token 발급 및 로그인 상태 유지</li>
+  <li>회원가입 시 이메일 인증기능을 구현하였습니다.</li>
+  <li>회원가입, 로그인 성공 시 accessToken과 refreshToken을 받아 localstorage에 저장합니다</li>
 </ul>
 
 ![회원가입](./readme_assets/sign.gif)
