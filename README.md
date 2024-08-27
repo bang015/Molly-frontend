@@ -95,4 +95,4 @@
 ![프로필](./readme_assets/profile.gif)
 <br>
 <h2>📺 시연 영상 </h2>
-<div>https://youtu.be/B1pdhy8Ys_0</div>
+<div>https://youtu.be/ZdDOVTk2KTA</div>
