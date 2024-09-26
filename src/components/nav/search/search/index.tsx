@@ -5,13 +5,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import Result from '../result'
 import { ResultType } from '@/interfaces/search'
-interface searchProps {
-  isCollapsed: boolean
-}
+
 export interface SearchHandle {
   getCurrentRef: () => HTMLDivElement | null
 }
-const Search: React.FC<searchProps> = ({ isCollapsed }) => {
+const Search: React.FC = () => {
   const [keyword, setKeyword] = useState('')
   const dispatch = useDispatch()
   const result = useSelector((state: RootState) => state.searchReducer.result)

@@ -23,6 +23,7 @@ const Header: React.FC<headerProps> = ({ profile }) => {
     if (profile.id !== user?.id) {
       const check = async () => {
         const result = await followedCheck(profile.id!)
+        console.log(result)
         setCheckFollowed(result)
       }
       check()

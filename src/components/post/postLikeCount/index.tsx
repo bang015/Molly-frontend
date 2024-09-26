@@ -1,15 +1,24 @@
+import { PostType } from '@/interfaces/post'
+import { likePost } from '@/redux/like'
+import { updatePostLike } from '@/redux/postList'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 
 interface postLikeCountProps {
   config: boolean
-  likeCount: number
-  handleLike: () => void
+  post: PostType
 }
-const PostLikeCount: React.FC<postLikeCountProps> = ({ config, likeCount, handleLike }) => {
+
+const PostLikeCount: React.FC<postLikeCountProps> = ({ config, post }) => {
+  const dispatch = useDispatch()
+  const handleLike = async () => {
+    const isLiked = await likePost(post.id)
+    dispatch(updatePostLike({ postId: post.id, isLiked }))
+  }
   return (
     <section className={`mb-1 ${!config && 'order-4 px-4'}`}>
-      {likeCount > 0 ? (
-        <div className="text-body14sd">좋아요 {likeCount}개</div>
+      {post.likeCount > 0 ? (
+        <div className="text-body14sd">좋아요 {post.likeCount}개</div>
       ) : (
         <div className="text-body14rg">
           가장 먼저{' '}

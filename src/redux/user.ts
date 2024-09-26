@@ -32,6 +32,7 @@ const userSlice = createSlice({
         state.editLoading = true
       })
       .addCase(updateUser.fulfilled, (state, action) => {
+        console.log(action)
         state.profile = action.payload
         state.editLoading = false
       })
@@ -49,7 +50,7 @@ export const getProfile = createAsyncThunk(
   async (nickname: string, { dispatch }) => {
     const response = await request(
       `${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
-      { method: 'GET' },
+      { method: 'GET', headers: {} },
     )
     if (response.status === 200) {
       dispatch(getProfileSuccess(response.data))

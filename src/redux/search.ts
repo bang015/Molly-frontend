@@ -41,8 +41,8 @@ export const getSearchResult = createAsyncThunk(
   async ({ keyword, type }: { keyword: string; type: string }, { dispatch }) => {
     try {
       const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/q/${type}/?query=${keyword}`,
-        { method: 'GET' },
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/${type}?query=${keyword}`,
+        { method: 'GET', headers: {} },
       )
       if (response.status === 200) {
         dispatch(getResultSuccess(response.data))
@@ -58,7 +58,7 @@ export const saveSearchHistory = createAsyncThunk(
       `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/history`,
       {
         method: 'POST',
-        data: { result },
+        data: result,
         headers: {},
       },
     )
@@ -72,7 +72,7 @@ export const getSearchHistory = createAsyncThunk(
   'search/getSearchHistory',
   async (_, { dispatch }) => {
     const response = await request(
-      `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/history1`,
+      `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/history`,
       {
         method: 'GET',
         headers: {},
@@ -86,12 +86,12 @@ export const getSearchHistory = createAsyncThunk(
 
 export const deleteSearchHistory = createAsyncThunk(
   'search/deleteSearchHistory',
-  async ({ history }: { history: string | null }, { dispatch }) => {
+  async ({ history }: { history: ResultType | null }, { dispatch }) => {
     const response = await request(
       `${import.meta.env.VITE_SERVER_URL}${INIT}${SEARCH_API}/history`,
       {
         method: 'DELETE',
-        params: { history },
+        data: history,
         headers: {},
       },
     )

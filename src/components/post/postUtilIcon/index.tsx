@@ -1,64 +1,36 @@
 import { IconButton } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { useDispatch } from 'react-redux'
-import { openSnackBar } from '@/redux/snackBar'
-import { BOOKMARK_API, INIT } from '@/utils/api-url'
-import { request } from '@/redux/baseRequest'
+import { PostType } from '@/interfaces/post'
+import { likePost } from '@/redux/like'
+import { updatePostBookmark, updatePostLike } from '@/redux/postList'
+import { bookmarkPost } from '@/redux/bookmark'
 
 interface postUtilIconProps {
-  checkLiked: boolean
   focusCommentInput: () => void
-  handleLike: () => void
   config: boolean
-  postId: number
+  post: PostType
 }
-const PostUtilIcon: React.FC<postUtilIconProps> = ({
-  checkLiked,
-  focusCommentInput,
-  handleLike,
-  config,
-  postId,
-}) => {
+const PostUtilIcon: React.FC<postUtilIconProps> = ({ focusCommentInput, config, post }) => {
   const dispatch = useDispatch()
-  const [checkBookmark, setCheckBookmark] = useState(false)
-  useEffect(() => {
-    const bookmark = async () => {
-      try {
-        const response = await request(
-          `${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/${postId}`,
-          {
-            method: 'GET',
-            headers: {},
-          },
-        )
-        setCheckBookmark(response.data)
-      } catch (e: any) {
-        dispatch(openSnackBar(e.response.data.message))
-      }
-    }
-    bookmark()
-  }, [postId])
+
   const handleBookmark = async () => {
-    try {
-      const bookmark = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${BOOKMARK_API}/`, {
-        method: 'POST',
-        data: { postId },
-        headers: {},
-      })
-      setCheckBookmark(bookmark.data)
-    } catch (e: any) {
-      dispatch(openSnackBar(e.response.data.message))
-    }
+    const isBookmarked = await bookmarkPost(post.id)
+    dispatch(updatePostBookmark({ postId: post.id, isBookmarked }))
+  }
+  const handleLike = async () => {
+    const isLiked = await likePost(post.id)
+    dispatch(updatePostLike({ postId: post.id, isLiked }))
   }
   return (
     <section className={`flex py-2 ${!config && 'order-2 border-t px-2'}`}>
       <IconButton className="" aria-label="heart" onClick={handleLike}>
-        {checkLiked ? (
+        {post.isLiked ? (
           <FavoriteIcon style={{ color: 'rgb(255, 48, 64)' }} />
         ) : (
           <FavoriteBorderIcon sx={{ fontSize: 25 }} />
@@ -69,7 +41,7 @@ const PostUtilIcon: React.FC<postUtilIconProps> = ({
       </IconButton>
       <div className="ml-auto">
         <IconButton className="" aria-label="bookmark" onClick={handleBookmark}>
-          {checkBookmark ? (
+          {post.isBookmarked ? (
             <BookmarkIcon sx={{ fontSize: 25 }} />
           ) : (
             <BookmarkBorderIcon sx={{ fontSize: 25 }} />

@@ -3,7 +3,7 @@ import Nav from '@/components/nav/navBar'
 import { useParams } from 'react-router-dom'
 import TagIcon from '@/icons/tag-icon.svg?react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostList, getTagPost } from '@/redux/postList'
+import { clearPostList, getTagPost, setPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import { openModal } from '@/redux/modal'
 import { PostType } from '@/interfaces/post'
@@ -55,7 +55,6 @@ const Tag: React.FC = () => {
       }
     }
   }, [observer])
-
   return (
     <div className="relative flex size-full overflow-auto">
       <Nav></Nav>
@@ -80,9 +79,8 @@ const Tag: React.FC = () => {
                     dispatch(
                       openModal({
                         modalType: 'PostDetailModal',
-                        post: post,
-                        id: post.id,
                       }),
+                      dispatch(setPostDetail(post)),
                     )
                   }}
                 >

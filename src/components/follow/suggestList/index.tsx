@@ -15,7 +15,6 @@ export const SuggestList: React.FC<SuggestListProps> = ({ limit }) => {
     dispatch(getSuggestFollow(limit) as any)
   }, [limit])
   const suggestList = useSelector((state: RootState) => state.followReducer.list.suggest)
-
   return (
     <div>
       {suggestList.map((user: FollowType) => (

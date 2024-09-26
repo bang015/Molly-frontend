@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostDetail, getPostDetail } from '@/redux/postList'
+import { clearPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
@@ -25,7 +25,6 @@ import {
 } from '@/redux/comment'
 import { CommentList } from '../comment/commentList'
 import { followUser, followedCheck } from '@/redux/follow'
-import { getPostLike, likePost } from '@/redux/like'
 import PostUtilIcon from '../postUtilIcon'
 import PostLikeCount from '../postLikeCount'
 import { useNavigate } from 'react-router-dom'
@@ -44,40 +43,33 @@ const PostDetail: React.FC = () => {
   const commentList = useSelector((state: RootState) => state.commentReducer.commentList)
   const totalPages = useSelector((state: RootState) => state.commentReducer.totalPages.comment)
   const { followed } = useSelector((state: RootState) => state.followReducer)
-  const { isOpen, id } = useSelector((state: RootState) => state.modalReducer)
+  const { isOpen } = useSelector((state: RootState) => state.modalReducer)
   const textFieldRef = useRef<HTMLInputElement | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const [comment, setComment] = useState('')
   const [commentId, setCommentId] = useState<number | null>(null)
   const [page, setPage] = useState(1)
-  const [likeCount, setLikeCount] = useState<number>(0)
-  const [checkLiked, setCheckLiked] = useState(false)
   const [checkFollowed, setCheckFollowed] = useState(false)
   useEffect(() => {
-    dispatch(getPostDetail(id!) as any)
-    dispatch(getComment({ postId: id!, page }) as any)
+    dispatch(clearComment())
+  }, [])
+  useEffect(() => {
+    // dispatch(getPostDetail(id!) as any)
+    dispatch(getComment({ postId: post?.id!, page }) as any)
     if (page === 1) {
-      dispatch(getMyCommentByPost(id!) as any)
+      dispatch(getMyCommentByPost(post?.id!) as any)
     }
-  }, [id!, page])
+  }, [post, page])
 
   useEffect(() => {
     followCheck()
   }, [user, post, followed])
   const followCheck = async () => {
     if (post) {
-      const result = await followedCheck(post.userId)
+      const result = await followedCheck(post.user.id)
       setCheckFollowed(result)
     }
   }
-  useEffect(() => {
-    const like = async () => {
-      const result = await getPostLike(id!)
-      setLikeCount(result.count)
-      setCheckLiked(result.checkLiked)
-    }
-    like()
-  }, [id!, checkLiked])
 
   useEffect(() => {
     if (editingComment) {
@@ -119,7 +111,9 @@ const PostDetail: React.FC = () => {
   }
   const handlePostComment = async () => {
     const commentContent = formatTextToHTML(comment)
-    dispatch(addComment({ postId: id!, content: commentContent, commentId: commentId }) as any)
+    dispatch(
+      addComment({ postId: post?.id!, content: commentContent, commentId: commentId }) as any,
+    )
     setComment('')
     setCommentId(null)
   }
@@ -142,12 +136,8 @@ const PostDetail: React.FC = () => {
     if (totalPages > page) setPage(page + 1)
   }
   const handleFollow = () => {
-    const followUserId = post?.userId!
+    const followUserId = post?.user.id!
     dispatch(followUser(followUserId) as any)
-  }
-  const handleLike = async () => {
-    const check = await likePost(id!)
-    setCheckLiked(check)
   }
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -227,7 +217,7 @@ const PostDetail: React.FC = () => {
                         <div className="mr-1 text-body14m" onClick={goToProfilePage}>
                           {post.user.nickname}
                         </div>
-                        {!checkFollowed && post.userId !== user?.id && (
+                        {!checkFollowed && post.user.id !== user?.id && (
                           <div>
                             <span>•</span>
                             <button onClick={handleFollow}>
@@ -296,14 +286,8 @@ const PostDetail: React.FC = () => {
                       </div>
                     </ul>
                   </div>
-                  <PostUtilIcon
-                    config={false}
-                    focusCommentInput={focusCommentInput}
-                    checkLiked={checkLiked}
-                    handleLike={handleLike}
-                    postId={id!}
-                  />
-                  <PostLikeCount config={false} likeCount={likeCount} handleLike={handleLike} />
+                  <PostUtilIcon config={false} focusCommentInput={focusCommentInput} post={post} />
+                  <PostLikeCount config={false} post={post} />
                   <div className="order-5 mb-2.5 px-5 text-body14rg text-gray-500">
                     {createdAt(post?.createdAt)}
                   </div>

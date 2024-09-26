@@ -119,15 +119,15 @@ export const initializeImage = async (
   cropStates: { crop: Point; zoom: number }[],
 ) => {
   if (fileList) {
-    let newMediaList: string[] = [...showImages];
-    let newCroppedAreas: Area[] = [...croppedAreaList];
-    let newCropStates: { crop: Point; zoom: number }[] = [...cropStates];
+    let newMediaList: string[] = [...showImages]
+    let newCroppedAreas: Area[] = [...croppedAreaList]
+    let newCropStates: { crop: Point; zoom: number }[] = [...cropStates]
     for (let i = 0; i < fileList.length; i++) {
       const currentFile = fileList[i]
       if (currentFile.type.startsWith('image/')) {
         const imageUrl = URL.createObjectURL(currentFile)
         newMediaList.push(imageUrl)
-        newCropStates.push({crop:{x:0, y:0}, zoom: 1});
+        newCropStates.push({ crop: { x: 0, y: 0 }, zoom: 1 })
         const image = new Image()
         image.src = imageUrl
         await new Promise(resolve => {
@@ -136,6 +136,8 @@ export const initializeImage = async (
             const originalImageWidth = image.width
             const originalImageHeight = image.height
             const imageRatio = 7 / 7
+            const centerX = originalImageWidth / 2
+            const centerY = originalImageHeight / 2
             const cropSize = getCropSize(
               originalImageWidth,
               originalImageHeight,
@@ -146,8 +148,8 @@ export const initializeImage = async (
             const areaCropSize = {
               width: cropSize.width,
               height: cropSize.height,
-              x: 0,
-              y: 0,
+              x: centerX - cropSize.width / 2,
+              y: centerY - cropSize.height / 2,
             }
             newCroppedAreas.push(areaCropSize)
           }

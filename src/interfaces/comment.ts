@@ -6,7 +6,7 @@ export interface CommentType {
   commentId: number | null
   createdAt: string
   updatedAt: string
-  user: { nickname: string; profileImage: { path: string } | null }
+  user: { id:number, nickname: string; profileImage: { path: string } | null }
   subComment: CommentType[]
   showSubComments: boolean
   subCommentsCount: number

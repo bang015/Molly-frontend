@@ -8,14 +8,14 @@ import { closeSubModal } from '@/redux/modal'
 const CommentActionModal: React.FC = () => {
   const dispatch = useDispatch()
   const user = useSelector((state: RootState) => state.authReducer.user)
-  const { comment, isSubOpen} = useSelector((state: RootState) => state.modalReducer)
+  const { comment, isSubOpen } = useSelector((state: RootState) => state.modalReducer)
   if (!comment) {
     return null
   }
   const id = comment.id
-  const userId = comment.userId
+  const userId = comment.user.id
   const removeComment = () => {
-    dispatch(deleteComment({id, commentId: comment.commentId}) as any)
+    dispatch(deleteComment({ id, commentId: comment.commentId }) as any)
     dispatch(closeSubModal())
   }
 

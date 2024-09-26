@@ -22,9 +22,7 @@ const Result: React.FC<resultProps> = ({ result, type }) => {
     dispatch(saveSearchHistory({ result }) as any)
   }
   const deleteHistory = () => {
-    const history = JSON.stringify(result)
-
-    dispatch(deleteSearchHistory({ history }) as any)
+    dispatch(deleteSearchHistory({ history: result }) as any)
   }
   return (
     <div className="flex cursor-pointer items-center rounded-lg p-2.5 hover:bg-gray-100">

@@ -9,12 +9,12 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import { addCommentType, CommentType } from '@/interfaces/comment'
 import { addComment, getMyCommentByPost } from '@/redux/comment'
 import PostUtilIcon from '../postUtilIcon'
-import { getPostLike, likePost } from '@/redux/like'
 import PostLikeCount from '../postLikeCount'
 import { displayCreateAt } from '@/utils/format/moment'
 import { useNavigate } from 'react-router-dom'
 import { openModal, openSubModal } from '@/redux/modal'
 import { formatTextToHTML } from '@/utils/format/formatter'
+import { setPostDetail } from '@/redux/postList'
 
 interface postListProps {
   post: PostType
@@ -27,8 +27,6 @@ const PostList: React.FC<postListProps> = ({ post }) => {
   const [comment, setComment] = useState<string>('')
   const textFieldRef = useRef<HTMLInputElement | null>(null)
   const [commentList, setCommentList] = useState<CommentType[]>([])
-  const [likeCount, setLikeCount] = useState<number>(0)
-  const [checkLiked, setCheckLiked] = useState(false)
 
   useEffect(() => {
     const myComment = async () => {
@@ -36,15 +34,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
       setCommentList(result.payload.slice(0, 3))
     }
     myComment()
-  }, [user, post])
-  useEffect(() => {
-    const like = async () => {
-      const result = await getPostLike(post.id)
-      setLikeCount(result.count)
-      setCheckLiked(result.checkLiked)
-    }
-    like()
-  }, [post, checkLiked])
+  }, [user])
   const onPrevClick = () => {
     setCurrentImageIndex(
       prevIndex => (prevIndex - 1 + post.postMedias.length) % post.postMedias.length,
@@ -67,10 +57,7 @@ const PostList: React.FC<postListProps> = ({ post }) => {
     setCommentList([newComment.payload, ...commentList])
     setComment('')
   }
-  const handleLike = async () => {
-    const check = await likePost(post.id)
-    setCheckLiked(check)
-  }
+
   const focusCommentInput = () => {
     if (textFieldRef.current) {
       textFieldRef.current.focus()
@@ -153,14 +140,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
             ))}
           </div>
         </div>
-        <PostUtilIcon
-          checkLiked={checkLiked}
-          handleLike={handleLike}
-          focusCommentInput={focusCommentInput}
-          config={true}
-          postId={post.id}
-        />
-        <PostLikeCount config={true} likeCount={likeCount} handleLike={handleLike} />
+        <PostUtilIcon focusCommentInput={focusCommentInput} config={true} post={post} />
+        <PostLikeCount config={true} post={post} />
         <div className="py-1">
           <div className="mr-1.5 inline-flex text-body12sd">
             <span>{post.user.nickname}</span>
@@ -173,7 +154,8 @@ const PostList: React.FC<postListProps> = ({ post }) => {
         <div className="pb-1 text-body14rg text-gray-500">
           <button
             onClick={() => {
-              dispatch(openModal({ modalType: 'PostDetailModal', id: post.id }))
+              dispatch(openModal({ modalType: 'PostDetailModal' }))
+              dispatch(setPostDetail(post))
             }}
           >
             댓글 모두 보기

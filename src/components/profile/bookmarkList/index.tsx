@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearPostList, getBookmarkPost } from '@/redux/postList'
+import { clearPostList, getBookmarkPost, setPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import { openModal } from '@/redux/modal'
@@ -19,7 +19,7 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
   const loading = useSelector((state: RootState) => state.postListReducer.loading.bookmark)
   useEffect(() => {
     dispatch(clearPostList())
-  }, [userId])
+  }, [])
   useEffect(() => {
     dispatch(getBookmarkPost({ userId, page }) as any)
   }, [userId, page])
@@ -61,10 +61,11 @@ const BookmarkList: React.FC<bookmarkListProps> = ({ userId }) => {
               <div
                 key={bookmark.id}
                 onClick={() => {
-                  dispatch(openModal({ modalType: 'PostDetailModal', id: bookmark.post.id }))
+                  dispatch(openModal({ modalType: 'PostDetailModal' }))
+                  dispatch(setPostDetail(bookmark))
                 }}
               >
-                <img className="cursor-pointer" src={bookmark.post.postMedias[0].path} />
+                <img className="cursor-pointer" src={bookmark.postMedias[0].path} />
               </div>
             ))}
           {loading && (

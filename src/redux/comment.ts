@@ -171,26 +171,25 @@ export const getMyCommentByPost = createAsyncThunk<CommentType[], number>(
   'comment/mycomment',
   async (postId: number, { dispatch }) => {
     try {
-      const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/my/${postId}`,
-        {
-          method: 'GET',
-          headers: {},
-        },
-      )
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/my`, {
+        method: 'GET',
+        headers: {},
+        params: { postId },
+      })
       return response.data
     } catch (e: any) {
       dispatch(openSnackBar(e.response.data.message))
     }
   },
 )
+
 export const getSubComment = createAsyncThunk<CommentType[], { id: number; page: number }>(
   'comment/subComment',
   async ({ id, page }: { id: number; page: number }, { dispatch }) => {
     try {
       const response = await request(
         `${import.meta.env.VITE_SERVER_URL}${INIT}${COMMENT_API}/sub/${id}?page=${page}`,
-        { method: 'GET' },
+        { method: 'GET', headers: {} },
       )
       return response.data
     } catch (e: any) {

@@ -46,6 +46,7 @@ const App: React.FC = () => {
     }
     dispatch(closeSnackBar())
   }
+  console.log(user?.followingCount)
   return (
     <>
       <Routes>

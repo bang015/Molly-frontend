@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { FOLLOW_API, FOLLOWER, FOLLOWING, INIT } from '../utils/api-url'
 import { FollowType } from '../interfaces/follow'
 import { request } from './baseRequest'
-import { getUser } from './auth'
+import { followingCountUpdate } from './auth'
 import { openSnackBar } from './snackBar'
 
 interface FollowState {
@@ -47,8 +47,7 @@ const followSlice = createSlice({
         state.followed = !state.followed
       })
       .addCase(getSuggestFollow.fulfilled, (state, action) => {
-        state.list.suggest = action.payload.suggestFollowerList
-        state.followed = action.payload.followed
+        state.list.suggest = action.payload
       })
       .addCase(getFollowing.fulfilled, (state, action) => {
         const followings = [...state.list.following, ...action.payload.followings]
@@ -78,7 +77,7 @@ export const followUser = createAsyncThunk<boolean, number>(
         headers: {},
       })
       if (response.status === 200) {
-        dispatch(getUser())
+        dispatch(followingCountUpdate(response.data))
       }
       return response.data
     } catch (e: any) {
@@ -87,27 +86,23 @@ export const followUser = createAsyncThunk<boolean, number>(
   },
 )
 
-export const getSuggestFollow = createAsyncThunk<
-  {
-    suggestFollowerList: FollowType[]
-    followed: boolean
+export const getSuggestFollow = createAsyncThunk<FollowType[], number>(
+  'follow/getFollow',
+  async (limit: number, { dispatch }) => {
+    try {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
+        method: 'GET',
+        headers: {},
+        params: {
+          limit: limit,
+        },
+      })
+      return response.data
+    } catch (e: any) {
+      dispatch(openSnackBar(e.response.data.message))
+    }
   },
-  number
->('follow/getFollow', async (limit: number, { dispatch }) => {
-  try {
-    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}`, {
-      method: 'GET',
-      headers: {},
-      params: {
-        limit: limit,
-      },
-    })
-
-    return response.data
-  } catch (e: any) {
-    dispatch(openSnackBar(e.response.data.message))
-  }
-})
+)
 
 export const getFollowing = createAsyncThunk<
   { followings: FollowType[]; totalPages: number },
@@ -120,8 +115,8 @@ export const getFollowing = createAsyncThunk<
   ) => {
     try {
       const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWING}/${userId}/?page=${page}&query=${keyword}`,
-        { method: 'GET' },
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}${FOLLOWING}/${userId}/?page=${page}&query=${keyword}`,
+        { method: 'GET', headers: {} },
       )
       return response.data
     } catch (e: any) {
@@ -141,8 +136,8 @@ export const getFollower = createAsyncThunk<
   ) => {
     try {
       const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}/${FOLLOWER}/${userId}/?page=${page}&query=${keyword}`,
-        { method: 'GET' },
+        `${import.meta.env.VITE_SERVER_URL}${INIT}${FOLLOW_API}${FOLLOWER}/${userId}/?page=${page}&query=${keyword}`,
+        { method: 'GET', headers: {} },
       )
       return response.data
     } catch (e: any) {

@@ -17,13 +17,11 @@ const ProfilePage: React.FC = () => {
   const dispatch = useDispatch()
   const [selection, setSelection] = useState<string>('post')
   const { nickname } = useParams()
-  
   useEffect(() => {
     if (nickname) {
       dispatch(getProfile(nickname) as any)
     }
   }, [nickname, followed])
-
   return (
     <div className="flex size-full">
       <Nav />

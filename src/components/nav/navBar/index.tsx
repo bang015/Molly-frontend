@@ -12,11 +12,12 @@ import SmallLogo from '@/icons/molly-small-logo.svg?react'
 import HomeIcon from '@mui/icons-material/Home'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import SearchIcon from '@mui/icons-material/Search'
+import LogoutIcon from '@mui/icons-material/Logout'
 import ExploreIcon from '@mui/icons-material/Explore'
+import SyncLockIcon from '@mui/icons-material/SyncLock'
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined'
 import EmailIcon from '@mui/icons-material/Email'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
-import LogoutIcon from '@mui/icons-material/Logout'
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined'
 import DehazeIcon from '@mui/icons-material/Dehaze'
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,7 +27,7 @@ import Search from '@/components/nav/search/search'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { socket } from '@/redux/auth'
 import { clearPostList } from '@/redux/postList'
-import { openModal, openSubModal } from '@/redux/modal'
+import { openSubModal } from '@/redux/modal'
 import { getUnreadCount } from '@/redux/chat'
 const Nav: React.FC = () => {
   const dispatch = useDispatch()
@@ -35,12 +36,13 @@ const Nav: React.FC = () => {
   const searchRef = useRef<HTMLDivElement>(null)
   const { user } = useSelector((state: RootState) => state.authReducer)
   const { unreadCount } = useSelector((state: RootState) => state.chatReducer)
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(true)
   const [isMore, setIsMore] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsCollapsed(false)
+        setIsCollapsed(true)
       }
     }
 
@@ -63,17 +65,27 @@ const Nav: React.FC = () => {
     dispatch(signOut() as any)
   }
 
+  const handleTransitionEnd = () => {
+    setIsTransitioning(false)
+  }
+
   const toggleSearch = () => {
     setIsCollapsed(!isCollapsed)
+    setIsTransitioning(true)
+  }
+
+  const getTextVisibilityClass = () => {
+    return isTransitioning || !isCollapsed || location.pathname === '/messenger' ? 'hidden ' : ''
   }
 
   return (
     <div
       ref={searchRef}
       className={`fixed left-0 top-0 z-10 flex h-full min-w-16 ${location.pathname === '/messenger' ? 'w-16' : 'w-1/6'}`}
+      onTransitionEnd={handleTransitionEnd}
     >
       <div
-        className={`flex flex-shrink-0 flex-col border-r py-3 transition-all duration-300 ${isCollapsed || location.pathname === '/messenger' ? 'w-16' : 'w-full'}`}
+        className={`flex flex-shrink-0 flex-col border-r py-3 transition-all duration-300 ${!isCollapsed || location.pathname === '/messenger' ? 'w-16' : 'w-full'}`}
       >
         <div
           className="mb-3 flex h-[70px] flex-col pl-3.5 pt-2"
@@ -81,7 +93,7 @@ const Nav: React.FC = () => {
             navigate('/')
           }}
         >
-          {isCollapsed || location.pathname === '/messenger' ? (
+          {!isCollapsed || location.pathname === '/messenger' ? (
             <SmallLogo width={40} />
           ) : (
             <Logo width={110} />
@@ -89,6 +101,7 @@ const Nav: React.FC = () => {
         </div>
         <div className="grow space-y-2">
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -103,7 +116,7 @@ const Nav: React.FC = () => {
               )}
             </ListItemIcon>
             <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${getTextVisibilityClass()}`}
               primary="홈"
               primaryTypographyProps={{
                 className: ` ${location.pathname === '/' && 'text-body16sd'}`,
@@ -111,6 +124,7 @@ const Nav: React.FC = () => {
             />
           </ListItemButton>
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -120,12 +134,10 @@ const Nav: React.FC = () => {
             <ListItemIcon>
               <SearchIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
-            <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="검색"
-            />
+            <ListItemText className={`m-0 ${getTextVisibilityClass()}`} primary="검색" />
           </ListItemButton>
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -140,7 +152,7 @@ const Nav: React.FC = () => {
               )}
             </ListItemIcon>
             <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${getTextVisibilityClass()}`}
               primary="탐색"
               primaryTypographyProps={{
                 className: `${location.pathname === '/explore' && 'text-body16sd'}`,
@@ -148,6 +160,7 @@ const Nav: React.FC = () => {
             />
           </ListItemButton>
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -163,18 +176,16 @@ const Nav: React.FC = () => {
                 )}
               </Badge>
             </ListItemIcon>
-            <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="메시지"
-            />
+            <ListItemText className={`m-0 ${getTextVisibilityClass()}`} primary="메시지" />
           </ListItemButton>
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
               dispatch(
-                openModal({
-                  modalType: 'PostFormModal',
+                openSubModal({
+                  subModalType: 'PostFormModal',
                   id: null,
                   post: null,
                 }),
@@ -184,12 +195,10 @@ const Nav: React.FC = () => {
             <ListItemIcon>
               <AddBoxOutlinedIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
-            <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="게시물"
-            />
+            <ListItemText className={`m-0 ${getTextVisibilityClass()}`} primary="게시물" />
           </ListItemButton>
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -204,7 +213,7 @@ const Nav: React.FC = () => {
               />
             </ListItemAvatar>
             <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
+              className={`m-0 ${getTextVisibilityClass()}`}
               primary="프로필"
               primaryTypographyProps={{
                 className: `${location.pathname.includes('/profile/') && 'text-body16sd'}`,
@@ -224,18 +233,19 @@ const Nav: React.FC = () => {
               }}
               className="flex justify-start border-b p-5 text-body16sd text-red-500"
             >
-              비밀번호 변경
+              {isTransitioning || !isCollapsed ? <SyncLockIcon /> : '비밀번호 변경'}
             </button>
             <button
               onClick={handleSignOut}
               className="flex justify-start border-b p-5 text-body16sd text-red-500"
             >
-              로그아웃
+              {isTransitioning || !isCollapsed ? <LogoutIcon /> : '로그아웃'}
             </button>
           </div>
         )}
         <div className="mb-4">
           <ListItemButton
+            className="h-10"
             style={{ borderRadius: '12px' }}
             component="a"
             onClick={() => {
@@ -245,20 +255,17 @@ const Nav: React.FC = () => {
             <ListItemIcon>
               <DehazeIcon sx={{ fontSize: 30, color: 'black' }} />
             </ListItemIcon>
-            <ListItemText
-              className={`m-0 ${(isCollapsed || location.pathname === '/messenger') && 'hidden'}`}
-              primary="더보기"
-            />
+            <ListItemText className={`m-0 ${getTextVisibilityClass()}`} primary="더보기" />
           </ListItemButton>
         </div>
       </div>
       <div
         ref={searchRef}
         className={`flex flex-shrink-0 flex-col rounded-r-xl border-r bg-white transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'visible w-96 opacity-100' : 'invisible w-0 opacity-0'
+          !isCollapsed ? 'visible w-96 opacity-100' : 'invisible w-0 opacity-0'
         }`}
       >
-        <Search isCollapsed={isCollapsed} />
+        <Search />
       </div>
     </div>
   )

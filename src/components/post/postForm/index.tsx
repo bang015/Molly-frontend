@@ -12,7 +12,7 @@ import { MediaListType, updatePostType, uploadPostType } from '@/interfaces/post
 import { updatePost, uploadPost } from '@/redux/post'
 import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import { getSearchResult, resetResult } from '@/redux/search'
-import { closeModal, openModal } from '@/redux/modal'
+import { closeSubModal, openModal } from '@/redux/modal'
 import { formatHTMLToText, formatTextToHTML } from '@/utils/format/formatter'
 import { ResultType } from '@/interfaces/search'
 
@@ -20,7 +20,7 @@ const PostForm: React.FC = () => {
   const dispatch = useDispatch()
   const { user } = useSelector((state: RootState) => state.authReducer)
   const result = useSelector((state: RootState) => state.searchReducer.result)
-  const { post, isOpen } = useSelector((state: RootState) => state.modalReducer)
+  const { post, isSubOpen } = useSelector((state: RootState) => state.modalReducer)
   const [showImages, setShowImages] = useState<string[]>([])
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
   const [croppedAreaList, setCroppedAreaList] = useState<Area[]>([])
@@ -34,10 +34,11 @@ const PostForm: React.FC = () => {
       const content = formatHTMLToText(post.content)
       setPostContent(content)
     }
-  }, [post, isOpen])
+  }, [post, isSubOpen])
   const handleAddImages = async (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files
     const init = await initializeImage(fileList, showImages, croppedAreaList, cropStates)
+    
     if (init) {
       setShowImages(init.newMediaList)
       setCroppedAreaList(init.newCroppedAreas)
@@ -123,7 +124,7 @@ const PostForm: React.FC = () => {
       const tags = matches.map(match => match.replace(/^#/, ''))
       post.hashtags = tags
     }
-    dispatch(uploadPost({ post }) as any)
+    dispatch(uploadPost(post) as any)
     dispatch(openModal({ modalType: 'PostingModal', id: null, post: null }))
   }
   const handleUpdatePost = async () => {
@@ -140,7 +141,7 @@ const PostForm: React.FC = () => {
         postInfo.hashtags = tags
       }
       dispatch(updatePost({ postInfo }) as any)
-      dispatch(closeModal())
+      dispatch(closeSubModal())
     }
   }
   const handleHasTag = (name: string) => {
@@ -151,9 +152,9 @@ const PostForm: React.FC = () => {
   return (
     <div>
       <Modal
-        open={isOpen}
+        open={isSubOpen}
         onClose={() => {
-          dispatch(closeModal())
+          dispatch(closeSubModal())
         }}
       >
         <div className="relative left-1/2 top-1/2 h-[740px] w-[1060px] -translate-x-1/2 -translate-y-1/2 transform rounded-lg bg-white">
@@ -162,7 +163,7 @@ const PostForm: React.FC = () => {
             <div className="absolute right-0">
               <Button
                 onClick={() => {
-                  dispatch(closeModal())
+                  dispatch(closeSubModal())
                 }}
               >
                 취소

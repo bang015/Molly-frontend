@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { FollowType } from '@/interfaces/follow'
 import { followUser, followedCheck } from '@/redux/follow'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { closeSubModal } from '@/redux/modal'
+import { RootState } from '@/redux'
 
 interface followListUserProps {
   user: FollowType
@@ -13,13 +14,10 @@ interface followListUserProps {
 const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const my = useSelector((state: RootState) => state.authReducer.user)
   const [followed, setFollowed] = useState(false)
   useEffect(() => {
-    const check = async () => {
-      const result = await followedCheck(user.id)
-      setFollowed(result)
-    }
-    check()
+    setFollowed(user.isFollowed)
   }, [user])
   const handleFollow = async (followUserId: number) => {
     const result = await dispatch(followUser(followUserId) as any)
@@ -35,12 +33,16 @@ const FollowListUser: React.FC<followListUserProps> = ({ user, type }) => {
         key={user.id}
         style={{ padding: 0 }}
         secondaryAction={
-          <button
-            className={`btn h-9 rounded text-body14m ${followed && 'out-line'}`}
-            onClick={() => handleFollow(user.id)}
-          >
-            {followed ? '팔로잉' : '팔로우'}
-          </button>
+          my?.id != user.id ? (
+            <button
+              className={`btn h-9 rounded text-body14m ${followed && 'out-line'}`}
+              onClick={() => handleFollow(user.id)}
+            >
+              {followed ? '팔로잉' : '팔로우'}
+            </button>
+          ) : (
+            <div></div>
+          )
         }
       >
         <ListItemAvatar onClick={goToProfilePage}>

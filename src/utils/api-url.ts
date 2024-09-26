@@ -9,6 +9,8 @@ export const REFRESH_TOKEN = '/token'
 export const CODE = '/code'
 export const LINK = '/link'
 export const RESET_PASSWORD = '/reset/password'
+export const VALIDATE_UNIQUE = '/validateUnique'
+
 /* users */
 export const USER_API = '/users'
 export const USER_CHECK = '/check'

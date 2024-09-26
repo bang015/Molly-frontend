@@ -1,9 +1,9 @@
-import { INIT, USER_API, QUERY_EMAIL, QUERY_NICKNAME } from './api-url'
+import { INIT, USER_API, QUERY_EMAIL, QUERY_NICKNAME, VALIDATE_UNIQUE, AUTH_API } from './api-url'
 import axios from 'axios'
 
 export const checkEmailExists = async (email: string) => {
   const response = await axios.get(
-    `${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}${QUERY_EMAIL}${email}`,
+    `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${VALIDATE_UNIQUE}${QUERY_EMAIL}${email}`,
   )
   if (response.status === 204) {
     return false
@@ -36,7 +36,7 @@ export const checkEmailValidation = async (email: string) => {
 
 export const checkNickExists = async (nickname: string) => {
   const response = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}${QUERY_NICKNAME}${nickname}`,
+    `${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${VALIDATE_UNIQUE}${QUERY_NICKNAME}${nickname}`,
     { method: 'GET' },
   )
   if (response.status === 204) {

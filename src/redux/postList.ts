@@ -1,7 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { INIT, POST_API } from '../utils/api-url'
 import { PostType } from '../interfaces/post'
-import { updatedPost } from './post'
 import { request } from './baseRequest'
 import { openSnackBar } from './snackBar'
 
@@ -64,20 +63,47 @@ const postListSlice = createSlice({
       state.posts.main = [action.payload, ...state.posts.main]
       if (state.posts.user.length > 0) {
         const userPostIndex = state.posts.user.findIndex(
-          post => post.userId === action.payload.userId,
+          post => post.user.id === action.payload.userId,
         )
         if (userPostIndex !== -1) {
           state.posts.user = [action.payload, ...state.posts.user]
         }
       }
     },
-    postUpdateList: (state, action: PayloadAction<updatedPost>) => {
+    postUpdateList: (state, action) => {
+      if (state.postDetail && state.postDetail?.id === action.payload.id) {
+        state.postDetail.content = action.payload.content
+      }
       const updatedPosts = state.posts.main.map(post =>
-        post.id === action.payload.updatedPost.id
-          ? { ...post, content: action.payload.updatedPost.content! }
-          : post,
+        post.id === action.payload.id ? { ...post, content: action.payload.content! } : post,
       )
       state.posts.main = updatedPosts
+    },
+    updatePostLike: (state, action) => {
+      const { postId, isLiked } = action.payload
+      if (state.postDetail && state.postDetail.id === postId) {
+        state.postDetail.isLiked = isLiked
+        state.postDetail.likeCount = isLiked
+          ? state.postDetail.likeCount + 1
+          : state.postDetail.likeCount - 1
+      }
+      state.posts.main = updateLikeStatus(state.posts.main, postId, isLiked)
+      state.posts.explore = updateLikeStatus(state.posts.explore, postId, isLiked)
+      state.posts.user = updateLikeStatus(state.posts.user, postId, isLiked)
+      state.posts.bookmark = updateLikeStatus(state.posts.bookmark, postId, isLiked)
+    },
+    updatePostBookmark: (state, action) => {
+      const { postId, isBookmarked } = action.payload
+      if (state.postDetail && state.postDetail.id === postId) {
+        state.postDetail.isBookmarked = isBookmarked
+      }
+      state.posts.main = updateBookmarkStatus(state.posts.main, postId, isBookmarked)
+      state.posts.explore = updateBookmarkStatus(state.posts.explore, postId, isBookmarked)
+      state.posts.user = updateBookmarkStatus(state.posts.user, postId, isBookmarked)
+      state.posts.bookmark = updateBookmarkStatus(state.posts.bookmark, postId, isBookmarked)
+    },
+    setPostDetail: (state, action) => {
+      state.postDetail = action.payload
     },
     postDelete: (state, action: PayloadAction<number>) => {
       state.posts.main = state.posts.main.filter(post => post.id !== action.payload)
@@ -125,7 +151,7 @@ const postListSlice = createSlice({
         const post = [...state.posts.tag.posts, ...action.payload.postList]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.tag.posts = Array.from(filter.values())
-        state.posts.tag.count = action.payload.tagCount
+        state.posts.tag.count = action.payload.tagPostCount
         state.totalPages.tag = action.payload.totalPages
         state.loading.tag = false
       })
@@ -134,7 +160,7 @@ const postListSlice = createSlice({
       })
       .addCase(getUserPost.fulfilled, (state, action) => {
         const post = [...state.posts.user, ...action.payload.postList].filter(
-          post => post.userId === action.meta.arg.userId,
+          post => post.user.id === action.meta.arg.userId,
         )
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.user = Array.from(filter.values())
@@ -146,7 +172,7 @@ const postListSlice = createSlice({
       })
       .addCase(getBookmarkPost.fulfilled, (state, action) => {
         const post = [...state.posts.bookmark, ...action.payload.postList].filter(
-          post => post.userId === action.meta.arg.userId,
+          post => post.user.id === action.meta.arg.userId,
         )
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.bookmark = Array.from(filter.values())
@@ -163,21 +189,52 @@ const postListSlice = createSlice({
   },
 })
 
-export const { postDelete, postUpdateList, postUpload, clearPostList, clearPostDetail } =
-  postListSlice.actions
+export const {
+  postDelete,
+  postUpdateList,
+  postUpload,
+  clearPostList,
+  clearPostDetail,
+  updatePostLike,
+  updatePostBookmark,
+  setPostDetail,
+} = postListSlice.actions
 export default postListSlice.reducer
+
+function updateLikeStatus(posts: PostType[], postId: number, isLiked: boolean) {
+  return posts.map(post => {
+    if (post.id === postId) {
+      return {
+        ...post,
+        isLiked: isLiked,
+        likeCount: isLiked ? post.likeCount + 1 : post.likeCount - 1,
+      }
+    }
+    return post
+  })
+}
+
+function updateBookmarkStatus(posts: PostType[], postId: number, isBookmarked: boolean) {
+  return posts.map(post => {
+    if (post.id === postId) {
+      return {
+        ...post,
+        isBookmarked: isBookmarked,
+      }
+    }
+    return post
+  })
+}
 
 export const getMainPost = createAsyncThunk<{ postList: PostType[]; totalPages: number }, number>(
   'postList/getMainPost',
   async (page: number, { dispatch }) => {
     try {
-      const response = await request(
-        `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/main/?page=${page}`,
-        {
-          method: 'GET',
-          headers: {},
-        },
-      )
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/main`, {
+        method: 'GET',
+        headers: {},
+        params: { page },
+      })
       return response.data
     } catch (e: any) {
       dispatch(openSnackBar(e.response.data.message))
@@ -234,6 +291,7 @@ export const getUserPost = createAsyncThunk<
         `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/my/${userId}?page=${page}`,
         {
           method: 'GET',
+          headers: {},
         },
       )
       return response.data
@@ -243,7 +301,7 @@ export const getUserPost = createAsyncThunk<
   },
 )
 export const getTagPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number; tagCount: number },
+  { postList: PostType[]; totalPages: number; tagPostCount: number },
   { tagName: string; page: number }
 >(
   'postList/getTagPost',
@@ -253,6 +311,7 @@ export const getTagPost = createAsyncThunk<
         `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/tags/${tagName}?page=${page}`,
         {
           method: 'GET',
+          headers: {},
         },
       )
       return response.data
@@ -263,7 +322,7 @@ export const getTagPost = createAsyncThunk<
 )
 
 export const getBookmarkPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number; tagCount: number },
+  { postList: PostType[]; totalPages: number },
   { userId: number; page: number }
 >(
   'postList/getBookmarkPost',
@@ -273,6 +332,7 @@ export const getBookmarkPost = createAsyncThunk<
         `${import.meta.env.VITE_SERVER_URL}${INIT}${POST_API}/bookmark/${userId}?page=${page}`,
         {
           method: 'GET',
+          headers: {},
         },
       )
       return response.data

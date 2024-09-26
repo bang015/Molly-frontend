@@ -13,18 +13,18 @@ const PostActionModal: React.FC = () => {
   const [checkFollowed, setCheckFollowed] = useState(false)
 
   useEffect(() => {
-    if (user?.id !== post?.userId) {
+    if (user?.id !== post?.user.id) {
       followCheck()
     }
   }, [user, post, Followed])
   const handleUnFollow = () => {
-    const followUserId = post?.userId!
+    const followUserId = post?.user.id!
     dispatch(followUser(followUserId) as any)
     dispatch(closeSubModal())
   }
   const followCheck = async () => {
     if (post) {
-      const result = await followedCheck(post.userId)
+      const result = await followedCheck(post.user.id)
       setCheckFollowed(result)
     }
   }
@@ -38,12 +38,14 @@ const PostActionModal: React.FC = () => {
       >
         <div className="modal">
           <div className="pointer-events-auto flex flex-col rounded-xl bg-white">
-            {post?.userId === user!.id ? (
+            {post?.user.id === user!.id ? (
               <div className="flex flex-col">
                 <button
                   className="w-[400px] border-b p-5 text-body14sd text-red-500"
                   onClick={() => {
-                    dispatch(openModal({ modalType: 'PostFormModal', id: post?.id, post: post }))
+                    dispatch(
+                      openSubModal({ subModalType: 'PostFormModal', id: post?.id, post: post }),
+                    )
                   }}
                 >
                   수정

@@ -10,6 +10,7 @@ import {
   RESET_PASSWORD,
   SIGN_IN,
   SIGN_UP,
+  USER_API,
 } from '../utils/api-url'
 import io, { Socket } from 'socket.io-client'
 import { ResetPassword, SignUpInput, Token } from '@/interfaces/auth'
@@ -31,7 +32,6 @@ const initialState: AuthState = {
   loading: false,
 }
 export let socket: Socket | null = null
-// 유저 정보
 
 const authSlice = createSlice({
   name: 'auth',
@@ -56,6 +56,15 @@ const authSlice = createSlice({
       localStorage.setItem('refreshToken', action.payload.refreshToken)
       state.accessToken = action.payload.accessToken
     },
+    followingCountUpdate: (state, action: PayloadAction<boolean>) => {
+      if (state.user) {
+        if (action.payload) {
+          state.user.followingCount += 1
+        } else {
+          state.user.followingCount -= 1
+        }
+      }
+    },
   },
   extraReducers: builder => {
     builder
@@ -72,19 +81,19 @@ const authSlice = createSlice({
       })
   },
 })
-export const { setTokens, removeTokens, refreshTokens } = authSlice.actions
+export const { setTokens, removeTokens, refreshTokens, followingCountUpdate } = authSlice.actions
 export default authSlice.reducer
 export const getUser = createAsyncThunk<UserType | null>(
   'auth/getUser',
   async (_, { dispatch }) => {
     try {
-      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}`, {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}/me`, {
         headers: {},
       })
       return response.data
     } catch (e: any) {
       dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
-      return null
+      dispatch(removeTokens())
     }
   },
 )

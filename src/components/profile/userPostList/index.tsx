@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {  getUserPost } from '@/redux/postList'
+import { getUserPost, setPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import CameraAltOutlinedIcon from '@mui/icons-material/CameraAltOutlined'
-import { openModal } from '@/redux/modal'
+import { openModal, openSubModal } from '@/redux/modal'
 import { PostType } from '@/interfaces/post'
 import { CircularProgress } from '@mui/material'
 interface userPostListProps {
@@ -60,7 +60,8 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
             <div
               key={post.id}
               onClick={() => {
-                dispatch(openModal({ modalType: 'PostDetailModal', id: post.id }))
+                dispatch(openModal({ modalType: 'PostDetailModal' }))
+                dispatch(setPostDetail(post))
               }}
             >
               <img className="cursor-pointer" src={post.postMedias[0].path} />
@@ -88,8 +89,8 @@ const UserPostList: React.FC<userPostListProps> = ({ userId }) => {
                 className="p-3 text-body14sd text-main hover:text-hover"
                 onClick={() => {
                   dispatch(
-                    openModal({
-                      modalType: 'PostFormModal',
+                    openSubModal({
+                      subModalType: 'PostFormModal',
                       id: null,
                       post: null,
                     }),
