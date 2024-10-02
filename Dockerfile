@@ -1,9 +1,9 @@
 # Frontend Build Stage
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY client/package*.json ./
+COPY ./package*.json ./
 RUN npm install
-COPY client/ ./
+COPY ./ ./
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Nginx Stage
