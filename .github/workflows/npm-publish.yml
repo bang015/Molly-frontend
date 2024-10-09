@@ -15,5 +15,17 @@ jobs:
       - name: docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_REPO }}/frontend .
+          docker build --build-arg VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }} \
+            -t ${{ secrets.DOCKER_REPO }}/frontend .
           docker push ${{ secrets.DOCKER_REPO }}/frontend
+
+      - name: SSH to EC2 and Update
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/Spring-Molly
+            sudo docker-compose pull
+            sudo docker-compose up -d
