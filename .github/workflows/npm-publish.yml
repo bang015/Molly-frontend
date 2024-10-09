@@ -2,7 +2,7 @@ name: Build and Push Frontend
 
 on:
   push:
-    branches: 
+    branches:
       - spring
 
 jobs:
