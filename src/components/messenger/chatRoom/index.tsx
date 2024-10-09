@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { socket } from '@/redux/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { Avatar } from '@mui/material'
@@ -10,50 +9,49 @@ import { MessageType } from '@/interfaces/chat'
 import { openSubModal } from '@/redux/modal'
 import { useNavigate } from 'react-router-dom'
 import { UserType } from '@/interfaces/user'
+import { sendMessage, subscribeToMessages } from '@/common/socket'
 interface chatRoomProps {
   handleCeateOpen: () => void
 }
 const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const user = useSelector((state: RootState) => state.authReducer.user)
-  const roomId = useSelector((state: RootState) => state.chatReducer.roomId)
+  const { user, isConnected } = useSelector((state: RootState) => state.authReducer)
   const messageList = useSelector((state: RootState) => state.chatReducer.list.message)
-  const members = useSelector((state: RootState) => state.chatReducer.members)
+  const { members, roomId } = useSelector((state: RootState) => state.chatReducer)
   const [message, setMessage] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
+    let chat: any
     if (roomId) {
       dispatch(chatRoomDetails(roomId) as any)
       dispatch(updateUnreadCount(roomId))
-      if (socket) {
-        const handleNewMessage = (data: MessageType) => {
-          socket?.emit('messageRead', { roomId })
-          dispatch(addNewMessage(data) as any)
-        }
-        socket.emit('joinChatRoom', { roomId })
-        socket.on('sendMessagesuccess', handleNewMessage)
-
-        return () => {
-          socket?.off('sendMessagesuccess', handleNewMessage)
-        }
+      if (isConnected) {
+        sendMessage('messageRead', { roomId })
+        chat = subscribeToMessages(`/chat/${roomId}`, message => {
+          dispatch(addNewMessage(message) as any)
+        })
       }
     }
-  }, [roomId, socket])
+    return () => {
+      if (chat) {
+        chat.unsubscribe()
+      }
+      setIsOpen(false)
+    }
+  }, [isConnected, roomId])
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
   }
-  const sendMessage = () => {
-    if (message !== '' && socket) {
-      socket.emit('sendMessage', { roomId, message })
-    }
+  const sendNewMessage = () => {
+    sendMessage('sendMessage', { roomId, message })
     setMessage('')
   }
   const handleEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      sendMessage()
+      sendNewMessage()
     }
   }
   return (
@@ -67,10 +65,10 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                 <div className="flex grow items-center">
                   <Avatar
                     className="border"
-                    src={members[0]?.profileImage?.path}
+                    src={members?.filter(member => member.id !== user?.id)[0]?.profileImage?.path}
                     sx={{ width: 50, height: 50 }}
                   />
-                  {members.length > 0 ? (
+                  {members.length > 1 ? (
                     members.map((member: UserType) => (
                       <button
                         key={member.id}
@@ -79,7 +77,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                         }}
                         className="ml-3 text-body16sd"
                       >
-                        {member.name}
+                        {member.id !== user?.id && member.name}
                       </button>
                     ))
                   ) : (
@@ -113,8 +111,8 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                       {message.messages.map((msg: MessageType) => (
                         <div key={msg.id}>
                           {msg.type === 'USER' ? (
-                            <div className={`flex ${msg.userId === user?.id && 'justify-end'}`}>
-                              {msg.userId === user?.id ? (
+                            <div className={`flex ${msg.user.id === user?.id && 'justify-end'}`}>
+                              {msg.user.id === user?.id ? (
                                 <div className="p-1">
                                   <div className="whitespace-pre-wrap rounded-xl bg-main px-3 py-2 text-white">
                                     {msg.message}
@@ -164,7 +162,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                   ></textarea>
                   <button
                     className="px-5 text-body14sd text-main hover:text-hover"
-                    onClick={sendMessage}
+                    onClick={sendNewMessage}
                   >
                     보내기
                   </button>
@@ -196,7 +194,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
                               sx={{ width: 60, height: 60 }}
                             />
                           </div>
-                          <div>
+                          <div className='flex flex-col items-start'>
                             <div className="text-body16sd">{member.nickname}</div>
                             <div className="text-body14rg">{member.name}</div>
                           </div>

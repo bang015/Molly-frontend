@@ -12,17 +12,18 @@ import {
   SIGN_UP,
   USER_API,
 } from '../utils/api-url'
-import io, { Socket } from 'socket.io-client'
 import { ResetPassword, SignUpInput, Token } from '@/interfaces/auth'
 import { request } from './baseRequest'
 import { openSnackBar } from './snackBar'
 import { clearChat } from './chat'
+import { disconnectSocket } from '@/common/socket'
 
 interface AuthState {
   isLogin: boolean
   accessToken: string | null
   user: UserType | null
   loading: boolean
+  isConnected: boolean
 }
 
 const initialState: AuthState = {
@@ -30,8 +31,8 @@ const initialState: AuthState = {
   accessToken: localStorage.getItem('accessToken'),
   user: null,
   loading: false,
+  isConnected: false,
 }
-export let socket: Socket | null = null
 
 const authSlice = createSlice({
   name: 'auth',
@@ -49,7 +50,7 @@ const authSlice = createSlice({
       state.isLogin = false
       state.accessToken = null
       state.user = null
-      socket?.disconnect()
+      disconnectSocket()
     },
     refreshTokens: (state, action: PayloadAction<Token>) => {
       localStorage.setItem('accessToken', action.payload.accessToken)
@@ -65,6 +66,9 @@ const authSlice = createSlice({
         }
       }
     },
+    setConnected: (state, action) => {
+      state.isConnected = action.payload
+    },
   },
   extraReducers: builder => {
     builder
@@ -77,26 +81,12 @@ const authSlice = createSlice({
         state.user = null
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
-        socket?.disconnect()
       })
   },
 })
-export const { setTokens, removeTokens, refreshTokens, followingCountUpdate } = authSlice.actions
+export const { setTokens, removeTokens, refreshTokens, followingCountUpdate, setConnected } =
+  authSlice.actions
 export default authSlice.reducer
-export const getUser = createAsyncThunk<UserType | null>(
-  'auth/getUser',
-  async (_, { dispatch }) => {
-    try {
-      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}/me`, {
-        headers: {},
-      })
-      return response.data
-    } catch (e: any) {
-      dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
-      dispatch(removeTokens())
-    }
-  },
-)
 
 // 이메일 인증번호 보내기
 export const sendVerificationCode = async (email: string) => {
@@ -113,14 +103,16 @@ export const sendVerificationCode = async (email: string) => {
 // 비밀번호 재설정 링크 보내기
 export const sendPasswordResetLink = async (email: string) => {
   try {
-    await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${LINK}`, {
+    const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${AUTH_API}${LINK}`, {
       data: { email },
       method: 'POST',
     })
-    return true
+    if(response.status === 200) {
+      return response.data
+    }
+    
   } catch (e: any) {
-    alert(e.response.data.message)
-    return false
+    return e.response.data.message
   }
 }
 
@@ -134,7 +126,7 @@ export const resetPassword = async (data: ResetPassword) => {
         method: 'POST',
       },
     )
-    if (response.status === 200) alert(response.data.message)
+    if (response.status === 200) alert(response.data)
   } catch (e: any) {
     alert(e.response.data.message)
   }
@@ -184,21 +176,27 @@ export const signIn = createAsyncThunk(
   },
 )
 
+export const getUser = createAsyncThunk<UserType | null>(
+  'auth/getUser',
+  async (_, { dispatch }) => {
+    try {
+      const response = await request(`${import.meta.env.VITE_SERVER_URL}${INIT}${USER_API}/me`, {
+        headers: {},
+      })
+      return response.data
+    } catch (e: any) {
+      dispatch(openSnackBar('유저 정보를 가져오는데 실패했습니다.'))
+      dispatch(removeTokens())
+    }
+  },
+)
+
 // 로그아웃
 export const signOut = createAsyncThunk('auth/signOut', async (_, { dispatch }) => {
   dispatch(removeTokens())
   dispatch(clearChat())
-  if (socket) {
-    socket.disconnect()
-  }
 })
 
-// 소켓 연결
-export const initializeSocket = (token: string) => {
-  socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
-    auth: { token },
-  })
-}
 // refreshToken
 export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { dispatch }) => {
   try {
@@ -207,10 +205,6 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async (_, { di
       { refreshToken: localStorage.getItem('refreshToken') },
     )
     if (response.status === 200) {
-      if (socket) {
-        socket.disconnect()
-        initializeSocket(response.data.accessToken)
-      }
       dispatch(refreshTokens(response.data))
       return response.data.accessToken
     }

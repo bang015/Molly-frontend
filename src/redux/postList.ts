@@ -128,7 +128,7 @@ const postListSlice = createSlice({
         state.loading.main = true
       })
       .addCase(getMainPost.fulfilled, (state, action) => {
-        const post = [...state.posts.main, ...action.payload.postList]
+        const post = [...state.posts.main, ...action.payload.result]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.main = Array.from(filter.values())
         state.totalPages.main = action.payload.totalPages
@@ -138,7 +138,7 @@ const postListSlice = createSlice({
         state.loading.explore = true
       })
       .addCase(getExplorePost.fulfilled, (state, action) => {
-        const post = [...state.posts.explore, ...action.payload.postList]
+        const post = [...state.posts.explore, ...action.payload.result]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.explore = Array.from(filter.values())
         state.totalPages.explore = action.payload.totalPages
@@ -148,7 +148,7 @@ const postListSlice = createSlice({
         state.loading.tag = true
       })
       .addCase(getTagPost.fulfilled, (state, action) => {
-        const post = [...state.posts.tag.posts, ...action.payload.postList]
+        const post = [...state.posts.tag.posts, ...action.payload.result]
         const filter = new Map(post.map(p => [p.id, p]))
         state.posts.tag.posts = Array.from(filter.values())
         state.posts.tag.count = action.payload.tagPostCount
@@ -159,7 +159,7 @@ const postListSlice = createSlice({
         state.loading.user = true
       })
       .addCase(getUserPost.fulfilled, (state, action) => {
-        const post = [...state.posts.user, ...action.payload.postList].filter(
+        const post = [...state.posts.user, ...action.payload.result].filter(
           post => post.user.id === action.meta.arg.userId,
         )
         const filter = new Map(post.map(p => [p.id, p]))
@@ -171,7 +171,7 @@ const postListSlice = createSlice({
         state.loading.bookmark = true
       })
       .addCase(getBookmarkPost.fulfilled, (state, action) => {
-        const post = [...state.posts.bookmark, ...action.payload.postList].filter(
+        const post = [...state.posts.bookmark, ...action.payload.result].filter(
           post => post.user.id === action.meta.arg.userId,
         )
         const filter = new Map(post.map(p => [p.id, p]))
@@ -226,7 +226,7 @@ function updateBookmarkStatus(posts: PostType[], postId: number, isBookmarked: b
   })
 }
 
-export const getMainPost = createAsyncThunk<{ postList: PostType[]; totalPages: number }, number>(
+export const getMainPost = createAsyncThunk<{ result: PostType[]; totalPages: number }, number>(
   'postList/getMainPost',
   async (page: number, { dispatch }) => {
     try {
@@ -243,7 +243,7 @@ export const getMainPost = createAsyncThunk<{ postList: PostType[]; totalPages: 
 )
 
 export const getExplorePost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number },
+  { result: PostType[]; totalPages: number },
   { page: number; limit: number }
 >(
   'postList/getExplorePost',
@@ -281,7 +281,7 @@ export const getPostDetail = createAsyncThunk<PostType, number>(
 )
 
 export const getUserPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number; userId: number },
+  { result: PostType[]; totalPages: number; userId: number },
   { userId: number; page: number }
 >(
   'postList/getUserPost',
@@ -301,7 +301,7 @@ export const getUserPost = createAsyncThunk<
   },
 )
 export const getTagPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number; tagPostCount: number },
+  { result: PostType[]; totalPages: number; tagPostCount: number },
   { tagName: string; page: number }
 >(
   'postList/getTagPost',
@@ -322,7 +322,7 @@ export const getTagPost = createAsyncThunk<
 )
 
 export const getBookmarkPost = createAsyncThunk<
-  { postList: PostType[]; totalPages: number },
+  { result: PostType[]; totalPages: number },
   { userId: number; page: number }
 >(
   'postList/getBookmarkPost',

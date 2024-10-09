@@ -8,7 +8,7 @@ export default defineConfig({
     outDir: 'build',
     minify: false,
     sourcemap: false,
-    target: 'esnext'
+    target: 'esnext',
   },
   server: {
     host: '0.0.0.0',
@@ -28,5 +28,7 @@ export default defineConfig({
     }),
     react(),
   ],
-  define: {},
+  define: {
+    global: {},
+  },
 })

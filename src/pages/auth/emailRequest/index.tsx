@@ -1,7 +1,8 @@
 import Logo from '@/icons/molly-logo.svg?react'
-import { sendPasswordResetLink } from '@/redux/auth'
-import { TextField } from '@mui/material'
+import { sendPasswordResetLink, signOut } from '@/redux/auth'
+import { CircularProgress, TextField } from '@mui/material'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 const EmailReqeust: React.FC = () => {
@@ -9,7 +10,8 @@ const EmailReqeust: React.FC = () => {
   const [helperText, setHelperText] = useState('')
   const [isValid, setIsValid] = useState(false)
   const [config, setConfig] = useState<boolean>(false)
-
+  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch()
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
     const regExp = /^[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
@@ -26,10 +28,15 @@ const EmailReqeust: React.FC = () => {
   }
   const sendPasswordReset = async () => {
     if (isValid) {
-      const result = await sendPasswordResetLink(email)
-      if (result) {
-        alert('비밀번호 재설정 링크를 보냈습니다.')
+      setIsLoading(true)
+      try {
+        const result = await sendPasswordResetLink(email)
+        alert(result)
         setConfig(true)
+      } catch (e) {
+        console.error('Error sending reset link', e)
+      } finally {
+        setIsLoading(false)
       }
     }
   }
@@ -47,7 +54,7 @@ const EmailReqeust: React.FC = () => {
           <div className="py-5">
             <div>{email}로 비밀번호 재설정 링크를 보내드렸어요!</div>
             <button className="py-2 text-body14sd text-main" onClick={sendPasswordReset}>
-              링크 재전송
+            {isLoading ? <CircularProgress /> : '링크 재전송'}
             </button>
           </div>
         ) : (
@@ -68,14 +75,24 @@ const EmailReqeust: React.FC = () => {
                 onKeyDown={handleEnter}
               />
             </div>
-            <button onClick={sendPasswordReset} disabled={!isValid} className="btn my-5 w-full">
-              링크 보내기
+            <button
+              onClick={sendPasswordReset}
+              disabled={!isValid || isLoading}
+              className="btn my-5 w-full"
+            >
+              {isLoading ? <CircularProgress /> : '링크 보내기'}
             </button>
           </div>
         )}
 
         <button className="link mt-4">
-          <Link className="text-body14rg text-slate-400" to="/sign/in">
+          <Link
+            className="text-body14rg text-slate-400"
+            to="/sign/in"
+            onClick={() => {
+              dispatch(signOut() as any)
+            }}
+          >
             이미 계정이 있으신가요?
           </Link>
         </button>

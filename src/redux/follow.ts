@@ -50,13 +50,13 @@ const followSlice = createSlice({
         state.list.suggest = action.payload
       })
       .addCase(getFollowing.fulfilled, (state, action) => {
-        const followings = [...state.list.following, ...action.payload.followings]
+        const followings = [...state.list.following, ...action.payload.result]
         const filter = new Map(followings.map(f => [f.id, f]))
         state.list.following = Array.from(filter.values())
         state.totalPages.following = action.payload.totalPages
       })
       .addCase(getFollower.fulfilled, (state, action) => {
-        const followers = [...state.list.follower, ...action.payload.followers]
+        const followers = [...state.list.follower, ...action.payload.result]
         const filter = new Map(followers.map(f => [f.id, f]))
         state.list.follower = Array.from(filter.values())
         state.totalPages.follower = action.payload.totalPages
@@ -105,7 +105,7 @@ export const getSuggestFollow = createAsyncThunk<FollowType[], number>(
 )
 
 export const getFollowing = createAsyncThunk<
-  { followings: FollowType[]; totalPages: number },
+  { result: FollowType[]; totalPages: number },
   { userId: number; page: number; keyword: string }
 >(
   'follow/getFollowing',
@@ -126,7 +126,7 @@ export const getFollowing = createAsyncThunk<
 )
 
 export const getFollower = createAsyncThunk<
-  { followers: FollowType[]; totalPages: number },
+  { result: FollowType[]; totalPages: number },
   { userId: number; page: number; keyword: string }
 >(
   'follow/getFollower',

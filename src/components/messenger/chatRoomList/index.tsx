@@ -4,9 +4,9 @@ import { RootState } from '@/redux'
 import { Avatar } from '@mui/material'
 import { displayCreateAt } from '@/utils/format/moment'
 import { chatRoomList, setRoomId, updateChatRoomInfo, userLeft } from '@/redux/chat'
-import { socket } from '@/redux/auth'
 import { UserType } from '@/interfaces/user'
 import { RoomListType } from '@/interfaces/chat'
+import { stompClient, subscribeToMessages } from '@/common/socket'
 interface chatRoomListProps {}
 const ChatRoomList: React.FC<chatRoomListProps> = () => {
   const target = useRef<HTMLDivElement | null>(null)
@@ -15,29 +15,37 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
   const dispatch = useDispatch()
   const roomList = useSelector((state: RootState) => state.chatReducer.list.room)
   const totalPages = useSelector((state: RootState) => state.chatReducer.totalPages.room)
+  const { user, isConnected } = useSelector((state: RootState) => state.authReducer)
   const [page, setPage] = useState(1)
   useEffect(() => {
     dispatch(chatRoomList(page) as any)
-    if (socket) {
-      socket.on('connect', () => {
-        console.log('Connected')
+  }, [page]) // socket
+
+  useEffect(() => {
+    let newChatRoom: any
+    let newMessage: any
+    let memberLeft: any
+    if (isConnected && user) {
+      newChatRoom = subscribeToMessages(`/user/${user?.id}/newChatRoom`, message => {
+        dispatch(setRoomId(message))
       })
-      socket.on('newMessage', data => {
-        dispatch(updateChatRoomInfo(data))
+
+      newMessage = subscribeToMessages(`/user/${user?.id}/newMessage`, message => {
+        dispatch(updateChatRoomInfo(message))
       })
-      socket.on('userLeft', data => {
-        dispatch(userLeft(data))
+
+      memberLeft = subscribeToMessages(`/user/${user?.id}/memberLeft`, message => {
+        dispatch(userLeft(message))
       })
-      socket.on('newChatRoom', data => {
-        dispatch(setRoomId(data))
-      })
-      return () => {
-        socket?.off('newMessage')
-        socket?.off('userLeft')
-        socket?.off('newChatRoom')
+    }
+    return () => {
+      if (newChatRoom && newMessage) {
+        newChatRoom.unsubscribe()
+        newMessage.unsubscribe()
+        memberLeft.unsubscribe()
       }
     }
-  }, [socket, page])
+  }, [isConnected, user])
   const callback = (entries: IntersectionObserverEntry[]) => {
     if (entries[0].isIntersecting && !isFetching) {
       if (hasObserved) {
@@ -67,7 +75,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
     }
   }, [observer])
   return (
-    <div>
+    <div className='h-full'>
       {roomList.length > 0 ? (
         <div>
           {roomList.map((room: RoomListType) => (
@@ -80,16 +88,16 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
             >
               <div className="mr-3 rounded-full border">
                 <Avatar
-                  src={room?.members?.[0]?.profileImage?.path}
+                  src={room?.members?.filter(member => member.id !== user?.id)[0]?.profileImage?.path}
                   sx={{ width: 44, height: 44 }}
                 />
               </div>
               <div className="flex flex-col">
                 <div className="flex">
-                  {room.members.length > 0 ? (
+                  {room.members.length > 1 ? (
                     room.members.map((member: UserType) => (
                       <div key={member.id} className="pr-1 text-body16m">
-                        {member.name}
+                        {member.id !== user?.id && member.name}
                       </div>
                     ))
                   ) : (
@@ -99,7 +107,7 @@ const ChatRoomList: React.FC<chatRoomListProps> = () => {
                 {room.latestMessage && (
                   <div className="flex items-center">
                     <div className="text-body14rg">{room.latestMessage.message}</div>
-                    <div className="ml-1 min-w-10 text-body14rg">
+                    <div className="ml-1 min-w-10 text-body12rg">
                       • {displayCreateAt(room.latestMessage.createdAt)}
                     </div>
                   </div>

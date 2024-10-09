@@ -3,19 +3,21 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import { closeSubModal } from '@/redux/modal'
-import { socket } from '@/redux/auth'
 import { leaveChatRoom } from '@/redux/chat'
+import { sendMessage } from '@/common/socket'
 
 const LeaveRoomModal: React.FC = () => {
   const dispatch = useDispatch()
   const { isSubOpen } = useSelector((state: RootState) => state.modalReducer)
   const { roomId } = useSelector((state: RootState) => state.chatReducer)
   const leaveRoom = async () => {
-    if (roomId && socket) {
-      socket.emit('leaveChatRoom', { roomId })
-      dispatch(leaveChatRoom())
-      dispatch(closeSubModal())
-    }
+    sendMessage('leaveChatRoom', { roomId })
+    dispatch(leaveChatRoom())
+    dispatch(closeSubModal())
+    // if (roomId && socket) {
+    //   socket.emit('leaveChatRoom', { roomId })
+
+    // }
   }
   return (
     <div>

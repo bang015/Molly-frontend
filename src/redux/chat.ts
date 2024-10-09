@@ -89,20 +89,20 @@ const chatSlice = createSlice({
     userLeft: (state, action) => {
       if (action.payload.roomId === state.roomId) {
         state.members = action.payload.members
-        const messages = updateMessagesByDate(action.payload.sysMessage, state.list.message)
+        const messages = updateMessagesByDate(action.payload.latestMessage, state.list.message)
         state.list.message = messages
       }
       if (state.list.room.find(room => room.roomId === action.payload.roomId)) {
         state.list.room.map(room => {
           if (room.roomId === action.payload.roomId) {
-            room.latestMessage = action.payload.sysMessage
+            room.latestMessage = action.payload.latestMessage
             room.members = action.payload.members
           }
         })
       } else {
         state.list.room.push({
           roomId: action.payload.roomId,
-          latestMessage: action.payload.sysMessage,
+          latestMessage: action.payload.latestMessage,
           members: action.payload.members,
           unReadCount: 0,
         })
@@ -110,26 +110,28 @@ const chatSlice = createSlice({
       state.list.room.sort((a, b) => {
         const dateA = new Date(a.latestMessage.createdAt).getTime()
         const dateB = new Date(b.latestMessage.createdAt).getTime()
-        return dateB - dateA // 내림차순 정렬
+        return dateB - dateA 
       })
     },
   },
   extraReducers: builder => {
     builder
       .addCase(chatRoomList.fulfilled, (state, action) => {
-        const roomList = [...state.list.room, ...action.payload.roomList]
+        const roomList = [...state.list.room, ...action.payload.result]
         const filter = new Map(roomList.map(r => [r.roomId, r]))
         state.list.room = Array.from(filter.values())
         state.list.room.sort((a, b) => {
           const dateA = new Date(a.latestMessage.createdAt).getTime()
           const dateB = new Date(b.latestMessage.createdAt).getTime()
-          return dateB - dateA // 내림차순 정렬
+          return dateB - dateA 
         })
         state.totalPages.room = action.payload.totalPages
       })
       .addCase(chatRoomDetails.fulfilled, (state, action) => {
-        const messages = groupMessagesByDate(action.payload.messages)
-        state.list.message = messages
+        if (action.payload.messages.length > 0) {
+          const messages = groupMessagesByDate(action.payload.messages)
+          state.list.message = messages
+        }
         state.members = action.payload.members
       })
       .addCase(getUnreadCount.fulfilled, (state, action) => {
@@ -151,7 +153,7 @@ export const {
 export default chatSlice.reducer
 
 export const chatRoomList = createAsyncThunk<
-  { roomList: RoomListType[]; totalPages: number },
+  { result: RoomListType[]; totalPages: number },
   number
 >('chat/getList', async (page: number, { dispatch }) => {
   try {

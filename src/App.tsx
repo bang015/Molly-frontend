@@ -10,27 +10,40 @@ import ExplorePage from './pages/explore'
 import TagsPage from './pages/tag'
 import MessengerPage from './pages/messenger'
 import { useDispatch, useSelector } from 'react-redux'
-import { getUser, initializeSocket, refreshToken, socket } from './redux/auth'
+import { getUser, refreshToken, setConnected } from './redux/auth'
 import { Snackbar } from '@mui/material'
 import PasswordReset from './pages/auth/passwordReset'
 import { closeSnackBar } from './redux/snackBar'
 import EmailReqeust from './pages/auth/emailRequest'
+import { initializeSocket } from './common/socket'
 
 const App: React.FC = () => {
+  window.global = window
+
   const { isLogin, user } = useSelector((state: RootState) => state.authReducer)
   const { showSnackBar, message } = useSelector((state: RootState) => state.snackBarReducer)
   const dispatch = useDispatch()
   useEffect(() => {
     if (isLogin) {
       dispatch(getUser() as any)
-      initializeSocket(`${localStorage.getItem('accessToken')}`)
-      if (socket) {
-        socket.on('connect_error', e => {
-          if (e.message === 'Token expired') {
-            dispatch(refreshToken() as any)
-          }
+      dispatch(setConnected(false))
+      initializeSocket(
+        `${import.meta.env.VITE_SERVER_URL}/ws/chat`,
+        `${localStorage.getItem('accessToken')}`,
+      )
+        .then(() => {
+          dispatch(setConnected(true))
         })
-      }
+        .catch(e => {
+          dispatch(setConnected(false))
+        })
+      // if (socket) {
+      //   socket.on('connect_error', e => {
+      //     if (e.message === 'Token expired') {
+      //       dispatch(refreshToken() as any)
+      //     }
+      //   })
+      // }
       const interval = setInterval(
         () => {
           dispatch(refreshToken() as any)
@@ -46,7 +59,6 @@ const App: React.FC = () => {
     }
     dispatch(closeSnackBar())
   }
-  console.log(user?.followingCount)
   return (
     <>
       <Routes>

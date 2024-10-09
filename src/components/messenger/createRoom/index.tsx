@@ -4,8 +4,8 @@ import { getSearchResult } from '@/redux/search'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/redux'
 import CancelIcon from '@mui/icons-material/Cancel'
-import { socket } from '@/redux/auth'
 import { ResultType } from '@/interfaces/search'
+import { sendMessage } from '@/common/socket'
 interface createRoomProps {
   open: boolean
   onClose: () => void
@@ -32,10 +32,8 @@ const CreateRoom: React.FC<createRoomProps> = ({ open, onClose }) => {
     }
   }
   const handleCteartChat = () => {
-    if (members.length > 0 && socket) {
-      socket.emit('createChatRoom', { chatMembers: members })
-      setMembers([])
-    }
+    sendMessage('createChatRoom', members)
+    setMembers([])
     onClose()
   }
   const removeMember = (id: number) => {

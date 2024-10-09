@@ -56,7 +56,7 @@ const commentSlice = createSlice({
         state.loading.comment = true
       })
       .addCase(getComment.fulfilled, (state, action) => {
-        const comments = [...state.commentList, ...action.payload.commentList]
+        const comments = [...state.commentList, ...action.payload.result]
         const filter = new Map(comments.map(comment => [comment.id, comment]))
         state.commentList = Array.from(filter.values())
         state.loading.comment = false
@@ -150,7 +150,7 @@ export const { setShowSubComments, setEditingComment, clearComment, updateCommen
 export default commentSlice.reducer
 
 export const getComment = createAsyncThunk<
-  { commentList: CommentType[]; totalPages: number },
+  { result: CommentType[]; totalPages: number },
   { postId: number; page: number }
 >('comment/get', async ({ postId, page }: { postId: number; page: number }, { dispatch }) => {
   try {

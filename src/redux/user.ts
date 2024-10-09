@@ -32,7 +32,6 @@ const userSlice = createSlice({
         state.editLoading = true
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        console.log(action)
         state.profile = action.payload
         state.editLoading = false
       })

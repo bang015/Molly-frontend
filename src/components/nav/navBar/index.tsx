@@ -25,20 +25,23 @@ import { RootState } from '@/redux'
 import { signOut } from '@/redux/auth'
 import Search from '@/components/nav/search/search'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { socket } from '@/redux/auth'
 import { clearPostList } from '@/redux/postList'
 import { openSubModal } from '@/redux/modal'
 import { getUnreadCount } from '@/redux/chat'
+import { subscribeToMessages } from '@/common/socket'
 const Nav: React.FC = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const navigate = useNavigate()
   const searchRef = useRef<HTMLDivElement>(null)
-  const { user } = useSelector((state: RootState) => state.authReducer)
+  const { user, isConnected } = useSelector((state: RootState) => state.authReducer)
   const { unreadCount } = useSelector((state: RootState) => state.chatReducer)
   const [isCollapsed, setIsCollapsed] = useState(true)
   const [isMore, setIsMore] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  useEffect(() => {
+    dispatch(getUnreadCount() as any)
+  }, [])
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -53,13 +56,19 @@ const Nav: React.FC = () => {
   }, [searchRef])
 
   useEffect(() => {
-    dispatch(getUnreadCount() as any)
-    if (socket) {
-      socket.on('updateCount', data => {
+    let subscription: any
+    if (isConnected && user) {
+      subscription = subscribeToMessages(`/user/${user?.id}/updateCount`, message => {
         dispatch(getUnreadCount() as any)
       })
     }
-  }, [socket])
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
+  }, [isConnected, user, dispatch])
   const handleSignOut = () => {
     dispatch(clearPostList())
     dispatch(signOut() as any)
@@ -233,13 +242,21 @@ const Nav: React.FC = () => {
               }}
               className="flex justify-start border-b p-5 text-body16sd text-red-500"
             >
-              {isTransitioning || !isCollapsed ? <SyncLockIcon /> : '비밀번호 변경'}
+              {isTransitioning || !isCollapsed || location.pathname === '/messenger' ? (
+                <SyncLockIcon />
+              ) : (
+                '비밀번호 변경'
+              )}
             </button>
             <button
               onClick={handleSignOut}
               className="flex justify-start border-b p-5 text-body16sd text-red-500"
             >
-              {isTransitioning || !isCollapsed ? <LogoutIcon /> : '로그아웃'}
+              {isTransitioning || !isCollapsed || location.pathname === '/messenger' ? (
+                <LogoutIcon />
+              ) : (
+                '로그아웃'
+              )}
             </button>
           </div>
         )}

@@ -6,11 +6,13 @@ export const groupMessagesByDate = (messages: MessageType[]) => {
     const date = message.createdAt.substring(0, 10)
     const existingMessages = messageByDateMap.get(date) || []
     if (!existingMessages.some(msg => msg.id === message.id)) {
-      existingMessages.unshift(message)
+      existingMessages.push(message)
     }
     messageByDateMap.set(date, existingMessages)
   })
-  return Array.from(messageByDateMap, ([date, messages]) => ({ date, messages }))
+  return Array.from(messageByDateMap, ([date, messages]) => ({ date, messages })).sort((a, b) =>
+    b.date < a.date ? -1 : 1,
+  )
 }
 
 export const updateMessagesByDate = (
