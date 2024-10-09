@@ -1,9 +1,11 @@
 # Frontend Build Stage
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY client/package*.json ./
+COPY ./package*.json ./
 RUN npm install
-COPY client/ ./
+COPY ./ ./
+ARG VITE_SERVER_URL
+ENV VITE_SERVER_URL=${VITE_SERVER_URL}
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Nginx Stage
@@ -11,5 +13,4 @@ FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
-EXPOSE 443
+EXPOSE 3000
