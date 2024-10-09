@@ -22,9 +22,13 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
   const [message, setMessage] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
-    let chat: any
     if (roomId) {
       dispatch(chatRoomDetails(roomId) as any)
+    }
+  }, [roomId])
+  useEffect(() => {
+    let chat: any
+    if (roomId) {
       dispatch(updateUnreadCount(roomId))
       if (isConnected) {
         sendMessage('messageRead', { roomId })
@@ -39,7 +43,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
       }
       setIsOpen(false)
     }
-  }, [isConnected, roomId])
+  }, [isConnected, roomId, messageList])
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value)
