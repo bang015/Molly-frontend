@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getExplorePost } from '@/redux/postList'
+import { getExplorePost, setPostDetail } from '@/redux/postList'
 import { RootState } from '@/redux'
 import Nav from '@/components/nav/navBar'
 import { openModal } from '@/redux/modal'
@@ -58,7 +58,8 @@ const Explore: React.FC = () => {
               <button
                 key={post.id}
                 onClick={() => {
-                  dispatch(openModal({ modalType: 'PostDetailModal', id: post.id }))
+                  dispatch(openModal({ modalType: 'PostDetailModal' }))
+                  dispatch(setPostDetail(post))
                 }}
               >
                 <img
