@@ -7,8 +7,8 @@ const People: React.FC = () => {
   return (
     <div className="relative flex size-full overflow-auto">
       <Nav></Nav>
-      <div className="ml-[16.6667%] flex w-full justify-center">
-        <div className="w-[550px] py-10">
+      <div className="ml-[200px] flex w-full justify-center">
+        <div className="p-5 min-w-[300px] w-[35%] py-10">
           <div className="pb-5 text-body16sd">추천</div>
           <SuggestList limit={limit} />
         </div>
