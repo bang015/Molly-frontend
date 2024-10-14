@@ -99,7 +99,7 @@ const ChatRoom: React.FC<chatRoomProps> = ({ handleCeateOpen }) => {
             </div>
             {/* 메시지 */}
             <div className="flex size-full grow flex-col">
-              <div className="flex max-h-[730px] grow flex-col-reverse overflow-y-scroll px-5">
+              <div className="flex h-1 grow flex-col-reverse overflow-y-scroll px-5">
                 {messageList.map(
                   (
                     message: {

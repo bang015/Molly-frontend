@@ -25,7 +25,7 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="flex size-full">
       <Nav />
-      <div className="ml-[16.6667%] flex size-full min-w-body510 justify-center overflow-y-scroll">
+      <div className="ml-[300px] flex size-full min-w-body510 justify-center overflow-y-scroll">
         {profile ? (
           <div className="w-[70%] p-12">
             <Header profile={profile} />

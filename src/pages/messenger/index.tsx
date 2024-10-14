@@ -28,7 +28,7 @@ const Messenger: React.FC = () => {
   return (
     <div className="relative flex size-full overflow-auto">
       <Nav />
-      <div className="ml-[4rem] flex size-full">
+      <div className="ml-[4rem] flex w-full">
         <div className="flex w-[540px] flex-col border-r">
           <div className="flex justify-between p-5">
             <div className="text-body16sd">{user?.nickname}</div>
@@ -41,7 +41,7 @@ const Messenger: React.FC = () => {
             <ChatRoomList />
           </div>
         </div>
-        <div className="flex size-full">
+        <div className="container flex w-full">
           <ChatRoom handleCeateOpen={handleCeateOpen} />
         </div>
       </div>

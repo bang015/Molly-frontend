@@ -90,7 +90,7 @@ const Nav: React.FC = () => {
   return (
     <div
       ref={searchRef}
-      className={`fixed left-0 top-0 z-10 flex h-full min-w-16 ${location.pathname === '/messenger' ? 'w-16' : 'w-1/6'}`}
+      className={`fixed left-0 top-0 z-10 bg-white flex h-full ${location.pathname === '/messenger' ? 'w-16' : 'w-1/6 min-w-[200px]'}`}
       onTransitionEnd={handleTransitionEnd}
     >
       <div
